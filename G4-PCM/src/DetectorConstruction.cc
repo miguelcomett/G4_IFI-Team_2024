@@ -1,9 +1,15 @@
 #include "DetectorConstruction.hh"
+#include "G4NistManager.hh"
 #include "G4MaterialPropertiesTable.hh"
 #include "G4MaterialPropertyVector.hh"
 #include "G4OpticalSurface.hh"
 #include "G4LogicalSkinSurface.hh"
+#include "G4Tubs.hh"
+#include "G4Box.hh"
+#include "G4LogicalVolume.hh"
+#include "G4PVPlacement.hh"
 #include "G4RunManager.hh"
+#include "DetectorConstructionMessenger.hh"
 
 namespace G4_PCM
 {
@@ -12,6 +18,7 @@ namespace G4_PCM
         fMessenger(new DetectorConstructionMessenger(this)) // Crear el mensajero
     {
         DefineMaterials();
+        DefineOpticalProperties();
     }
 
     DetectorConstruction::~DetectorConstruction()
@@ -19,43 +26,33 @@ namespace G4_PCM
         delete fMessenger; // Eliminar el mensajero
     }
 
-    G4Material* DetectorConstruction::DefineRealisticMaterial()
-    {
-        //G4double density = 2.2 * g / cm3; // Densidad del vidrio de sílice
-        //G4Material* realisticMaterial = new G4Material("SilicaGlass", density, 2);
-
-        //G4NistManager* nist = G4NistManager::Instance();
-        //realisticMaterial->AddElement(nist->FindOrBuildElement("Si"), 1);
-        //realisticMaterial->AddElement(nist->FindOrBuildElement("O"), 2);
-
-        G4double density = 3.36 * g / cm3; // Densidad del óxido de vanadio (V2O5)
-        G4Material* realisticMaterial = new G4Material("VanadiumOxide", density, 2);
-
-        G4NistManager* nist = G4NistManager::Instance();
-        realisticMaterial->AddElement(nist->FindOrBuildElement("V"), 2); // Dos átomos de vanadio
-        realisticMaterial->AddElement(nist->FindOrBuildElement("O"), 5); // Cinco átomos de oxígeno
-
-
-        return realisticMaterial;
-    }
-
+    // Define los materiales utilizados en la simulación
     void DetectorConstruction::DefineMaterials()
     {
         G4NistManager* nist = G4NistManager::Instance();
 
-        // Definir vidrio de sílice (target)
-        target = DefineRealisticMaterial();
+        // Definir el material realista V2O5 (óxido de vanadio)
+        G4double density = 3.36 * g / cm3; // Densidad del óxido de vanadio (V2O5)
+        target = new G4Material("VanadiumOxide", density, 2);
+        target->AddElement(nist->FindOrBuildElement("V"), 2); // Dos átomos de vanadio
+        target->AddElement(nist->FindOrBuildElement("O"), 5); // Cinco átomos de oxígeno
 
-        // Material para el detector
+        // Definir el material para el detector
         E_PbWO4 = new G4Material("E_PbWO4", 8.28 * g / cm3, 3);
         E_PbWO4->AddElement(nist->FindOrBuildElement("Pb"), 1);
         E_PbWO4->AddElement(nist->FindOrBuildElement("W"), 1);
         E_PbWO4->AddElement(nist->FindOrBuildElement("O"), 4);
 
-        // Material de vacío para el mundo
+        // Definir el material de vacío para el mundo
         vacuum = nist->FindOrBuildMaterial("G4_Galactic");
 
         // Asignar propiedades ópticas al vacío
+        DefineWorldOpticalProperties();
+    }
+
+    // Define las propiedades ópticas del vacío (mundo)
+    void DetectorConstruction::DefineWorldOpticalProperties()
+    {
         G4MaterialPropertiesTable* vacuumMPT = new G4MaterialPropertiesTable();
         G4double vacuumRindex[] = { 1.0, 1.0 }; // Índice de refracción para vacío
         G4double vacuumPhotonEnergy[] = { 0.1 * eV, 12.4 * eV };
@@ -63,7 +60,8 @@ namespace G4_PCM
         vacuum->SetMaterialPropertiesTable(vacuumMPT);
     }
 
-    void DetectorConstruction::DefineOpticalProperties()
+    // Define las propiedades ópticas del V2O5
+    void DetectorConstruction::DefineTargetOpticalProperties()
     {
         const G4int numEntries = 12;
         G4double photonEnergy[numEntries] = {
@@ -91,30 +89,44 @@ namespace G4_PCM
         MPTV2O5->AddProperty("ABSLENGTH", photonEnergy, absorptionLengthV2O5, numEntries);
 
         target->SetMaterialPropertiesTable(MPTV2O5);
+    }
 
+    // Define las propiedades ópticas del detector (E_PbWO4)
+    void DetectorConstruction::DefineDetectorOpticalProperties()
+    {
+        const G4int numEntries = 12;
+        G4double photonEnergy[numEntries] = {
+            0.496 * eV, 1.0 * eV, 2.0 * eV, 3.0 * eV,
+            4.0 * eV, 5.0 * eV, 6.0 * eV, 7.0 * eV,
+            8.0 * eV, 9.0 * eV, 10.0 * eV, 12.4 * eV // Energía de los fotones
+        };
 
-
-        // Propiedades ópticas para el detector (E_PbWO4)
-        G4double refractiveIndexDetector[numEntries] = {
+        G4double refractiveIndexTarget[numEntries] = {
             2.2, 2.25, 2.3, 2.35, 2.4, 2.45, 2.5, 2.55, 2.6, 2.65, 2.7, 2.75
         };
 
-        G4double absorptionLengthDetector[numEntries] = {
+        G4double absorptionLengthTarget[numEntries] = {
             1 * cm, 1 * cm, 1 * cm, 1 * cm, 1 * cm,
             1 * cm, 1 * cm, 1 * cm, 1 * cm, 1 * cm, 1 * cm, 1 * cm
         };
 
-        G4double reflectivityDetector[numEntries] = {
+        G4double reflectivityTarget[numEntries] = {
             0.1, 0.1, 0.1, 0.1, 0.1,
             0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1
         };
 
         // Crear tabla de propiedades del material para el detector
-        G4MaterialPropertiesTable* MPTDetector = new G4MaterialPropertiesTable();
-        MPTDetector->AddProperty("RINDEX", photonEnergy, refractiveIndexDetector, numEntries);
-        MPTDetector->AddProperty("ABSLENGTH", photonEnergy, absorptionLengthDetector, numEntries);
-        MPTDetector->AddProperty("REFLECTIVITY", photonEnergy, reflectivityDetector, numEntries);
-        E_PbWO4->SetMaterialPropertiesTable(MPTDetector);
+        G4MaterialPropertiesTable* MPTTarget = new G4MaterialPropertiesTable();
+        MPTTarget->AddProperty("RINDEX", photonEnergy, refractiveIndexTarget, numEntries);
+        MPTTarget->AddProperty("ABSLENGTH", photonEnergy, absorptionLengthTarget, numEntries);
+        MPTTarget->AddProperty("REFLECTIVITY", photonEnergy, reflectivityTarget, numEntries);
+        E_PbWO4->SetMaterialPropertiesTable(MPTTarget);
+    }
+
+    void DetectorConstruction::DefineOpticalProperties()
+    {
+        DefineDetectorOpticalProperties();
+        DefineTargetOpticalProperties();
     }
 
     G4VPhysicalVolume* DetectorConstruction::Construct()
@@ -125,35 +137,14 @@ namespace G4_PCM
         fWorldLog = new G4LogicalVolume(solidWorld, vacuum, "World");
         auto physWorld = new G4PVPlacement(nullptr, G4ThreeVector(), fWorldLog, "World", nullptr, false, 0);
 
-        // Crear el target (vidrio de sílice)
-        G4double innerTargetRadius = 0.0;
-        G4double outerTargetRadius = 2.5 * cm;
-
-        G4Tubs* solidTarget = new G4Tubs("Target", innerTargetRadius, outerTargetRadius, fTargetThickness / 2.0, 0.0, 360.0 * deg);
-        G4LogicalVolume* logicTarget = new G4LogicalVolume(solidTarget, target, "Target");
-
-        // Posicionar el target en el mundo
-        G4ThreeVector targetPos = G4ThreeVector(); // Posición (0,0,0)
-        G4VPhysicalVolume* fTargetLog = new G4PVPlacement(nullptr, targetPos, logicTarget, "Target", fWorldLog, false, 0);
+        // Crear el target (óxido de vanadio)
+        CreateTarget();
 
         // Crear el detector (plomo tungsteno)
-        G4double detectorSizeXY = 20 * cm;
-        G4double detectorSizeZ = 10 * cm;
-        auto solidDetector = new G4Box("Detector", detectorSizeXY, detectorSizeXY, detectorSizeZ);
-        fDetectorLog = new G4LogicalVolume(solidDetector, E_PbWO4, "Detector");
-
-        // Posicionar el detector en el mundo
-        G4ThreeVector detectorPos = G4ThreeVector(0, 0, 20 * cm);
-        new G4PVPlacement(nullptr, detectorPos, fDetectorLog, "Detector", fWorldLog, false, 0);
+        CreateDetector();
 
         // Definir propiedades ópticas y asignarlas a la superficie
-        DefineOpticalProperties();
-        G4OpticalSurface* opticalSurface = new G4OpticalSurface("OpticalSurface");
-        opticalSurface->SetType(dielectric_dielectric);
-        opticalSurface->SetFinish(polished);
-        opticalSurface->SetModel(unified);
-
-        auto* surface = new G4LogicalBorderSurface("Surface", physWorld, fTargetLog, opticalSurface);
+        CreateOpticalSurface();
 
         // Definir este detector como el detector gamma
         fGammaDetector = fDetectorLog;
@@ -161,9 +152,42 @@ namespace G4_PCM
         return physWorld;
     }
 
+    // Crea el target y lo posiciona en el mundo
+    void DetectorConstruction::CreateTarget()
+    {
+        G4double innerTargetRadius = 0.0;
+        G4double outerTargetRadius = 2.5 * cm;
+
+        G4Tubs* solidTarget = new G4Tubs("Target", innerTargetRadius, outerTargetRadius, fTargetThickness / 2.0, 0.0, 360.0 * deg);
+        G4LogicalVolume* logicTarget = new G4LogicalVolume(solidTarget, target, "Target");
+        new G4PVPlacement(nullptr, G4ThreeVector(), logicTarget, "Target", fWorldLog, false, 0);
+    }
+
+    // Crea el detector y lo posiciona en el mundo
+    void DetectorConstruction::CreateDetector()
+    {
+        G4double innerDetectorRadius = 0.0;
+        G4double outerDetectorRadius = 2.5 * cm;
+
+        G4Tubs* solidDetector = new G4Tubs("Detector", innerDetectorRadius, outerDetectorRadius, fTargetThickness / 2.0, 0.0, 360.0 * deg);
+        fDetectorLog = new G4LogicalVolume(solidDetector, E_PbWO4, "Detector");
+        new G4PVPlacement(nullptr, G4ThreeVector(0., 0., fTargetThickness / 2.0 + 1 * cm), fDetectorLog, "Detector", fWorldLog, false, 0);
+    }
+
+    // Define la superficie óptica y la asigna a la geometría
+    void DetectorConstruction::CreateOpticalSurface()
+    {
+        auto surface = new G4OpticalSurface("Surface");
+        surface->SetType(dielectric_dielectric);
+        surface->SetFinish(polished);
+        surface->SetModel(unified);
+
+        auto surfaceLog = new G4LogicalSkinSurface("SkinSurface", fDetectorLog, surface);
+    }
+
     void DetectorConstruction::SetTargetThickness(G4double thickness)
     {
         fTargetThickness = thickness;
-        G4RunManager::GetRunManager()->GeometryHasBeenModified();
+        G4RunManager::GetRunManager()->ReinitializeGeometry();
     }
 }

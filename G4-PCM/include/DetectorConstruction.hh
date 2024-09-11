@@ -15,7 +15,6 @@
 #include "DetectorConstructionMessenger.hh"
 #include "G4LogicalBorderSurface.hh"
 
-
 namespace G4_PCM
 {
     class DetectorConstructionMessenger; // Forward declaration
@@ -29,12 +28,10 @@ namespace G4_PCM
         G4VPhysicalVolume* Construct() override;
 
         void SetTargetThickness(G4double thickness);
-        void SetMaterial(G4Material* material); // Añadido
 
         G4LogicalVolume* GetOpticalPhotonDetector() const { return fGammaDetector; }
 
     private:
-        G4Material* DefineRealisticMaterial();
         G4LogicalVolume* fGammaDetector = nullptr;
         G4LogicalVolume* fWorldLog = nullptr;  // Añadido
         G4LogicalVolume* fDetectorLog = nullptr; // Añadido
@@ -44,10 +41,21 @@ namespace G4_PCM
         G4UIcmdWithADoubleAndUnit* fTargetThicknessCmd;
         DetectorConstructionMessenger* fMessenger; // Pointer to the messenger
 
-        G4Material* target, * vacuum, * E_PbWO4, * detector; //*E_V2O5
+        G4Material* target; // Corregido
+        G4Material* vacuum; // Corregido
+        G4Material* E_PbWO4; // Corregido
+        G4Material* detector; // Corregido
 
         void DefineMaterials();
         void DefineOpticalProperties();
+
+        // Añadido: Métodos privados
+        void CreateTarget();
+        void CreateDetector();
+        void CreateOpticalSurface();
+        void DefineWorldOpticalProperties();
+        void DefineDetectorOpticalProperties();
+        void DefineTargetOpticalProperties();
     };
 }
 

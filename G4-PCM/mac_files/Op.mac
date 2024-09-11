@@ -22,4 +22,4 @@
 /gps/ene/calculate
 
 # Disparar n partículas
-/run/beamOn 10000000
+/run/beamOn 1000

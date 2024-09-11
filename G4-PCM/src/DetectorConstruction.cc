@@ -101,21 +101,21 @@ namespace G4_PCM
             8.0 * eV, 9.0 * eV, 10.0 * eV, 12.4 * eV // Energía de los fotones
         };
 
-        // Índice de refracción del detector
+        // Reducir el índice de refracción del detector
         G4double refractiveIndexTarget[numEntries] = {
-            2.2, 2.25, 2.3, 2.35, 2.4, 2.45, 2.5, 2.55, 2.6, 2.65, 2.7, 2.75
+            1.8, 1.85, 1.9, 1.95, 2.0, 2.05, 2.1, 2.15, 2.2, 2.25, 2.3, 2.35
         };
 
-        // Longitud de absorción para el detector (aumentada para permitir más fotones dentro)
+        // Aumentar la longitud de absorción para mejorar la transparencia
         G4double absorptionLengthTarget[numEntries] = {
-            10 * cm, 10 * cm, 10 * cm, 10 * cm, 10 * cm,
-            10 * cm, 10 * cm, 10 * cm, 10 * cm, 10 * cm, 10 * cm, 10 * cm
+            20 * cm, 20 * cm, 20 * cm, 20 * cm, 20 * cm,
+            20 * cm, 20 * cm, 20 * cm, 20 * cm, 20 * cm, 20 * cm, 20 * cm
         };
 
-        // Reflectividad del detector (ajustada para reducir la reflexión y permitir más fotones)
+        // Reflectividad ajustada para que más fotones escapen del detector
         G4double reflectivityTarget[numEntries] = {
-            0.01, 0.01, 0.01, 0.01, 0.01,
-            0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01
+            0.05, 0.05, 0.05, 0.05, 0.05,
+            0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05
         };
 
         // Crear tabla de propiedades del material para el detector
@@ -168,18 +168,28 @@ namespace G4_PCM
         new G4PVPlacement(nullptr, targetPos, logicTarget, "Target", fWorldLog, false, 0);
     }
 
-    // Crea el detector y lo posiciona en el mundo
     void DetectorConstruction::CreateDetector()
     {
         G4double detectorSizeXY = 20 * cm;
         G4double detectorSizeZ = 10 * cm;
 
+        // Crear el detector transparente (plomo tungsteno)
         auto solidDetector = new G4Box("Detector", detectorSizeXY, detectorSizeXY, detectorSizeZ);
         fDetectorLog = new G4LogicalVolume(solidDetector, E_PbWO4, "Detector");
         G4ThreeVector detectorPos = G4ThreeVector(0, 0, 20 * cm);
         new G4PVPlacement(nullptr, detectorPos, fDetectorLog, "Detector", fWorldLog, false, 0);
-    }
 
+        // Crear la placa de tungsteno detrás del detector
+        G4double plateThickness = 1.0 * cm; // Espesor de la placa de tungsteno
+        G4double plateSizeXY = 20 * cm;
+
+        auto solidPlate = new G4Box("TungstenPlate", plateSizeXY, plateSizeXY, plateThickness / 2.0);
+        auto logicPlate = new G4LogicalVolume(solidPlate, G4NistManager::Instance()->FindOrBuildMaterial("G4_W"), "TungstenPlate");
+
+        // Posicionar la placa detrás del detector (z = 25 cm detrás del detector)
+        G4ThreeVector platePos = G4ThreeVector(0, 0, (25 + ((plateThickness / 2.0) + 0.5)) * cm); // Ajuste de posición
+        new G4PVPlacement(nullptr, platePos, logicPlate, "TungstenPlate", fWorldLog, false, 0);
+    }
 
     // Define la superficie óptica y la asigna a la geometría
     void DetectorConstruction::CreateOpticalSurface()

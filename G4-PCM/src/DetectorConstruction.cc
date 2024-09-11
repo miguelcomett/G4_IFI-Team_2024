@@ -160,19 +160,22 @@ namespace G4_PCM
 
         G4Tubs* solidTarget = new G4Tubs("Target", innerTargetRadius, outerTargetRadius, fTargetThickness / 2.0, 0.0, 360.0 * deg);
         G4LogicalVolume* logicTarget = new G4LogicalVolume(solidTarget, target, "Target");
-        new G4PVPlacement(nullptr, G4ThreeVector(), logicTarget, "Target", fWorldLog, false, 0);
+        G4ThreeVector targetPos = G4ThreeVector();
+        new G4PVPlacement(nullptr, targetPos, logicTarget, "Target", fWorldLog, false, 0);
     }
 
     // Crea el detector y lo posiciona en el mundo
     void DetectorConstruction::CreateDetector()
     {
-        G4double innerDetectorRadius = 0.0;
-        G4double outerDetectorRadius = 2.5 * cm;
+        G4double detectorSizeXY = 20 * cm;
+        G4double detectorSizeZ = 10 * cm;
 
-        G4Tubs* solidDetector = new G4Tubs("Detector", innerDetectorRadius, outerDetectorRadius, fTargetThickness / 2.0, 0.0, 360.0 * deg);
+        auto solidDetector = new G4Box("Detector", detectorSizeXY, detectorSizeXY, detectorSizeZ);
         fDetectorLog = new G4LogicalVolume(solidDetector, E_PbWO4, "Detector");
-        new G4PVPlacement(nullptr, G4ThreeVector(0., 0., fTargetThickness / 2.0 + 1 * cm), fDetectorLog, "Detector", fWorldLog, false, 0);
+        G4ThreeVector detectorPos = G4ThreeVector(0, 0, 20 * cm);
+        new G4PVPlacement(nullptr, detectorPos, fDetectorLog, "Detector", fWorldLog, false, 0);
     }
+
 
     // Define la superficie óptica y la asigna a la geometría
     void DetectorConstruction::CreateOpticalSurface()

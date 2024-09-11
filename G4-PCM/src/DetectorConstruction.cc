@@ -84,11 +84,11 @@ namespace G4_PCM
         };
 
         // Asignar propiedades ópticas al V2O5
-        G4MaterialPropertiesTable* MPTV2O5 = new G4MaterialPropertiesTable();
-        MPTV2O5->AddProperty("RINDEX", photonEnergy, refractiveIndexV2O5, numEntries);
-        MPTV2O5->AddProperty("ABSLENGTH", photonEnergy, absorptionLengthV2O5, numEntries);
+        G4MaterialPropertiesTable* MPTTarget = new G4MaterialPropertiesTable();
+        MPTTarget->AddProperty("RINDEX", photonEnergy, refractiveIndexV2O5, numEntries);
+        MPTTarget->AddProperty("ABSLENGTH", photonEnergy, absorptionLengthV2O5, numEntries);
 
-        target->SetMaterialPropertiesTable(MPTV2O5);
+        target->SetMaterialPropertiesTable(MPTTarget);
     }
 
     // Define las propiedades ópticas del detector (E_PbWO4)
@@ -101,27 +101,31 @@ namespace G4_PCM
             8.0 * eV, 9.0 * eV, 10.0 * eV, 12.4 * eV // Energía de los fotones
         };
 
+        // Índice de refracción del detector
         G4double refractiveIndexTarget[numEntries] = {
             2.2, 2.25, 2.3, 2.35, 2.4, 2.45, 2.5, 2.55, 2.6, 2.65, 2.7, 2.75
         };
 
+        // Longitud de absorción para el detector (aumentada para permitir más fotones dentro)
         G4double absorptionLengthTarget[numEntries] = {
-            1 * cm, 1 * cm, 1 * cm, 1 * cm, 1 * cm,
-            1 * cm, 1 * cm, 1 * cm, 1 * cm, 1 * cm, 1 * cm, 1 * cm
+            10 * cm, 10 * cm, 10 * cm, 10 * cm, 10 * cm,
+            10 * cm, 10 * cm, 10 * cm, 10 * cm, 10 * cm, 10 * cm, 10 * cm
         };
 
+        // Reflectividad del detector (ajustada para reducir la reflexión y permitir más fotones)
         G4double reflectivityTarget[numEntries] = {
-            0.1, 0.1, 0.1, 0.1, 0.1,
-            0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1
+            0.01, 0.01, 0.01, 0.01, 0.01,
+            0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01
         };
 
         // Crear tabla de propiedades del material para el detector
-        G4MaterialPropertiesTable* MPTTarget = new G4MaterialPropertiesTable();
-        MPTTarget->AddProperty("RINDEX", photonEnergy, refractiveIndexTarget, numEntries);
-        MPTTarget->AddProperty("ABSLENGTH", photonEnergy, absorptionLengthTarget, numEntries);
-        MPTTarget->AddProperty("REFLECTIVITY", photonEnergy, reflectivityTarget, numEntries);
-        E_PbWO4->SetMaterialPropertiesTable(MPTTarget);
+        G4MaterialPropertiesTable* MPTV2O5 = new G4MaterialPropertiesTable();
+        MPTV2O5->AddProperty("RINDEX", photonEnergy, refractiveIndexTarget, numEntries);
+        MPTV2O5->AddProperty("ABSLENGTH", photonEnergy, absorptionLengthTarget, numEntries);
+        MPTV2O5->AddProperty("REFLECTIVITY", photonEnergy, reflectivityTarget, numEntries);
+        E_PbWO4->SetMaterialPropertiesTable(MPTV2O5);
     }
+
 
     void DetectorConstruction::DefineOpticalProperties()
     {

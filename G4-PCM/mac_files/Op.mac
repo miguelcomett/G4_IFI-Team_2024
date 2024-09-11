@@ -1,0 +1,25 @@
+# Inicializa la simulación
+/run/initialize
+
+# Configuración de la fuente de partículas
+/gps/particle opticalphoton
+/gps/ene/type Bbody
+/gps/ene/temp 5100 K   # Sol en la Tierra
+/gps/ene/min 0.496 eV  # Energía mínima (correspondiente a 2500 nm)
+/gps/ene/max 12.4 eV   # Energía máxima (correspondiente a 100 nm)
+
+/gps/pos/type Plane
+/gps/pos/shape Circle
+/gps/pos/radius 1 cm
+/gps/pos/centre 0 0 -1 m  # Centro del círculo en (0, 0, -1 m)
+
+/gps/direction 0 0 1       # Dirección de las partículas a lo largo del eje Z
+
+# Configuración de polarización lineal
+/gps/polarization 1 0 0          # Polarización lineal a lo largo del eje X
+
+# Calcular la energía del espectro
+/gps/ene/calculate
+
+# Disparar n partículas
+/run/beamOn 10000000

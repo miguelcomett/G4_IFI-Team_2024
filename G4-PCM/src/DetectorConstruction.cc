@@ -101,21 +101,21 @@ namespace G4_PCM
             8.0 * eV, 9.0 * eV, 10.0 * eV, 12.4 * eV // Energía de los fotones
         };
 
-        // Reducir el índice de refracción del detector
+        // Reducir más el índice de refracción del detector para mayor transparencia
         G4double refractiveIndexTarget[numEntries] = {
-            1.8, 1.85, 1.9, 1.95, 2.0, 2.05, 2.1, 2.15, 2.2, 2.25, 2.3, 2.35
+            1.5, 1.55, 1.6, 1.65, 1.7, 1.75, 1.8, 1.85, 1.9, 1.95, 2.0, 2.05
         };
 
-        // Aumentar la longitud de absorción para mejorar la transparencia
+        // Aumentar aún más la longitud de absorción para mejorar la transparencia
         G4double absorptionLengthTarget[numEntries] = {
-            20 * cm, 20 * cm, 20 * cm, 20 * cm, 20 * cm,
-            20 * cm, 20 * cm, 20 * cm, 20 * cm, 20 * cm, 20 * cm, 20 * cm
+            50 * cm, 50 * cm, 50 * cm, 50 * cm, 50 * cm,
+            50 * cm, 50 * cm, 50 * cm, 50 * cm, 50 * cm, 50 * cm, 50 * cm
         };
 
-        // Reflectividad ajustada para que más fotones escapen del detector
+        // Disminuir la reflectividad para que más fotones escapen del detector
         G4double reflectivityTarget[numEntries] = {
-            0.05, 0.05, 0.05, 0.05, 0.05,
-            0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05
+            0.01, 0.01, 0.01, 0.01, 0.01,
+            0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01
         };
 
         // Crear tabla de propiedades del material para el detector
@@ -125,7 +125,6 @@ namespace G4_PCM
         MPTV2O5->AddProperty("REFLECTIVITY", photonEnergy, reflectivityTarget, numEntries);
         E_PbWO4->SetMaterialPropertiesTable(MPTV2O5);
     }
-
 
     void DetectorConstruction::DefineOpticalProperties()
     {
@@ -185,6 +184,22 @@ namespace G4_PCM
 
         auto solidPlate = new G4Box("TungstenPlate", plateSizeXY, plateSizeXY, plateThickness / 2.0);
         auto logicPlate = new G4LogicalVolume(solidPlate, G4NistManager::Instance()->FindOrBuildMaterial("G4_W"), "TungstenPlate");
+
+        // Asignar propiedades ópticas al tungsteno (100% reflectividad)
+        const G4int numEntries = 12;
+        G4double photonEnergy[numEntries] = {
+            0.496 * eV, 1.0 * eV, 2.0 * eV, 3.0 * eV,
+            4.0 * eV, 5.0 * eV, 6.0 * eV, 7.0 * eV,
+            8.0 * eV, 9.0 * eV, 10.0 * eV, 12.4 * eV // Energía de los fotones
+        };
+
+        // Reflectividad de 100% para el tungsteno
+        G4double reflectivityTungsten[numEntries] = { 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 };
+
+        // Crear tabla de propiedades ópticas del tungsteno
+        G4MaterialPropertiesTable* MPTTungsten = new G4MaterialPropertiesTable();
+        MPTTungsten->AddProperty("REFLECTIVITY", photonEnergy, reflectivityTungsten, numEntries);
+        logicPlate->GetMaterial()->SetMaterialPropertiesTable(MPTTungsten);
 
         // Posicionar la placa detrás del detector (z = 25 cm detrás del detector)
         G4ThreeVector platePos = G4ThreeVector(0, 0, (25 + ((plateThickness / 2.0) + 0.5)) * cm); // Ajuste de posición

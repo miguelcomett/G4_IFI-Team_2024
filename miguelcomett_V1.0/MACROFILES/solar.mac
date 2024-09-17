@@ -1,0 +1,16 @@
+# a simple test run
+/run/initialize
+
+/gps/particle gamma
+/gps/ene/type Bbody
+/gps/ene/temp 5778 K
+/gps/ene/min 1.77 eV  # Energía mínima correspondiente a 700 nm
+/gps/ene/max 3.10 eV  # Energía máxima correspondiente a 400 nm
+/gps/pos/type Plane
+/gps/pos/shape Circle
+/gps/pos/radius 2.5 cm
+/gps/pos/centre 0 0 -5 cm  # Centro del círculo en (0, 0, -5 cm)
+/gps/direction 0 0 1        # Dirección de las partículas a lo largo del eje Z
+/gps/ene/calculate
+/run/beamOn 1000000
+

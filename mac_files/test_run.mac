@@ -1,0 +1,21 @@
+# a simple test run
+/run/initialize
+
+# /gun/energy 70 keV
+/gun/energy 50 keV
+/det/t 5 cm
+/run/reinitializeGeometry
+
+
+/Pgun/Z -30 cm
+/run/reinitializeGeometry
+/run/beamOn 1000000
+
+
+/Pgun/Z -50 cm
+/run/reinitializeGeometry
+/run/beamOn 1000000
+
+/Pgun/Z -100 cm
+/run/reinitializeGeometry
+/run/beamOn 1000000

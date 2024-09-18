@@ -1,0 +1,14 @@
+# Running 1e9 particles
+# Estimation: it will take 1.5 hrs
+
+# Open the output file
+/analysis/openFile max
+
+# run medium_run.mac 20 times: (args: mac_file, counter_name, initial_value, final_value)
+/control/loop run.mac count 0 19
+
+# write to the file
+/analysis/write
+
+# close the file
+/analysis/closeFile

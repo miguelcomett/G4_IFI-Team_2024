@@ -194,26 +194,67 @@ namespace G4_PCM
     }
 
     // Método para construir el detector
+// Método para construir el detector
     G4VPhysicalVolume* DetectorConstruction::Construct()
     {
-        // Crear el mundo
-        solidWorld = new G4Box("solidWorld", detectorSizeXY / 2.0, detectorSizeXY / 2.0, detectorSizeZ / 2.0);
-        logicWorld = new G4LogicalVolume(solidWorld, vacuum, "logicWorld");
-        physWorld = new G4PVPlacement(0, G4ThreeVector(), logicWorld, "physWorld", 0, false, 0, true);
+        // Definir el tamaño del mundo
+        G4double worldSize = 1 * m;
+        solidWorld = new G4Box("World",
+            worldSize / 2,
+            worldSize / 2,
+            worldSize * 10);
+        logicWorld = new G4LogicalVolume(solidWorld,
+            vacuum,
+            "World");
+        physWorld = new G4PVPlacement(nullptr,
+            G4ThreeVector(),
+            logicWorld,
+            "World",
+            nullptr,
+            false,
+            0);
 
-        // Construcción del brazo
+        // Definir la posición y rotación del tubo, sin importar si es un brazo o hueso
+        targetPos = G4ThreeVector(); // 0,0,0
+        //targetRotation = new G4RotationMatrix(90, 0, 0);
+
+        // Selección de tipo
         if (isArm)
         {
             ConstructArm();
         }
-        else if (isNormalBone)
+
+        if (isSingleBone)
         {
-            ConstructNormalBone();
+            ConstructSingleBone();
         }
-        else if (isRealisticBone)
-        {
-            ConstructRealBone();
-        }
+
+        // Construir el detector
+        G4Box* solidDetector = new G4Box(
+            "Detector",
+            detectorSizeXY,
+            detectorSizeXY,
+            detectorSizeZ);
+
+        G4LogicalVolume* logicDetector = new G4LogicalVolume(
+            solidDetector,
+            E_PbWO4,
+            "Detector");
+
+        G4ThreeVector detectorPos = G4ThreeVector(0, 0, 20 * cm);
+        G4RotationMatrix* detRotation = new G4RotationMatrix();
+
+        // Colocar el detector
+        new G4PVPlacement(detRotation,
+            detectorPos,
+            logicDetector,
+            "Detector",
+            logicWorld,
+            false,
+            0);
+
+        // Definir este detector como el detector gamma
+        fGammaDetector = logicDetector;
 
         return physWorld;
     }

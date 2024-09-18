@@ -18,7 +18,7 @@ namespace G4_PCM
     private:
         PrimaryGeneratorAction* fGun;
         G4UIcmdWithADoubleAndUnit* fPgunCmd; 
-         G4UIcmdWithADouble *fPgunAngleCmd;
+        G4UIcmdWithADouble *fPgunAngleCmd;
     };
 }
 

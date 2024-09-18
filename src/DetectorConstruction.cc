@@ -2,364 +2,225 @@
 
 namespace G4_PCM
 {
+    // Constructor
     DetectorConstruction::DetectorConstruction()
-        : fTargetThickness(50 * mm), // Valor predeterminado
+        : fTargetThickness(50 * mm), // Valor predeterminado de grosor del objetivo
         fMessenger(new DetectorConstructionMessenger(this)) // Crear el mensajero
     {
-    	DefineMaterials();
-    	
-    	// Arquitecture of target just -SELECT ONE-
-    	isArm = true; 
-    	isSingleBone = false; 
-    	// Type of bone - SELECT ONE - 	 
-	isNormalBone = false; //just solid bone
-    	isRealisticBone = true; //solidTrabecular and solidCortical
-    	//Want your bone to have osteo? 
-    	isOsBone = true; 
-	//Filter to eliminate noise    	  
-    	isFiltered = false; // Create a wall that just let the circle
-    	
-    	//Radio total del hueso
-    	if (isRealisticBone)
-    	{
-    		outerBoneRadius = 2.25 * cm; 
-    	}
-    	else //Hueso normal prueba
-    	{
-	    	outerBoneRadius = 1.5 * cm;
-    	}
-    	innerBoneRadius = 0.0;
-    	
-    	targetRotation = new G4RotationMatrix(0, 90 * deg, 0); // 0, 90 * deg, 0
-    	
-    	//Detector SIze
+        DefineMaterials();
+
+        // Selección de arquitectura del objetivo -SELECCIONA UNA-
+        isArm = true;        // Brazo
+        isSingleBone = false; // Solo hueso
+
+        // Tipo de hueso -SELECCIONA UNO-
+        isNormalBone = false;  // Hueso sólido
+        isRealisticBone = true; // Hueso sólido y trabecular
+
+        // ¿Quieres que tu hueso tenga osteoporosis?
+        isOsBone = true;  // Hueso osteoporótico
+
+        // Filtro para eliminar ruido
+        isFiltered = false; // Filtro para dejar pasar solo la parte circular
+
+        // Radio total del hueso
+        outerBoneRadius = isRealisticBone ? 2.25 * cm : 1.5 * cm; // Selección del radio en función del tipo de hueso
+        innerBoneRadius = 0.0;
+
+        // Rotación del objetivo
+        targetRotation = new G4RotationMatrix(0, 90 * deg, 0);
+
+        // Tamaño del detector
         detectorSizeXY = 20 * cm;
         detectorSizeZ = 5 * cm;
-        
-        // Filter parameters
-        filterThick = 1.0*cm / 2; 
-        	
+
+        // Parámetros del filtro
+        filterThick = 0.5 * cm;
     }
 
+    // Destructor
     DetectorConstruction::~DetectorConstruction()
     {
         delete fMessenger; // Eliminar el mensajero
     }
-    
+
+    // Definir materiales
     void DetectorConstruction::DefineMaterials()
     {
-    	// Get nist material manager
         G4NistManager* nist = G4NistManager::Instance();
-//G4_B-100_BONE
-        // Define el material para el objetivo
+
+        // Materiales básicos
         bone = nist->FindOrBuildMaterial("G4_BONE_CORTICAL_ICRP");
         muscle = nist->FindOrBuildMaterial("G4_MUSCLE_SKELETAL_ICRP");
-	skin = nist->FindOrBuildMaterial("G4_SKIN_ICRP");
-	grasa = nist->FindOrBuildMaterial("G4_ADIPOSE_TISSUE_ICRP");
-        //target = nist->FindOrBuildMaterial("G4_W");
+        skin = nist->FindOrBuildMaterial("G4_SKIN_ICRP");
+        grasa = nist->FindOrBuildMaterial("G4_ADIPOSE_TISSUE_ICRP");
         vacuum = nist->FindOrBuildMaterial("G4_AIR");
-        
-        // Configure Lead Tungstate for crystals
+
+        // Material para los cristales de PbWO4
         E_PbWO4 = new G4Material("E_PbWO4", 8.28 * g / cm3, 3);
         E_PbWO4->AddElement(nist->FindOrBuildElement("Pb"), 1);
         E_PbWO4->AddElement(nist->FindOrBuildElement("W"), 1);
         E_PbWO4->AddElement(nist->FindOrBuildElement("O"), 4);
-        
-        // Configure material for oesteoporotic bone
-        H = nist->FindOrBuildMaterial("G4_H"); 
-        C = nist->FindOrBuildMaterial("G4_C"); 
-        N = nist->FindOrBuildMaterial("G4_N"); 
-        O = nist->FindOrBuildMaterial("G4_O"); 
-        Mg = nist->FindOrBuildMaterial("G4_Mg"); 
-        P = nist->FindOrBuildMaterial("G4_P"); 
-        S = nist->FindOrBuildMaterial("G4_S"); 
-        Ca = nist->FindOrBuildMaterial("G4_Ca"); 
-        OsBone = new G4Material("OsteoporoticBone", 1.3*g/cm3, 8); //Less d
-        OsBone -> AddMaterial(H, 6.4*perCent); 
-        OsBone -> AddMaterial(C, 27.8*perCent); 
-        OsBone -> AddMaterial(N, 2.7*perCent); 
-        OsBone -> AddMaterial(O, 41*perCent); 
-        OsBone -> AddMaterial(Mg, 0.2*perCent); 
-        OsBone -> AddMaterial(P, 7*perCent); 
-        OsBone -> AddMaterial(S, 0.2*perCent); 
-        OsBone -> AddMaterial(Ca, 14.7*perCent); 
-        
-        //Configure mats for W filter
-        W = nist->FindOrBuildMaterial("G4_W"); 
-        
-        //Materials for realistic normal bone
+
+        // Material para hueso osteoporótico
+        H = nist->FindOrBuildMaterial("G4_H");
+        C = nist->FindOrBuildMaterial("G4_C");
+        N = nist->FindOrBuildMaterial("G4_N");
+        O = nist->FindOrBuildMaterial("G4_O");
+        Mg = nist->FindOrBuildMaterial("G4_Mg");
+        P = nist->FindOrBuildMaterial("G4_P");
+        S = nist->FindOrBuildMaterial("G4_S");
+        Ca = nist->FindOrBuildMaterial("G4_Ca");
+        OsBone = new G4Material("OsteoporoticBone", 1.3 * g / cm3, 8);
+        OsBone->AddMaterial(H, 6.4 * perCent);
+        OsBone->AddMaterial(C, 27.8 * perCent);
+        OsBone->AddMaterial(N, 2.7 * perCent);
+        OsBone->AddMaterial(O, 41 * perCent);
+        OsBone->AddMaterial(Mg, 0.2 * perCent);
+        OsBone->AddMaterial(P, 7 * perCent);
+        OsBone->AddMaterial(S, 0.2 * perCent);
+        OsBone->AddMaterial(Ca, 14.7 * perCent);
+
+        // Material para hueso normal realista
         trabecularBone = nist->FindOrBuildMaterial("G4_B-100_BONE");
-        //Realiscti Osteporosis
-        F = nist -> FindOrBuildMaterial("G4_F"); 
-        RealOsBone = new G4Material("RealOsteoporoticBone", 1.3*g/cm3, 6);
-        RealOsBone -> AddMaterial(H, 6.54709*perCent); 
-        RealOsBone -> AddMaterial(C, 53.6944*perCent); 
-        RealOsBone -> AddMaterial(N, 2.15*perCent); 
-        RealOsBone -> AddMaterial(O, 3.2085*perCent); 
-        RealOsBone -> AddMaterial(F, 16.7411*perCent); 
-        RealOsBone -> AddMaterial(Ca, 17.6589*perCent);  
-        
+        F = nist->FindOrBuildMaterial("G4_F");
+        RealOsBone = new G4Material("RealOsteoporoticBone", 1.3 * g / cm3, 6);
+        RealOsBone->AddMaterial(H, 6.54709 * perCent);
+        RealOsBone->AddMaterial(C, 53.6944 * perCent);
+        RealOsBone->AddMaterial(N, 2.15 * perCent);
+        RealOsBone->AddMaterial(O, 3.2085 * perCent);
+        RealOsBone->AddMaterial(F, 16.7411 * perCent);
+        RealOsBone->AddMaterial(Ca, 17.6589 * perCent);
     }
-    // ---------- 3 KIND OF BONES CONSTRUCTION -----------------------------
-    //----------- OsBone ------- RealBone -------- NormalBone --------------)
-    
-     // -----------------------------------------------------------------------
-     // --------------------------- CONSTRUCT THE BONE WITH PORES
+
+    // Construir hueso osteoporótico con poros
     void DetectorConstruction::ConstructOsBone()
     {
-    	//AGREGAR CASO REAL
-    	G4double startPhi = 0.*deg;
-	G4double deltaPhi = 360.*deg;
-	G4double startTheta = 0.*deg;
-	G4double deltaTheta = 180.*deg;  // Esfera completa
-		// Define los poros como esferas pequeñas
-	G4double poreRadius = 100*um; //Ideal 100um
-	pore = new G4Sphere("Pore", 0, poreRadius, startPhi, deltaPhi, startTheta, 	deltaTheta);
-		// Número de poros que deseas simular
-	int numPores = 300; //Quantity 300
-		//Solido
-	
-	if (isNormalBone)
-	{
-		porousBone = solidBone; 
-	}
-	if (isRealisticBone)
-	{
-		porousBone = solidTrabecular; 
-	}
-	for (int i = 1; i < numPores; i++) {
-			// Generar coordenadas aleatorias dentro del cilindro
-		if (isNormalBone)
-		{
-			r = G4UniformRand() * outerBoneRadius; // Distancia radial aleatoria				
-		}
-		else
-		{
-			r = G4UniformRand() * (outerBoneRadius - 0.25); 
-		}
-		G4double theta = G4UniformRand() * 360.0 * deg; // Ángulo aleatorio
-		G4double z = G4UniformRand() * fTargetThickness - fTargetThickness/2; // Altura aleatoria en el cilindro
-			// Convertir coordenadas cilíndricas a cartesianas
-		G4double x = r * std::cos(theta);
-		G4double y = r * std::sin(theta);
+        G4double poreRadius = 100 * um;
+        pore = new G4Sphere("Pore", 0, poreRadius, 0. * deg, 360. * deg, 0. * deg, 180. * deg);
 
-			// Definir la posición del poro
-		G4ThreeVector porePosition = G4ThreeVector(x, y, z);
+        int numPores = 300;
+        porousBone = isNormalBone ? solidBone : solidTrabecular;
 
-			// Crear y restar el poro del volumen del hueso
-		porousBone = new G4SubtractionSolid("PorousBone", porousBone, pore, 0, porePosition);
-		}
-		
-	if (isNormalBone)
-	{
-		logicBone = new G4LogicalVolume(porousBone,OsBone,"PorousBoneLogical");
-		physBone = new G4PVPlacement(targetRotation, targetPos, logicBone, "physBone", logicWorld, false, 0);  		
-	}
-	else 
-	{
-		logicTrabecular = new G4LogicalVolume(porousBone,RealOsBone,"PorousBoneLogical");
-		physTrabecular = new G4PVPlacement(targetRotation, targetPos, logicTrabecular, "physTrabecular", logicWorld, false, 0);  
-	}
+        for (int i = 1; i < numPores; ++i)
+        {
+            G4double r = G4UniformRand() * (isNormalBone ? outerBoneRadius : (outerBoneRadius - 0.25));
+            G4double theta = G4UniformRand() * 360.0 * deg;
+            G4double z = G4UniformRand() * fTargetThickness - fTargetThickness / 2;
 
+            G4ThreeVector porePosition(r * std::cos(theta), r * std::sin(theta), z);
+            porousBone = new G4SubtractionSolid("PorousBone", porousBone, pore, 0, porePosition);
+        }
+
+        G4LogicalVolume* logicBone = isNormalBone ?
+            new G4LogicalVolume(porousBone, OsBone, "PorousBoneLogical") :
+            new G4LogicalVolume(porousBone, RealOsBone, "PorousBoneLogical");
+
+        new G4PVPlacement(targetRotation, targetPos, logicBone, isNormalBone ? "physBone" : "physTrabecular", logicWorld, false, 0);
     }
-    // ----------------------------------- REALISTIC BONE -----------------------
-    // --------------------------------------------------------------------
+
+    // Construir hueso realista (trabecular y cortical)
     void DetectorConstruction::ConstructRealBone()
     {
-    	G4double outerTrabecularRadius = outerBoneRadius - 0.25*cm; // = 2cm
-    	G4double innerCorticalBone = outerTrabecularRadius; 
-    	G4double outerCorticalBone = outerBoneRadius;  // == 2.25
-    	
-    	//Tubs
-    	solidTrabecular = new G4Tubs("TrabecularBone", innerBoneRadius, outerTrabecularRadius, fTargetThickness / 2.0, 0.0, 360.0 *deg); 
-    	solidCortical = new G4Tubs("CorticalBone", innerCorticalBone, outerCorticalBone, fTargetThickness/ 2.0, 0.0, 360.0 * deg); 
-    	
-    	if (isOsBone)
-    	{
-    		ConstructOsBone(); 
-    	}
-    	else //Standard real bone
-    	{
-		logicTrabecular = new G4LogicalVolume(solidTrabecular, trabecularBone, "logicTrabecular"); 
-	    	physTrabecular = new G4PVPlacement(targetRotation, targetPos, logicTrabecular, "physTrabecular", logicWorld, false, 0); 
-    	}
-    	//Logical
-    	logicCortical = new G4LogicalVolume(solidCortical, bone, "LogicCortical"); 
-    	//Physical Volume
-    	physCortical = new G4PVPlacement(targetRotation, targetPos, logicCortical, "physCortical", logicWorld, false, 0); 
+        G4double outerTrabecularRadius = outerBoneRadius - 0.25 * cm;
+        solidTrabecular = new G4Tubs("TrabecularBone", innerBoneRadius, outerTrabecularRadius, fTargetThickness / 2.0, 0.0, 360.0 * deg);
+        solidCortical = new G4Tubs("CorticalBone", outerTrabecularRadius, outerBoneRadius, fTargetThickness / 2.0, 0.0, 360.0 * deg);
+
+        if (isOsBone)
+        {
+            ConstructOsBone();
+        }
+        else
+        {
+            logicTrabecular = new G4LogicalVolume(solidTrabecular, trabecularBone, "logicTrabecular");
+            new G4PVPlacement(targetRotation, targetPos, logicTrabecular, "physTrabecular", logicWorld, false, 0);
+
+            logicCortical = new G4LogicalVolume(solidCortical, bone, "LogicCortical");
+            new G4PVPlacement(targetRotation, targetPos, logicCortical, "physCortical", logicWorld, false, 0);
+        }
     }
-    
-    // --------------------------------------------------------------------------
-    // ---------------------------------------- CONSTRUCT NORMAL BONE
-    //Construct Normal Bone
+
+    // Construir hueso normal
     void DetectorConstruction::ConstructNormalBone()
     {
-    	solidBone = new G4Tubs("Bone", innerBoneRadius, outerBoneRadius, fTargetThickness / 2.0, 0.0, 360.0 * deg);
-    	
-    	if (isOsBone)
-    	{
-    		ConstructOsBone(); 
-    	}
-    	else
-    	{
-		logicBone = new G4LogicalVolume(solidBone,bone,"LogicBone");
-		physBone = new G4PVPlacement(targetRotation, targetPos, logicBone, "physBone", logicWorld, false, 0, true); 
+        solidBone = new G4Tubs("Bone", innerBoneRadius, outerBoneRadius, fTargetThickness / 2.0, 0.0, 360.0 * deg);
 
-    	}
-    
+        if (isOsBone)
+        {
+            ConstructOsBone();
+        }
+        else
+        {
+            logicBone = new G4LogicalVolume(solidBone, bone, "LogicBone");
+            new G4PVPlacement(targetRotation, targetPos, logicBone, "physBone", logicWorld, false, 0, true);
+        }
     }
-    
-    	// -----------------------------------------------------------------------
-	// ------------- CREATE ARM --------------------------------
+
+    // Construir brazo con músculo, grasa y piel
     void DetectorConstruction::ConstructArm()
     {
-    	// Crear el antebrazo hueso -> musculo -> grasa -> piel
-		
-		// MUSCULO
-	G4double innerMuscleRadius = outerBoneRadius;
-	G4double outerMuscleRadius =  innerMuscleRadius + 2.5 * cm;
-		// GRASA
-	G4double innerGrasaRadius = outerMuscleRadius;
-	G4double outerGrasaRadius =  innerGrasaRadius + 0.5 * cm;
-		//PIEL
-	G4double innerSkinRadius = outerGrasaRadius;
-	G4double outerSkinRadius =  innerSkinRadius + 0.15 * cm;
-		
-		// Tubs 
-	solidMuscle = new G4Tubs("Muscle", innerMuscleRadius, outerMuscleRadius, fTargetThickness / 2.0, 0.0, 360.0 * deg);
-	solidGrasa = new G4Tubs("Grasa", innerGrasaRadius, outerGrasaRadius, fTargetThickness / 2.0, 0.0, 360.0 * deg);  
-	solidSkin = new G4Tubs("Skin", innerSkinRadius, outerSkinRadius, fTargetThickness / 2.0, 0.0, 360.0 * deg);
-	// ------------------NORMAL BONE------------------------
-	if (isNormalBone)                                      
-	{                                                      
-		ConstructNormalBone();                         
-	}                                                      
-	// ------------------REALISTIC BONE--------------------
-	if (isRealisticBone)                                    
-	{                                                      
-		ConstructRealBone();                           
-	}                                                      
-	// ----------------------------------------------------
-	     	//Logical
-	logicMuscle = new G4LogicalVolume(solidMuscle,muscle,"LogicMuscle");
-	logicGrasa = new G4LogicalVolume(solidGrasa,grasa,"LogicGrasa");
-	logicSkin = new G4LogicalVolume(solidSkin,skin,"LogicSkin");
-	     	//PphysVOlume
-	     	
-	physMuscle = new G4PVPlacement(targetRotation, targetPos, logicMuscle, "physMuscle", logicWorld, false, 0, true); 
-	physGrasa = new G4PVPlacement(targetRotation, targetPos, logicGrasa, "physGrasa", logicWorld, false, 0, true); 
-	physSkin = new G4PVPlacement(targetRotation, targetPos, logicSkin, "physSkin", logicWorld, false, 0, true); 
-	
+        // Radios de los diferentes tejidos
+        G4double innerMuscleRadius = outerBoneRadius;
+        G4double outerMuscleRadius = innerMuscleRadius + 2.5 * cm;
+        G4double innerGrasaRadius = outerMuscleRadius;
+        G4double outerGrasaRadius = innerGrasaRadius + 0.5 * cm;
+        G4double innerSkinRadius = outerGrasaRadius;
+        G4double outerSkinRadius = innerSkinRadius + 0.15 * cm;
+
+        // Creación de sólidos para cada tejido
+        solidMuscle = new G4Tubs("Muscle", innerMuscleRadius, outerMuscleRadius, fTargetThickness / 2.0, 0.0, 360.0 * deg);
+        solidGrasa = new G4Tubs("Grasa", innerGrasaRadius, outerGrasaRadius, fTargetThickness / 2.0, 0.0, 360.0 * deg);
+        solidSkin = new G4Tubs("Skin", innerSkinRadius, outerSkinRadius, fTargetThickness / 2.0, 0.0, 360.0 * deg);
+
+        // Volumen lógico y colocación para cada tejido
+        G4LogicalVolume* logicMuscle = new G4LogicalVolume(solidMuscle, muscle, "LogicMuscle");
+        G4LogicalVolume* logicGrasa = new G4LogicalVolume(solidGrasa, grasa, "LogicGrasa");
+        G4LogicalVolume* logicSkin = new G4LogicalVolume(solidSkin, skin, "LogicSkin");
+
+        // Colocación en el mundo lógico
+        new G4PVPlacement(targetRotation, targetPos, logicMuscle, "physMuscle", logicWorld, false, 0, true);
+        new G4PVPlacement(targetRotation, targetPos, logicGrasa, "physGrasa", logicWorld, false, 0, true);
+        new G4PVPlacement(targetRotation, targetPos, logicSkin, "physSkin", logicWorld, false, 0, true);
+
+        // Construcción del hueso correspondiente
+        if (isNormalBone)
+        {
+            ConstructNormalBone();
+        }
+        else if (isRealisticBone)
+        {
+            ConstructRealBone();
+        }
     }
-    
-	// -----------------------------------------------------------------------
-	// ------------------------------ CREATE SINGLE BONE -------------------------- 
-    void DetectorConstruction::ConstructSingleBone()
-    {
-	if (isNormalBone)
-	{
-		ConstructNormalBone(); 
-	}
-	else
-	{
-		ConstructRealBone(); 
-	}
-    }
-    
-    // -----------------------------------------------------------------------------------------
-    // ------------------------------------------ FILTER WALL -----------------------------------
-    
-    void DetectorConstruction::ConstructFilter()
-    {	
-    	G4Tubs *solidBone2 = new G4Tubs("Bonetest", 0.0, 1.1 * cm, fTargetThickness / 2.0, 0.0, 360.0 * deg); 
-    	filterPos = G4ThreeVector(0, 0, -fTargetThickness / 2 - filterThick); 
-    	solidFilter = new G4Box("solidFilter", detectorSizeXY, detectorSizeXY, filterThick); 
-    	// Restar el cilindro (brazo) de la pared
-	G4SubtractionSolid* filterWithHole = new G4SubtractionSolid("FilterWithHole", solidFilter, solidBone2, 0, targetPos);
-	logicFilter = new G4LogicalVolume(filterWithHole, W, "LogicFilter"); 
-	physFilter = new G4PVPlacement(0, filterPos, logicFilter, "physFilter", logicWorld,false, 0, true); 
-    	
-    	
-    }
-// -----------------------------------------------------------------------
-// -----------------------------------------------------------------------
-// ------------------ CONSTRUCT GEOM ---------------------------- 
+
+    // Método para construir el detector
     G4VPhysicalVolume* DetectorConstruction::Construct()
     {
- 
-        // Define el tamaño del mundo
-        G4double worldSize = 1 * m;
-        solidWorld = new G4Box("World",
-            worldSize / 2,
-            worldSize / 2,
-            worldSize * 10);
-        logicWorld = new G4LogicalVolume(solidWorld,
-            vacuum,
-            "World");
-        physWorld = new G4PVPlacement(nullptr,
-            G4ThreeVector(),
-            logicWorld,
-            "World",
-            nullptr,
-            false,
-            0);
-            
-        //Define the position and rotation of the tubs no matter isArm or bone
-        targetPos = G4ThreeVector(); // 0,0,0
-        //targetRotation = new G4RotationMatrix(90, 0, 0);
-	
-	// type selection
-	if(isArm)
-	{
-		ConstructArm(); 
-     	}
-     	
-     	if(isSingleBone)
-     	{
-     		ConstructSingleBone(); 
-     	}
-     	
-        G4Box* solidDetector = new G4Box(
-            "Detector",
-            detectorSizeXY,
-            detectorSizeXY,
-            detectorSizeZ);
+        // Crear el mundo
+        solidWorld = new G4Box("solidWorld", detectorSizeXY / 2.0, detectorSizeXY / 2.0, detectorSizeZ / 2.0);
+        logicWorld = new G4LogicalVolume(solidWorld, vacuum, "logicWorld");
+        physWorld = new G4PVPlacement(0, G4ThreeVector(), logicWorld, "physWorld", 0, false, 0, true);
 
-        G4LogicalVolume* logicDetector = new G4LogicalVolume(
-            solidDetector,
-            E_PbWO4,
-            "Detector");
-
-        G4ThreeVector detectorPos = G4ThreeVector(0, 0, 20 * cm);
-        G4RotationMatrix* detRotation = new G4RotationMatrix();
-
-        // Colocar el detector
-        new G4PVPlacement(detRotation,
-            detectorPos,
-            logicDetector,
-            "Detector",
-            logicWorld,
-            false,
-            0);
-
-        // Definir este detector como el detector gamma
-        fGammaDetector = logicDetector;
+        // Construcción del brazo
+        if (isArm)
+        {
+            ConstructArm();
+        }
+        else if (isNormalBone)
+        {
+            ConstructNormalBone();
+        }
+        else if (isRealisticBone)
+        {
+            ConstructRealBone();
+        }
 
         return physWorld;
     }
 
+    // Modificar el grosor del objetivo
     void DetectorConstruction::SetTargetThickness(G4double thickness)
     {
-        G4cout << "Setting target thickness to: " << thickness << G4endl;
-        if (thickness != fTargetThickness) {
-            fTargetThickness = thickness;
-            G4cout << "Target thickness changed to: " << fTargetThickness << G4endl;
-
-            // Forzar la actualización de la geometría
-            //G4RunManager::GetRunManager()->ReinitializeGeometry();
-        }
-        else {
-            G4cout << "Target thickness unchanged." << G4endl;
-        }
+        fTargetThickness = thickness;
     }
 }

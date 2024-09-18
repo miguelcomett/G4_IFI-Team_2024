@@ -18,6 +18,7 @@
 #include "G4SubtractionSolid.hh"
 #include "G4VSolid.hh"
 #include "G4Sphere.hh"
+#include "Randomize.hh"
 
 namespace G4_PCM
 {

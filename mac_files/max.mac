@@ -4,8 +4,8 @@
 # Open the output file
 /analysis/openFile max
 
-# run medium_run.mac 20 times: (args: mac_file, counter_name, initial_value, final_value)
-/control/loop run.mac count 0 19
+# run medium_run.mac 50 times: (args: mac_file, counter_name, initial_value, final_value)
+/control/loop run.mac count 0 49
 
 # write to the file
 /analysis/write

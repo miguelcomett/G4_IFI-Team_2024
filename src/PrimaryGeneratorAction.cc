@@ -39,7 +39,7 @@ namespace G4_PCM
 		if(fGunAngle == 0)
 		{	
 			// Randomize x and y starting point within a 1 mm diameter
-			radius = 50 * mm; // hay que cambiarlo .5*mm por defecto
+			radius = 100 * mm; // hay que cambiarlo .5*mm por defecto
 		}
 		else
 		{
@@ -54,10 +54,16 @@ namespace G4_PCM
 		// to avoid using slow methods like sin and cos,
 		// we generate random values in a cube and regect the ones
 		// outside of a circle. This way 
-		do {
-			x = G4UniformRand() * (2.0 * radius) - radius;
-			y = G4UniformRand() * (2.0 * radius) - radius;
-		} while (x * x + y * y > radius * radius);
+
+		// Fuente radial
+		//do {
+		//	x = G4UniformRand() * (2.0 * radius) - radius;
+		//	y = G4UniformRand() * (2.0 * radius) - radius;
+		//} while (x * x + y * y > radius * radius);
+
+		// Fuente cuadrada
+		x = G4UniformRand() * (2.0 * radius) - radius;
+		y = G4UniformRand() * (2.0 * radius) - radius;
 
 		// Define el valor de π
 		const G4double pi = 3.14159265358979323846;

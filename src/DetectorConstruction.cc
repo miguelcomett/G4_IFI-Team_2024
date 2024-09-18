@@ -18,7 +18,7 @@ namespace G4_PCM
         isRealisticBone = true; // Hueso sólido y trabecular
 
         // ¿Quieres que tu hueso tenga osteoporosis?
-        isOsBone = true;  // Hueso osteoporótico
+        isOsBone = false;  // Hueso osteoporótico
 
         // Filtro para eliminar ruido
         isFiltered = false; // Filtro para dejar pasar solo la parte circular
@@ -28,7 +28,7 @@ namespace G4_PCM
         innerBoneRadius = 0.0;
 
         // Rotación del objetivo
-        targetRotation = new G4RotationMatrix(0, 90 * deg, 0);
+        targetRotation = new G4RotationMatrix(0, 0 * deg, 0);
 
         // Tamaño del detector
         detectorSizeXY = 20 * cm;
@@ -214,19 +214,18 @@ namespace G4_PCM
             false,
             0);
 
-        // Definir la posición y rotación del tubo, sin importar si es un brazo o hueso
-        targetPos = G4ThreeVector(); // 0,0,0
-        //targetRotation = new G4RotationMatrix(90, 0, 0);
-
-        // Selección de tipo
+        // Construcción del brazo
         if (isArm)
         {
             ConstructArm();
         }
-
-        if (isSingleBone)
+        else if (isNormalBone)
         {
-            ConstructSingleBone();
+            ConstructNormalBone();
+        }
+        else if (isRealisticBone)
+        {
+            ConstructRealBone();
         }
 
         // Construir el detector

@@ -1,0 +1,4 @@
+/run/numberOfThreads 10
+/run/initialize
+
+/control/loop loop2.mac energy 1 4 1

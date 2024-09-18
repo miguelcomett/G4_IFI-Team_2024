@@ -1,0 +1,8 @@
+/run/numberOfThreads 1
+/run/initialize
+
+/myDetector/ThicknessTarget 2
+/run/reinitializeGeometry
+
+/gun/momentumAmp 10 keV
+/run/beamOn 3

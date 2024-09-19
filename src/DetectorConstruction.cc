@@ -10,12 +10,14 @@ namespace G4_PCM
         DefineMaterials();
 
         // Selección de arquitectura del objetivo -SELECCIONA UNA-
-        isArm = true;        // Brazo
+        isArm = false;        // Brazo
         isSingleBone = false; // Solo hueso
 
         // Tipo de hueso -SELECCIONA UNO-
         isNormalBone = false;  // Hueso sólido
-        isRealisticBone = true; // Hueso sólido y trabecular
+        isRealisticBone = false; // Hueso sólido y trabecular
+        isBoneWall = false; //Pared de hueso 
+        isArmWall = true; //Pared de braso tissue
 
         // ¿Quieres que tu hueso tenga osteoporosis?
         isOsBone = false;  // Hueso osteoporótico
@@ -93,6 +95,41 @@ namespace G4_PCM
         RealOsBone->AddMaterial(Ca, 17.6589 * perCent);
     }
 
+    // Construir walls
+    void DetectorConstruction::ConstructBoneWall()
+    {
+    	G4double outerTrabecularRadius = 2.0*cm; 
+    	solidHuesoTrabecular = new G4Box("FIrstBoneWall", detectorSizeXY, detectorSizeXY, outerTrabecularRadius); 
+    	solidHuesoCortical = new G4Box("SecondBoneWall", detectorSizeXY, detectorSizeXY, 0.25*cm);
+    	
+    	logicHuesoTrabecular = new G4LogicalVolume(solidHuesoTrabecular, trabecularBone, "firstLogicWall"); 
+    	logicHuesoCortical = new G4LogicalVolume(solidHuesoCortical, bone, "secondWallLogic"); 
+    	
+    	physHuesoCortical = new G4PVPlacement(targetRotation, targetPos, logicHuesoCortical, "secondPhysWall", logicWorld, false, 0, true);  
+    	physHuesoTrabecular = new G4PVPlacement(targetRotation, G4ThreeVector(0, 0, 2.25*cm), logicHuesoTrabecular, "firstPhysWall", logicWorld, false, 0, true);
+    
+    }
+    
+    void DetectorConstruction::ConstructArmWall()
+    {
+        solidSkinP =    new G4Box("SolidSkinP",     0.4*m, 0.4*m, 0.15*cm);
+        solidFatP =     new G4Box("SolidFatP",      0.4*m, 0.4*m, 0.5*cm);
+        solidMuscleP =  new G4Box("SolidMuscleP",   0.4*m, 0.4*m, 2.5*cm);
+
+        logicSkinP = new G4LogicalVolume(solidSkinP, skin, "LogicSkinP");
+        logicFatP = new G4LogicalVolume(solidFatP, grasa, "LogicFatP");
+        logicMuscleP = new G4LogicalVolume(solidMuscleP, muscle, "LogicMuscleP");
+
+        G4ThreeVector pos1(0*cm, 0*cm, 0*cm);
+        G4ThreeVector pos2(0*cm, 0*cm, 0.65*cm);
+        G4ThreeVector pos3(0*cm, 0*cm, 3.65*cm);
+
+        physSkinP = new G4PVPlacement(targetRotation, pos1, logicSkinP, "physSkinP", logicWorld, false, 0, true);
+        physFatP = new G4PVPlacement(targetRotation, pos2, logicFatP, "physFatP", logicWorld, false, 0, true);
+        physMuscleP = new G4PVPlacement(targetRotation, pos3, logicMuscleP, "physMuscleP", logicWorld, false, 0, true);
+
+    }
+    
     // Construir hueso osteoporótico con poros
     void DetectorConstruction::ConstructOsBone()
     {
@@ -128,9 +165,9 @@ namespace G4_PCM
 
         if (isOsBone)
         {
-            ConstructOsBone();
+            ConstructOsBone(); //Construir hueso con osteo
         }
-        else
+        else //HUeso sin osteo
         {
             logicTrabecular = new G4LogicalVolume(solidTrabecular, trabecularBone, "logicTrabecular");
             new G4PVPlacement(targetRotation, targetPos, logicTrabecular, "physTrabecular", logicWorld, false, 0);
@@ -191,6 +228,7 @@ namespace G4_PCM
         {
             ConstructRealBone();
         }
+
     }
 
     // Método para construir el detector
@@ -227,6 +265,16 @@ namespace G4_PCM
         {
             ConstructRealBone();
         }
+        else if (isBoneWall)
+        {
+            ConstructBoneWall(); 
+        }
+        else if (isArmWall)
+        {
+            ConstructArmWall(); 
+        }
+        
+    
 
         // Construir el detector
         G4Box* solidDetector = new G4Box(

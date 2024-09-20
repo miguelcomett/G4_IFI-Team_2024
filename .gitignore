@@ -1,3 +1,4 @@
 BUILD/
 RESULTS/
 KK/
+.venv/

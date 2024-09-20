@@ -16,12 +16,13 @@ MyDetectorConstruction::MyDetectorConstruction()
     thicknessTarget = .00005 * mm; 
     
     fTargetThickness = 60 * mm;
-    outerBoneRadius = 3.0 * cm;
-    targetRotation = new G4RotationMatrix(0, 90*deg, 0);
+    outerBoneRadius = 2.25 * cm;
+    targetRotation = new G4RotationMatrix(0, 0*deg, 0);
 
-    isArm = false;
-    isBone = true;
+    isArm = true;
+    isBone = false;
     isOsBone = false;
+    isPlacas = false;
 
     DefineMaterials();
 }
@@ -177,6 +178,11 @@ void MyDetectorConstruction::ConstructArm()
     solidGrasa  = new G4Tubs("Grasa",   innerGrasaRadius, outerGrasaRadius,     fTargetThickness / 2.0, 0.0, 360.0 * deg);
     solidSkin   = new G4Tubs("Skin",    innerSkinRadius, outerSkinRadius,       fTargetThickness / 2.0, 0.0, 360.0 * deg);
 
+    // prueba = new G4Tubs("prueba", 4.0*cm, 5.0*cm, 5.0*cm, 0.0, 160.0 * deg);
+    // pruebaLog = new G4LogicalVolume(prueba, compactBone, "pruebaLog");
+    // G4ThreeVector x_1(8*cm, 8*cm, 8*cm);
+    // pruebaPhys = new G4PVPlacement(targetRotation, x_1, pruebaLog, "pruebaPhys", logicWorld, false, 0, true);
+
     if (isOsBone) {ConstructOsBone();} 
     else 
     {
@@ -191,6 +197,35 @@ void MyDetectorConstruction::ConstructArm()
     physMuscle = new G4PVPlacement(targetRotation, targetPos, logicMuscle, "physMuscle", logicWorld, false, 0, true);
     physGrasa = new G4PVPlacement(targetRotation, targetPos, logicGrasa, "physGrasa", logicWorld, false, 0, true);
     physSkin = new G4PVPlacement(targetRotation, targetPos, logicSkin, "physSkin", logicWorld, false, 0, true);
+}
+
+void MyDetectorConstruction::ConstructPlacas()
+{
+
+    G4Box * solidSkinP, * solidFatP, * solidMuscleP;
+    G4LogicalVolume * logicSkinP, * logicFatP, * logicMuscleP;
+    G4VPhysicalVolume * physSkinP, * physFatP, * physMuscleP;
+
+    solidSkinP =    new G4Box("SolidSkinP",     0.4*m, 0.4*m, 0.15*cm);
+    solidFatP =     new G4Box("SolidFatP",      0.4*m, 0.4*m, 0.5*cm);
+    solidMuscleP =  new G4Box("SolidMuscleP",   0.4*m, 0.4*m, 2.5*cm);
+
+    logicSkinP = new G4LogicalVolume(solidSkinP, Skin, "LogicSkinP");
+    logicFatP = new G4LogicalVolume(solidFatP, Fat, "LogicFatP");
+    logicMuscleP = new G4LogicalVolume(solidMuscleP, Muscle, "LogicMuscleP");
+
+    G4ThreeVector pos1(0*cm, 0*cm, 0*cm);
+    G4ThreeVector pos2(0*cm, 0*cm, 0.65*cm);
+    G4ThreeVector pos3(0*cm, 0*cm, 3.65*cm);
+
+    physSkinP = new G4PVPlacement(targetRotation, pos1, logicSkinP, "physSkinP", logicWorld, false, 0, true);
+    physFatP = new G4PVPlacement(targetRotation, pos2, logicFatP, "physFatP", logicWorld, false, 0, true);
+    physMuscleP = new G4PVPlacement(targetRotation, pos3, logicMuscleP, "physMuscleP", logicWorld, false, 0, true);
+
+    fScoringVolume = logicMuscleP;
+    fScoringVolume = logicFatP;
+    fScoringVolume = logicSkinP;
+
 }
 
 G4VPhysicalVolume * MyDetectorConstruction::Construct()
@@ -210,6 +245,8 @@ G4VPhysicalVolume * MyDetectorConstruction::Construct()
     if (isArm)  {ConstructArm();} 
     else 
     if (isBone) {ConstructBone();}
+    else
+    if (isPlacas) {ConstructPlacas();}
     else
     {
         solidRadiator = new G4Box("solidRadiator", 0.4*m, 0.4*m, thicknessTarget/2);

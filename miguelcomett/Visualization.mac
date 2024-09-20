@@ -8,3 +8,4 @@
 # /vis/scene/add/axes
 # /vis/scene/add/eventID
 /vis/scene/endOfEventAction accumulate
+/vis/geometry/set/visibility LogicalWorld 0 false

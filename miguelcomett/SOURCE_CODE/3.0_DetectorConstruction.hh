@@ -28,6 +28,7 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
         void ConstructBone();
         void ConstructOsBone();
         void ConstructArm();
+        void ConstructPlacas();
 
     public:
         MyDetectorConstruction();
@@ -61,7 +62,7 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
                    
         G4Element * C, * Al, * N, * O, * V, * Cd, * Te;
 
-        G4bool isArm, isBone, isOsBone;
+        G4bool isArm, isBone, isOsBone, isPlacas;
 
         G4int nColumns, nRows; 
         G4GenericMessenger * fDetectorMessenger;  

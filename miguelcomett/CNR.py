@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Generate some data
-data = np.loadtxt('output.csv', delimiter=',')
+data = np.loadtxt('BUILD/ROOT/jp1.csv', delimiter=',')
 
 # Create a heatmap
 fig, ax = plt.subplots()

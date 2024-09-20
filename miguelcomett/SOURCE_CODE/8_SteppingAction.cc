@@ -9,8 +9,15 @@ void MySteppingAction::UserSteppingAction(const G4Step * step)
 {
     G4LogicalVolume * Volume = step -> GetPreStepPoint() -> GetTouchableHandle() -> GetVolume() -> GetLogicalVolume();
     const MyDetectorConstruction * detectorConstruction = static_cast < const MyDetectorConstruction *> (G4RunManager::GetRunManager() -> GetUserDetectorConstruction());
+    
+    // G4LogicalVolume * fScoringVolume1 = detectorConstruction -> GetScoringVolume1();
+    // G4LogicalVolume * fScoringVolume2 = detectorConstruction -> GetScoringVolume2();
+    // G4LogicalVolume * fScoringVolume3 = detectorConstruction -> GetScoringVolume3();
+    // if(Volume != fScoringVolume1 || Volume != fScoringVolume2 || Volume != fScoringVolume3) { return; }
+
     G4LogicalVolume * fScoringVolume = detectorConstruction -> GetScoringVolume();
     if(Volume != fScoringVolume) { return; }
+
     G4double EDep = step -> GetTotalEnergyDeposit();
     fEventAction -> AddEdep(EDep);
 

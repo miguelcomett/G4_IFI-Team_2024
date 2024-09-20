@@ -9,6 +9,7 @@
 #include "G4NistManager.hh"
 #include "G4LogicalVolume.hh"
 #include "G4GenericMessenger.hh"
+#include "G4UnionSolid.hh"
 
 #include "G4UIcmdWithADoubleAndUnit.hh"
 #include "G4Material.hh"
@@ -28,13 +29,17 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
         void ConstructBone();
         void ConstructOsBone();
         void ConstructArm();
-        void ConstructPlacas();
+        void ConstructTissue();
 
     public:
         MyDetectorConstruction();
         ~MyDetectorConstruction();
 
         G4LogicalVolume * GetScoringVolume() const {return fScoringVolume;}
+        G4LogicalVolume * GetScoringVolume1() const {return fScoringVolume1;}
+        G4LogicalVolume * GetScoringVolume2() const {return fScoringVolume2;}
+        G4LogicalVolume * GetScoringVolume3() const {return fScoringVolume3;}
+
         virtual G4VPhysicalVolume * Construct();
 
         G4Material * GetMaterial() const {return materialTarget;}
@@ -46,8 +51,9 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
         G4Sphere * pore;  
         G4VSolid * porousBone; 
         G4RotationMatrix * targetRotation; 
-        G4LogicalVolume * logicWorld, * logicRadiator, * logicDetector, * fScoringVolume, * logicBone, 
-                        * logicMuscle, * logicGrasa, * logicSkin, *pruebaLog;
+        G4LogicalVolume * logicWorld, * logicRadiator, * logicDetector, 
+                        * fScoringVolume, * fScoringVolume1, * fScoringVolume2, * fScoringVolume3,  
+                        * logicBone, * logicMuscle, * logicGrasa, * logicSkin, *pruebaLog;
         G4VPhysicalVolume * physicalWorld, * physicalRadiator, * physicalDetector, * physBone, * physArm, 
                           * physMuscle, * physGrasa, * physSkin, *pruebaPhys;
         G4ThreeVector targetPos;

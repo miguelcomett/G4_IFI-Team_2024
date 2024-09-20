@@ -88,8 +88,8 @@ void MyDetectorConstruction::DefineMaterials()
     Bone = nist -> FindOrBuildMaterial("G4_B-100_BONE"); 
     compactBone = nist->FindOrBuildMaterial("G4_BONE_COMPACT_ICRU");
     Fat = nist -> FindOrBuildMaterial("G4_ADIPOSE_TISSUE_ICRP");
-    Skin = nist->FindOrBuildMaterial("G4_SKIN_ICRP");
-    Muscle = nist->FindOrBuildMaterial("G4_MUSCLE_SKELETAL_ICRP");
+    Skin = nist -> FindOrBuildMaterial("G4_SKIN_ICRP");
+    Muscle = nist -> FindOrBuildMaterial("G4_MUSCLE_SKELETAL_ICRP");
 
     // Configure Lead Tungstate for crystals
     E_PbWO4 = new G4Material("E_PbWO4", 8.28 * g / cm3, 3);
@@ -186,7 +186,7 @@ void MyDetectorConstruction::ConstructArm()
     if (isOsBone) {ConstructOsBone();} 
     else 
     {
-        logicBone = new G4LogicalVolume(solidBone, compactBone, "LogicBone");
+        logicBone = new G4LogicalVolume(solidBone, Bone, "LogicBone");
         physBone = new G4PVPlacement(targetRotation, targetPos, logicBone, "physBone", logicWorld, false, 0, true);
     }
 
@@ -199,39 +199,46 @@ void MyDetectorConstruction::ConstructArm()
     physSkin = new G4PVPlacement(targetRotation, targetPos, logicSkin, "physSkin", logicWorld, false, 0, true);
 }
 
-void MyDetectorConstruction::ConstructPlacas()
+void MyDetectorConstruction::ConstructTissue()
 {
 
-    G4Box * solidSkinP, * solidFatP, * solidMuscleP;
-    G4LogicalVolume * logicSkinP, * logicFatP, * logicMuscleP;
-    G4VPhysicalVolume * physSkinP, * physFatP, * physMuscleP;
+    // G4Box * solidSkinT, * solidFatT, * solidMuscleT;
+    // G4LogicalVolume * logicSkinT, * logicFatT, * logicMuscleT, * logicTissue;
+    // G4VPhysicalVolume * physSkinT, * physFatT, * physMuscleT;
 
-    solidSkinP =    new G4Box("SolidSkinP",     0.4*m, 0.4*m, 0.15*cm);
-    solidFatP =     new G4Box("SolidFatP",      0.4*m, 0.4*m, 0.5*cm);
-    solidMuscleP =  new G4Box("SolidMuscleP",   0.4*m, 0.4*m, 2.5*cm);
+    // solidSkinT =    new G4Box("SolidSkinT",    0.4*m, 0.4*m, 0.15*cm);
+    // solidFatT =     new G4Box("SolidFatT",      0.4*m, 0.4*m, 0.5*cm);
+    // solidMuscleT =  new G4Box("SolidMuscleT",   0.4*m, 0.4*m, 2.5*cm);
+    
+    // G4ThreeVector Position1(0*cm, 0*cm, 0*cm);
+    // G4ThreeVector Position2(0*cm, 0*cm, 0.65*cm);
+    // G4ThreeVector Position3(0*cm, 0*cm, 3.65*cm);
 
-    logicSkinP = new G4LogicalVolume(solidSkinP, Skin, "LogicSkinP");
-    logicFatP = new G4LogicalVolume(solidFatP, Fat, "LogicFatP");
-    logicMuscleP = new G4LogicalVolume(solidMuscleP, Muscle, "LogicMuscleP");
+    // // G4UnionSolid * solidTissue;
+    // // solidTissue = new G4UnionSolid("Tissue", solidSkinT, solidFatT,      0, Position2);
+    // // solidTissue = new G4UnionSolid("Tissue", solidTissue, solidMuscleT,  0, Position3);
 
-    G4ThreeVector pos1(0*cm, 0*cm, 0*cm);
-    G4ThreeVector pos2(0*cm, 0*cm, 0.65*cm);
-    G4ThreeVector pos3(0*cm, 0*cm, 3.65*cm);
+    // // logicTissue = new G4LogicalVolume(solidTissue, material1, "Plate");
 
-    physSkinP = new G4PVPlacement(targetRotation, pos1, logicSkinP, "physSkinP", logicWorld, false, 0, true);
-    physFatP = new G4PVPlacement(targetRotation, pos2, logicFatP, "physFatP", logicWorld, false, 0, true);
-    physMuscleP = new G4PVPlacement(targetRotation, pos3, logicMuscleP, "physMuscleP", logicWorld, false, 0, true);
+    // // fScoringVolume = logicTissue;
 
-    fScoringVolume = logicMuscleP;
-    fScoringVolume = logicFatP;
-    fScoringVolume = logicSkinP;
+    // logicSkinT = new G4LogicalVolume(solidSkinT, Skin, "LogicSkinP");
+    // logicFatT = new G4LogicalVolume(solidFatT, Fat, "LogicFatT");
+    // logicMuscleT = new G4LogicalVolume(solidMuscleT, Muscle, "LogicMuscleT");
 
+    // physSkinT = new G4PVPlacement(targetRotation, Position1, logicSkinT, "physSkinT", logicWorld, false, 0, true);
+    // physFatT = new G4PVPlacement(targetRotation, Position2, logicFatT, "physFatT", logicWorld, false, 0, true);
+    // physMuscleT = new G4PVPlacement(targetRotation, Position3, logicMuscleT, "physMuscleT", logicWorld, false, 0, true);
+
+    // fScoringVolume1 = logicSkinT;
+    // fScoringVolume2 = logicFatT;
+    // fScoringVolume3 = logicMuscleT;
 }
 
 G4VPhysicalVolume * MyDetectorConstruction::Construct()
 {
     bool check_Overlaps = false;
-    materialTarget = Bone;
+    materialTarget = Muscle;
     
     G4double xWorld = 0.5*m;
     G4double yWorld = 0.5*m;
@@ -246,7 +253,7 @@ G4VPhysicalVolume * MyDetectorConstruction::Construct()
     else 
     if (isBone) {ConstructBone();}
     else
-    if (isPlacas) {ConstructPlacas();}
+    if (isPlacas) {ConstructTissue();}
     else
     {
         solidRadiator = new G4Box("solidRadiator", 0.4*m, 0.4*m, thicknessTarget/2);

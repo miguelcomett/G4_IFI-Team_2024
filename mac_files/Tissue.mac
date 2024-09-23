@@ -1,0 +1,73 @@
+# Macro file for Geant4 simulation
+
+# Loop over energies from 20 keV to 100 keV with a step of 5 keV
+/run/initialize
+
+# Set energy and run the simulation for each step
+/gun/energy 20 keV
+/run/reinitializeGeometry
+/run/beamOn 1000000
+
+/gun/energy 25 keV
+/run/reinitializeGeometry
+/run/beamOn 1000000
+
+/gun/energy 30 keV
+/run/reinitializeGeometry
+/run/beamOn 1000000
+
+/gun/energy 35 keV
+/run/reinitializeGeometry
+/run/beamOn 1000000
+
+/gun/energy 40 keV
+/run/reinitializeGeometry
+/run/beamOn 1000000
+
+/gun/energy 45 keV
+/run/reinitializeGeometry
+/run/beamOn 1000000
+
+/gun/energy 50 keV
+/run/reinitializeGeometry
+/run/beamOn 1000000
+
+/gun/energy 55 keV
+/run/reinitializeGeometry
+/run/beamOn 1000000
+
+/gun/energy 60 keV
+/run/reinitializeGeometry
+/run/beamOn 1000000
+
+/gun/energy 65 keV
+/run/reinitializeGeometry
+/run/beamOn 1000000
+
+/gun/energy 70 keV
+/run/reinitializeGeometry
+/run/beamOn 1000000
+
+/gun/energy 75 keV
+/run/reinitializeGeometry
+/run/beamOn 1000000
+
+/gun/energy 80 keV
+/run/reinitializeGeometry
+/run/beamOn 1000000
+
+/gun/energy 85 keV
+/run/reinitializeGeometry
+/run/beamOn 1000000
+
+/gun/energy 90 keV
+/run/reinitializeGeometry
+/run/beamOn 1000000
+
+/gun/energy 95 keV
+/run/reinitializeGeometry
+/run/beamOn 1000000
+
+/gun/energy 100 keV
+/run/reinitializeGeometry
+/run/beamOn 1000000

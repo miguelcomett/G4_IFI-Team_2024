@@ -112,17 +112,21 @@ namespace G4_PCM
     
     void DetectorConstruction::ConstructArmWall()
     {
-        solidSkinP =    new G4Box("SolidSkinP",     0.4*m, 0.4*m, 0.15*cm);
-        solidFatP =     new G4Box("SolidFatP",      0.4*m, 0.4*m, 0.5*cm);
-        solidMuscleP =  new G4Box("SolidMuscleP",   0.4*m, 0.4*m, 2.5*cm);
+        //solidSkinP =    new G4Box("SolidSkinP",     0.4*m, 0.4*m, 0.15*cm);
+        //solidFatP =     new G4Box("SolidFatP",      0.4*m, 0.4*m, 0.5*cm);
+        //solidMuscleP =  new G4Box("SolidMuscleP",   0.4*m, 0.4*m, 2.5*cm);
+
+        solidSkinP = new G4Box("SolidSkinP", 0.4 * m, 0.4 * m, 0.15 * cm);
+        solidFatP = new G4Box("SolidFatP", 0.4 * m, 0.4 * m, (0.5 * 2) * cm);
+        solidMuscleP = new G4Box("SolidMuscleP", 0.4 * m, 0.4 * m, 2.5 * cm);
 
         logicSkinP = new G4LogicalVolume(solidSkinP, skin, "LogicSkinP");
         logicFatP = new G4LogicalVolume(solidFatP, grasa, "LogicFatP");
         logicMuscleP = new G4LogicalVolume(solidMuscleP, muscle, "LogicMuscleP");
 
-        G4ThreeVector pos1(0*cm, 0*cm, 0*cm);
-        G4ThreeVector pos2(0*cm, 0*cm, 0.65*cm);
-        G4ThreeVector pos3(0*cm, 0*cm, 3.65*cm);
+        G4ThreeVector pos1(0*cm, 0*cm, (0)*cm);
+        G4ThreeVector pos2(0*cm, 0*cm, (0.65+0.5)*cm);
+        G4ThreeVector pos3(0*cm, 0*cm, (3.65+1)*cm);
 
         physSkinP = new G4PVPlacement(targetRotation, pos1, logicSkinP, "physSkinP", logicWorld, false, 0, true);
         physFatP = new G4PVPlacement(targetRotation, pos2, logicFatP, "physFatP", logicWorld, false, 0, true);

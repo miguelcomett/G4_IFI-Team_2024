@@ -87,12 +87,15 @@ namespace G4_PCM
 
 		// randomize energy with a .127 MeV std:dev gaussean distribution for an e-
 		// Here, chance for a photon of 15 MeV with 4 stdDev 👍
-		// G4double meanEnergy = 6. * MeV;
-		// G4double stdDev = .127 * MeV;
-		// G4double energy = G4RandGauss::shoot(meanEnergy, stdDev);
-		G4double energy = 0.01 * keV;
+		// G4double energy = 0.01 * keV;
 
-		// fParticleGun->SetParticleEnergy(energy);
+		//G4double meanEnergy = 40 * keV;
+		//G4double stdDev = 3.5 * keV;
+		//G4double energy = G4RandGauss::shoot(meanEnergy, stdDev);
+
+		//G4double energy = 0.01 * keV;
+
+		// fParticleGun->SetParticleEnergy(10 * keV);
 
 
 		// satisfy "generate primaries" here.

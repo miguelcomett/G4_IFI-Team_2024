@@ -10,14 +10,14 @@ namespace G4_PCM
         DefineMaterials();
 
         // Selección de arquitectura del objetivo -SELECCIONA UNA-
-        isArm = false;        // Brazo
+        isArm = true;        // Brazo
         isSingleBone = false; // Solo hueso
 
         // Tipo de hueso -SELECCIONA UNO-
         isNormalBone = false;  // Hueso sólido
-        isRealisticBone = false; // Hueso sólido y trabecular
+        isRealisticBone = true; // Hueso sólido y trabecular
         isBoneWall = false; //Pared de hueso 
-        isArmWall = true; //Pared de braso tissue
+        isArmWall = false; //Pared de braso tissue
 
         // ¿Quieres que tu hueso tenga osteoporosis?
         isOsBone = false;  // Hueso osteoporótico
@@ -296,7 +296,7 @@ namespace G4_PCM
             E_PbWO4,
             "Detector");
 
-        G4ThreeVector detectorPos = G4ThreeVector(0, 0, 30 * cm); // Era 20
+        G4ThreeVector detectorPos = G4ThreeVector(0, 0, 20 * cm); // Era 20
         G4RotationMatrix* detRotation = new G4RotationMatrix();
 
         // Colocar el detector

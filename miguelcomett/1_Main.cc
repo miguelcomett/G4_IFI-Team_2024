@@ -1,4 +1,5 @@
 #include <iostream>
+#include <ctime> 
 
 #include "G4RunManager.hh"
 #include "G4MTRunManager.hh"
@@ -31,9 +32,12 @@ int main(int argc, char** argv)
     }
 
     // random seed
-    long seed = 123456;
+    // long seed = 123456;
+    // CLHEP::HepRandom::setTheSeed(seed);
+    // G4Random::setTheSeed(seed);
+
+    long seed = std::time(nullptr);
     CLHEP::HepRandom::setTheSeed(seed);
-    G4Random::setTheSeed(seed);
 
     runManager -> SetUserInitialization(new MyDetectorConstruction);
     runManager -> SetUserInitialization(new MyPhysicsList);

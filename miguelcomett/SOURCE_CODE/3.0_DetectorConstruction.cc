@@ -17,11 +17,11 @@ MyDetectorConstruction::MyDetectorConstruction()
     
     fTargetThickness = 60 * mm;
     outerBoneRadius = 2.25 * cm;
-    targetRotation = new G4RotationMatrix(0, 0*deg, 0);
+    targetRotation = new G4RotationMatrix(0, 90*deg, 0);
 
     isArm = true;
     isBone = false;
-    isOsBone = false;
+    isOsBone = true;
     isPlacas = false;
 
     DefineMaterials();

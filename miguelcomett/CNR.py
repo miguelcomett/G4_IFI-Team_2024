@@ -1,21 +1,99 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import uproot
+import os
+import numpy as np
+import dask.array as da
+import dask.dataframe as dd
 
-# Generate some data
-data = np.loadtxt('BUILD/ROOT/jp1.csv', delimiter=',')
+# ===========================================================================================
 
-# Create a heatmap
+def root_to_dask(directory, root_name_starts, tree_name, x_branch, y_branch, decimal_places):
+    
+    file_name = os.path.join(directory, root_name_starts + ".root")
+
+    with uproot.open(file_name) as root_file:
+        tree = root_file[tree_name]
+        if tree is None:
+            print(f"Tree '{tree_name}' not found in {file_name}")
+            return
+
+        x_values = tree[x_branch].array(library="np") if x_branch in tree else None
+        y_values = tree[y_branch].array(library="np") if y_branch in tree else None
+
+        if x_values is not None:
+            x_values = np.round(x_values, decimal_places)
+        if y_values is not None:
+            y_values = np.round(y_values, decimal_places)
+
+        if x_values is None or y_values is None:
+            print(f"Could not retrieve data for branches {x_branch} or {y_branch}")
+            return
+
+        x_dask_array = da.from_array(x_values, chunks="auto")
+        y_dask_array = da.from_array(y_values, chunks="auto")
+
+        dask_df = dd.from_dask_array(da.stack([x_dask_array, y_dask_array], axis=1), columns=[x_branch, y_branch])
+        
+        return dask_df
+
+
+directory = 'RESULTS/'
+root_name_starts = "arm_40kev_20M"
+
+tree_name = "Photons"
+x_branch  = "X_axis"
+y_branch  = "Y_axis"
+z_branch  = ""
+
+decimal_places = 2
+
+dataframe = root_to_dask(directory, root_name_starts, tree_name, x_branch, y_branch, decimal_places)
+
+# ===========================================================================================
+
+def heatmap_array_dask(dataframe, x_branch, y_branch, size, num, save_as):
+
+    x_data = dataframe[x_branch].to_dask_array(lengths=True).compute()
+    y_data = dataframe[y_branch].to_dask_array(lengths=True).compute()
+
+    set_bins = np.arange(-size, size + 1, size/num)
+    heatmap, x_edges, y_edges = np.histogram2d(x_data, y_data, bins = [set_bins, set_bins])
+    heatmap = heatmap.T
+
+    row = len(set_bins) // 2
+    normal_map = 1 - heatmap / np.max(heatmap)
+    maxi = np.max(normal_map[:5])
+    maxi = maxi * 1.2
+    normal_map[normal_map < maxi] = 0
+
+    return normal_map, x_edges, y_edges
+
+
+data = dataframe
+
+x_branch = "X_axis"
+y_branch = 'Y_axis'
+
+size = 100
+bins = 80
+
+save_as = '1.jpg'
+
+htmp_array, xlim, ylim = heatmap_array_dask(data, x_branch, y_branch, size, bins, save_as)
+
+# ===========================================================================================
+
+data = htmp_array
 fig, ax = plt.subplots()
 heatmap = ax.imshow(data, cmap='gray')
 
-# Variables to store the initial click and the rectangle selection
 rectangles = []
 start_pos = None
 signal_avg = 0
 background_avg = 0
 background_std = 0
 
-# Mouse press event
 def on_press(event):
     global start_pos, rectangles
     if event.inaxes != ax: return
@@ -33,7 +111,6 @@ def on_press(event):
     
     fig.canvas.draw()
 
-# Mouse motion event to update the rectangle size
 def on_motion(event):
     global start_pos
     if start_pos is None or event.inaxes != ax: return
@@ -44,7 +121,6 @@ def on_motion(event):
     rect.set_height(height)
     fig.canvas.draw()
 
-# Mouse release event to finalize the selection
 def on_release(event):
     global start_pos, signal_avg, background_avg, background_std
     if start_pos is None or event.inaxes != ax: return
@@ -86,7 +162,6 @@ def on_release(event):
         print("CNR: "+str(cnr)+'\n')
     start_pos = None
 
-# Connect the events
 fig.canvas.mpl_connect('button_press_event', on_press)
 fig.canvas.mpl_connect('motion_notify_event', on_motion)
 fig.canvas.mpl_connect('button_release_event', on_release)

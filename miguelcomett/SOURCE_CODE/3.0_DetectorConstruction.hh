@@ -36,9 +36,6 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
         ~MyDetectorConstruction();
 
         G4LogicalVolume * GetScoringVolume() const {return fScoringVolume;}
-        G4LogicalVolume * GetScoringVolume1() const {return fScoringVolume1;}
-        G4LogicalVolume * GetScoringVolume2() const {return fScoringVolume2;}
-        G4LogicalVolume * GetScoringVolume3() const {return fScoringVolume3;}
 
         virtual G4VPhysicalVolume * Construct();
 

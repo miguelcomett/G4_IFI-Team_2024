@@ -30,7 +30,7 @@ namespace G4_PCM
         innerBoneRadius = 0.0;
 
         // Rotación del objetivo
-        targetRotation = new G4RotationMatrix(0, 0 * deg, 0);
+        targetRotation = new G4RotationMatrix(0, 90 * deg, 0);
 
         // Tamaño del detector
         detectorSizeXY = 20 * cm;

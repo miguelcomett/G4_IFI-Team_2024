@@ -41,7 +41,6 @@ namespace G4_PCM
 		// -------------------------------------------------------
 		const G4double pi = 3.14159265358979323846; // Valor de π
 		const G4double defaultRadius = 0.5 * mm;    // Radio por defecto para las fuentes
-		const G4double scannerRange = 10.0 * mm;    // Rango para el escáner
 
 		// -------------------------------------------------------
 		// Establecer el radio según el ángulo
@@ -96,9 +95,8 @@ namespace G4_PCM
 		// -------------------------------------------------------
 
 		// Escáner lineal en el eje X (por defecto activado)
-		G4double x_scan_range = scannerRange;
-		G4double x_position = (G4UniformRand() - 0.5) * x_scan_range;
-		G4ThreeVector scannerPositionX = G4ThreeVector(x_position, 0.0, z);
+		x = G4UniformRand() * (2.0 * radius) - radius;
+		G4ThreeVector scannerPositionX = G4ThreeVector(x, 0.0, z);
 		fParticleGun->SetParticlePosition(scannerPositionX);
 
 		// Escáner lineal en el eje Y (descomentar para activar)

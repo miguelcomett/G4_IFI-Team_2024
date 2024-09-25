@@ -36,70 +36,95 @@ namespace G4_PCM
 
 	void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event)
 	{	
-		if(fGunAngle == 0)
-		{	
-			// Randomize x and y starting point within a 1 mm diameter
-			radius = 100 * mm; // hay que cambiarlo .5*mm por defecto
+		// -------------------------------------------------------
+		// Constantes globales
+		// -------------------------------------------------------
+		const G4double pi = 3.14159265358979323846; // Valor de π
+		const G4double defaultRadius = 0.5 * mm;    // Radio por defecto para las fuentes
+		const G4double scannerRange = 10.0 * mm;    // Rango para el escáner
+
+		// -------------------------------------------------------
+		// Establecer el radio según el ángulo
+		// -------------------------------------------------------
+		G4double radius;
+		if (fGunAngle == 0) {
+			// Si el ángulo es 0, define un diámetro de 100 mm
+			radius = 100 * mm;
 		}
-		else
-		{
-			// Randomize x and y starting point within a 1 mm diameter
-			radius = 0.5 * mm; // hay que cambiarlo .5*mm por defecto
-		
+		else {
+			// Si el ángulo no es 0, usa el diámetro por defecto
+			radius = defaultRadius;
 		}
-			
-		// generate random x and y positions within that radius
-		double x, y, z = fPgun; // Aquí estableces z en -5 cm
 
-		// to avoid using slow methods like sin and cos,
-		// we generate random values in a cube and regect the ones
-		// outside of a circle. This way 
+		// Definir posición inicial de la partícula
+		G4double x, y, z = fPgun; // Establece z en -5 cm (ajusta según sea necesario)
 
-		// Fuente radial
-		//do {
-		//	x = G4UniformRand() * (2.0 * radius) - radius;
-		//	y = G4UniformRand() * (2.0 * radius) - radius;
-		//} while (x * x + y * y > radius * radius);
+		// -------------------------------------------------------
+		// Fuente de posición (Radial o Cuadrada)
+		// -------------------------------------------------------
 
-		// Fuente cuadrada
-		x = G4UniformRand() * (2.0 * radius) - radius;
-		y = G4UniformRand() * (2.0 * radius) - radius;
+		// Fuente radial (descomentar para activar)
+		// do {
+		//     x = G4UniformRand() * (2.0 * radius) - radius;
+		//     y = G4UniformRand() * (2.0 * radius) - radius;
+		// } while (x * x + y * y > radius * radius);
 
-		// Define el valor de π
-		const G4double pi = 3.14159265358979323846;
+		// Fuente cuadrada (descomentar para activar)
+		//x = G4UniformRand() * (2.0 * radius) - radius;
+		//y = G4UniformRand() * (2.0 * radius) - radius;
+		//G4ThreeVector position = G4ThreeVector(x, y, z);
+	
+		//fParticleGun->SetParticlePosition(position);
 
-		// Define el ángulo en grados
-		G4double angleInDegrees = fGunAngle;  // 45 grados
+		// -------------------------------------------------------
+		// Dirección del haz (Cónico o Lineal)
+		// -------------------------------------------------------
 
-		// Convierte el ángulo a radianes
+		// Definir el ángulo en grados y convertir a radianes
+		G4double angleInDegrees = fGunAngle;
 		G4double angleInRadians = angleInDegrees * (pi / 180.0);
 
-		// Add conic behaviour
-		G4double theta, phi;
-		theta = angleInRadians * (G4UniformRand() - 0.5);
-		phi = angleInRadians * (G4UniformRand() - 0.5);
-		G4ThreeVector photonMomentum(theta, phi, 1.0);
-		fParticleGun->SetParticleMomentumDirection(photonMomentum);
+		// Comportamiento cónico (descomentar para activar dispersión angular)
+		// G4double theta, phi;
+		// theta = angleInRadians * (G4UniformRand() - 0.5);
+		// phi = angleInRadians * (G4UniformRand() - 0.5);
+		// G4ThreeVector photonMomentum(theta, phi, 1.0);
+		// fParticleGun->SetParticleMomentumDirection(photonMomentum);
 
-		G4ThreeVector position = G4ThreeVector(x, y, z);
-		// G4ThreeVector position = G4ThreeVector(x, y, z);
-		fParticleGun->SetParticlePosition(position);
+		// -------------------------------------------------------
+		// Escáner lineal (en eje X o Y)
+		// -------------------------------------------------------
 
-		// randomize energy with a .127 MeV std:dev gaussean distribution for an e-
-		// Here, chance for a photon of 15 MeV with 4 stdDev 👍
-		// G4double energy = 0.01 * keV;
+		// Escáner lineal en el eje X (por defecto activado)
+		G4double x_scan_range = scannerRange;
+		G4double x_position = (G4UniformRand() - 0.5) * x_scan_range;
+		G4ThreeVector scannerPositionX = G4ThreeVector(x_position, 0.0, z);
+		fParticleGun->SetParticlePosition(scannerPositionX);
 
-		//G4double meanEnergy = 40 * keV;
-		//G4double stdDev = 3.5 * keV;
-		//G4double energy = G4RandGauss::shoot(meanEnergy, stdDev);
+		// Escáner lineal en el eje Y (descomentar para activar)
+		// G4double y_scan_range = scannerRange;
+		// G4double y_position = (G4UniformRand() - 0.5) * y_scan_range;
+		// G4ThreeVector scannerPositionY = G4ThreeVector(0.0, y_position, 0.0);
+		// fParticleGun->SetParticlePosition(scannerPositionY);
 
-		//G4double energy = 0.01 * keV;
+		// -------------------------------------------------------
+		// Energía de la partícula (Fija o Gaussiana)
+		// -------------------------------------------------------
 
-		// fParticleGun->SetParticleEnergy(10 * keV);
+		// Distribución Gaussiana de energía (descomentar para activar)
+		// G4double meanEnergy = 40 * keV;
+		// G4double stdDev = 3.5 * keV;
+		// G4double energy = G4RandGauss::shoot(meanEnergy, stdDev);
 
+		// Energía fija (por defecto activada)
+		//G4double energy = 10 * keV;
+		//fParticleGun->SetParticleEnergy(energy);
 
-		// satisfy "generate primaries" here.
+		// -------------------------------------------------------
+		// Generar el evento primario
+		// -------------------------------------------------------
 		fParticleGun->GeneratePrimaryVertex(event);
+
 	}
 
 	PrimaryGeneratorAction::~PrimaryGeneratorAction() {

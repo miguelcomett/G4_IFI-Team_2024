@@ -52,7 +52,7 @@ dataframe = root_to_dask(directory, root_name_starts, tree_name, x_branch, y_bra
 
 # ===========================================================================================
 
-def heatmap_array_dask(dataframe, x_branch, y_branch, size, num, save_as):
+def heatmap_array_dask(dataframe, x_branch, y_branch, size, num):
 
     x_data = dataframe[x_branch].to_dask_array(lengths=True).compute()
     y_data = dataframe[y_branch].to_dask_array(lengths=True).compute()
@@ -75,12 +75,10 @@ data = dataframe
 x_branch = "X_axis"
 y_branch = 'Y_axis'
 
-size = 100
-bins = 80
+size = 60
+bins = 100
 
-save_as = '1.jpg'
-
-htmp_array, xlim, ylim = heatmap_array_dask(data, x_branch, y_branch, size, bins, save_as)
+htmp_array, xlim, ylim = heatmap_array_dask(data, x_branch, y_branch, size, bins)
 
 # ===========================================================================================
 

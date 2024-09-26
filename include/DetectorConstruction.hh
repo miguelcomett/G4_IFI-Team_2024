@@ -19,6 +19,9 @@
 #include "G4VSolid.hh"
 #include "G4Sphere.hh"
 #include "Randomize.hh"
+#include "G4STL.hh"
+
+#include "STLGeometryReader.hh" // Import STL Geometry
 
 namespace G4_PCM
 {
@@ -41,10 +44,15 @@ namespace G4_PCM
 	void ConstructNormalBone(); 
 	void ConstructBoneWall();
 	void ConstructArmWall();  
-	
+    void Construct3D();
+
         G4LogicalVolume* GetGammaDetector() const { return fGammaDetector; }
 
     private:
+        // Instancia para la clase STLGeometryReader
+        G4TessellatedSolid* stlSolid;
+        STLGeometryReader* stlReader;
+
         G4LogicalVolume* fGammaDetector = nullptr;
         G4double fTargetThickness = 60 * mm; // Valor predeterminado
 
@@ -54,9 +62,9 @@ namespace G4_PCM
         G4Box *solidWorld, *solidFilter, *solidHuesoTrabecular, *solidHuesoCortical, *solidSkinP, *solidFatP, *solidMuscleP; 
         G4LogicalVolume *logicBone, *logicMuscle, *logicGrasa, *logicSkin, *logicWorld, *logicFilter, *logicTrabecular, *logicCortical, *logicHuesoTrabecular, *logicHuesoCortical, *logicSkinP, *logicFatP, *logicMuscleP; 
         G4VPhysicalVolume *physBone, *physMuscle, *physGrasa, *physSkin, *physWorld, *physFilter, *physTrabecular, *physCortical, *physHuesoTrabecular, *physHuesoCortical, *physSkinP, *physFatP, *physMuscleP; 
-        G4Material *bone, *vacuum, *E_PbWO4, *skin, *grasa, *muscle, *OsBone, *H, *C, *N, *O, *Mg, *P, *S, *Ca, *W, *F, *trabecularBone, *RealOsBone; 
+        G4Material *bone, *vacuum, *E_PbWO4, *skin, *grasa, *muscle, *OsBone, *H, *C, *N, *O, *Mg, *P, *S, *Ca, *W, *F, *trabecularBone, *RealOsBone, *material3D;
         G4Tubs *solidBone, *solidMuscle, *solidGrasa, *solidSkin, *solidTrabecular, *solidCortical; 
-        G4bool isArm, isSingleBone, isOsBone, isFiltered, isRealisticBone, isNormalBone, isBoneWall, isArmWall; 
+        G4bool isArm, isSingleBone, isOsBone, isFiltered, isRealisticBone, isNormalBone, isBoneWall, isRealHand, isArmWall;
         G4ThreeVector targetPos, filterPos; 
         G4RotationMatrix *targetRotation; 
         G4Sphere *pore;  

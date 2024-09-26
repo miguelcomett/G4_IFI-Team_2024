@@ -7,10 +7,14 @@ namespace G4_PCM
         : fTargetThickness(50 * mm), // Valor predeterminado de grosor del objetivo
         fMessenger(new DetectorConstructionMessenger(this)) // Crear el mensajero
     {
+        // Crear una instancia de STLGeometryReader
+        stlReader = new STLGeometryReader();
+
         DefineMaterials();
 
         // Selección de arquitectura del objetivo -SELECCIONA UNA-
-        isArm = true;        // Brazo
+        isRealHand = true;    // Mano Realista 3D
+        isArm = false;        // Brazo
         isSingleBone = false; // Solo hueso
 
         // Tipo de hueso -SELECCIONA UNO-
@@ -30,7 +34,7 @@ namespace G4_PCM
         innerBoneRadius = 0.0;
 
         // Rotación del objetivo
-        targetRotation = new G4RotationMatrix(0, 90 * deg, 0);
+        targetRotation = new G4RotationMatrix(0, -90 * deg, 0);
 
         // Tamaño del detector
         detectorSizeXY = 20 * cm;
@@ -43,6 +47,8 @@ namespace G4_PCM
     // Destructor
     DetectorConstruction::~DetectorConstruction()
     {
+        // Liberar memoria
+        delete stlReader;
         delete fMessenger; // Eliminar el mensajero
     }
 
@@ -57,6 +63,9 @@ namespace G4_PCM
         skin = nist->FindOrBuildMaterial("G4_SKIN_ICRP");
         grasa = nist->FindOrBuildMaterial("G4_ADIPOSE_TISSUE_ICRP");
         vacuum = nist->FindOrBuildMaterial("G4_AIR");
+        
+        // Material para el sólido STL
+        material3D = nist->FindOrBuildMaterial("G4_B-100_BONE");
 
         // Material para los cristales de PbWO4
         E_PbWO4 = new G4Material("E_PbWO4", 8.28 * g / cm3, 3);
@@ -239,8 +248,26 @@ namespace G4_PCM
 
     }
 
+    // Método para construir mano con base en modelo STL 3D
+    void DetectorConstruction::Construct3D()
+    {
+        //// Crear el sólido a partir del archivo STL
+        //G4VSolid* stlSolid = stlReader->CreateSolidFromSTL("C:\\Users\\conej\\Documents\\Universidad\\Geant4\\Projects\\Models\\Prueba.stl");
+        G4STL stl; // Crea una instancia de G4STL
+        // Lee el archivo STL y asigna el resultado a stlsolid
+        stlSolid = stl.Read("C:\\Users\\conej\\Documents\\Universidad\\Geant4\\Projects\\Models\\G4_Hand-RealBones.stl");
+
+        ////if (stlSolid) {
+
+            // Crear volumen lógico
+            G4LogicalVolume* logicSTL = new G4LogicalVolume(stlSolid, material3D, "STLModelLogical");
+
+            // Colocar el modelo en el mundo
+            new G4PVPlacement(targetRotation, targetPos, logicSTL, "STLModelPhysical", logicWorld, false, 0, true);
+        //}
+
+    }
     // Método para construir el detector
-// Método para construir el detector
     G4VPhysicalVolume* DetectorConstruction::Construct()
     {
         // Definir el tamaño del mundo
@@ -261,7 +288,11 @@ namespace G4_PCM
             0);
 
         // Construcción del brazo
-        if (isArm)
+        if (isRealHand)
+        {
+            Construct3D();
+        }
+        else if (isArm)
         {
             ConstructArm();
         }

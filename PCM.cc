@@ -5,7 +5,8 @@
 #include "G4UIExecutive.hh"
 #include "G4RunManagerFactory.hh"
 #include "G4VisExecutive.hh"
-#include "G4MTRunManager.hh"
+#include "G4MTRunManager.hh" // Para Multithreading
+// #include "G4RunManager.hh"     // Sin Mulithreading
 
 #include "DetectorConstruction.hh"
 #include "PhysicsList.hh"
@@ -60,6 +61,12 @@ int main(int argc, char** argv)
 
     // get pointer to UI manager
     G4UImanager* UImanager = G4UImanager::GetUIpointer();
+
+    // Configurar verbosidad desde el main
+    //UImanager->ApplyCommand("/run/verbose 2");
+    //UImanager->ApplyCommand("/event/verbose 2");
+    //UImanager->ApplyCommand("/tracking/verbose 2");
+    //UImanager->ApplyCommand("/geometry/verbose 2");
 
     // Run macro or start UI
     if (!ui) {

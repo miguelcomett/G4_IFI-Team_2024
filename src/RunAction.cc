@@ -10,11 +10,11 @@ namespace G4_PCM {
         analysisManager->SetDefaultFileType("root");
         analysisManager->SetNtupleMerging(true);
         analysisManager->SetVerboseLevel(0);
-        analysisManager->CreateNtuple("G4_PCM", "Hits");
+        analysisManager->CreateNtuple("Photons", "Hits");
         analysisManager->CreateNtupleDColumn("Energy");//   id = 0
-        analysisManager->CreateNtupleDColumn("PositionX"); //id = 1
-        analysisManager->CreateNtupleDColumn("PositionY"); //id = 2
-        analysisManager->CreateNtupleDColumn("PositionZ"); //id = 3
+        analysisManager->CreateNtupleDColumn("X_axis"); //id = 1
+        analysisManager->CreateNtupleDColumn("Y_axis"); //id = 2
+        analysisManager->CreateNtupleDColumn("Z_axis"); //id = 3
         analysisManager->FinishNtuple();
     }
 

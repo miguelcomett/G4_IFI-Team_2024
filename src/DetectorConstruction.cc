@@ -249,23 +249,44 @@ namespace G4_PCM
     }
 
     // Método para construir mano con base en modelo STL 3D
-    void DetectorConstruction::Construct3D()
+    void DetectorConstruction::ConstructBONE3D()
     {
         //// Crear el sólido a partir del archivo STL
-        //G4VSolid* stlSolid = stlReader->CreateSolidFromSTL("C:\\Users\\conej\\Documents\\Universidad\\Geant4\\Projects\\Models\\Prueba.stl");
-        G4STL stl; // Crea una instancia de G4STL
-        // Lee el archivo STL y asigna el resultado a stlsolid
-        stlSolid = stl.Read("C:\\Users\\conej\\Documents\\Universidad\\Geant4\\Projects\\Models\\G4_Hand-RealBones.stl");
+        G4STL stl; 
+        stlSolid = stl.Read("C:\\Users\\conej\\Documents\\Universidad\\Geant4\\Projects\\Models\\G4_Hand-RealBonesSTABLE.stl");
 
-        ////if (stlSolid) {
-
+        if (stlSolid) {
             // Crear volumen lógico
             G4LogicalVolume* logicSTL = new G4LogicalVolume(stlSolid, material3D, "STLModelLogical");
 
             // Colocar el modelo en el mundo
             new G4PVPlacement(targetRotation, targetPos, logicSTL, "STLModelPhysical", logicWorld, false, 0, true);
-        //}
 
+            G4cout << "Modelo bone importado exitosamente" << G4endl;
+        }
+        else {
+            G4cout << "Modelo bone no importado" << G4endl;
+        }
+    }
+
+    void DetectorConstruction::ConstructSOFT3D()
+    {
+        //// Crear el sólido a partir del archivo STL
+        G4STL stl;
+        stlSolid2 = stl.Read("C:\\Users\\conej\\Documents\\Universidad\\Geant4\\Projects\\Models\\G4_Hand-RealTissueSTABLE.stl");
+
+        if (stlSolid2) {
+            // Crear volumen lógico
+            G4LogicalVolume* logicSTL2 = new G4LogicalVolume(stlSolid2, material3D, "STLModelLogical2");
+
+            // Colocar el modelo en el mundo
+            new G4PVPlacement(targetRotation, targetPos, logicSTL2, "STLModelPhysical2", logicWorld, false, 0, true);
+
+            G4cout << "Modelo tissue importado exitosamente" << G4endl;
+        }
+        else {
+            G4cout << "Modelo tissue no importado" << G4endl;
+        }
     }
     // Método para construir el detector
     G4VPhysicalVolume* DetectorConstruction::Construct()
@@ -290,7 +311,8 @@ namespace G4_PCM
         // Construcción del brazo
         if (isRealHand)
         {
-            Construct3D();
+            ConstructBONE3D();
+            ConstructSOFT3D();
         }
         else if (isArm)
         {

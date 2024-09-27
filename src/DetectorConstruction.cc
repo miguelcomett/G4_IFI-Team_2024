@@ -37,7 +37,7 @@ namespace G4_PCM
         targetRotation = new G4RotationMatrix(0, -90 * deg, 0);
 
         // Tamaño del detector
-        detectorSizeXY = 20 * cm;
+        detectorSizeXY = 35 * cm;
         detectorSizeZ = 5 * cm;
 
         // Parámetros del filtro

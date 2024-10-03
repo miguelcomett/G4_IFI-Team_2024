@@ -10,12 +10,13 @@ namespace G4_PCM
         DefineMaterials();
 
         // Selección de arquitectura del objetivo -SELECCIONA UNA-
-        isArm = true;        // Brazo
+        isArm = false;        // Brazo
         isSingleBone = false; // Solo hueso
+        isGenericWall = true;
 
         // Tipo de hueso -SELECCIONA UNO-
         isNormalBone = false;  // Hueso sólido
-        isRealisticBone = true; // Hueso sólido y trabecular
+        isRealisticBone = false; // Hueso sólido y trabecular
         isBoneWall = false; //Pared de hueso 
         isArmWall = false; //Pared de braso tissue
 
@@ -30,7 +31,7 @@ namespace G4_PCM
         innerBoneRadius = 0.0;
 
         // Rotación del objetivo
-        targetRotation = new G4RotationMatrix(0, 90 * deg, 0);
+        targetRotation = new G4RotationMatrix(0, 0 * deg, 0);
 
         // Tamaño del detector
         detectorSizeXY = 20 * cm;
@@ -93,6 +94,12 @@ namespace G4_PCM
         RealOsBone->AddMaterial(O, 3.2085 * perCent);
         RealOsBone->AddMaterial(F, 16.7411 * perCent);
         RealOsBone->AddMaterial(Ca, 17.6589 * perCent);
+
+        //Material for tissue without walls
+        RealTissue = new G4Material("RealTissue", 1.03 * g / cm3, 3);
+        RealTissue->AddMaterial(muscle, 79.36 * perCent);
+        RealTissue->AddMaterial(grasa, 15.87 * perCent);
+        RealTissue->AddMaterial(skin, 4.77 * perCent);
     }
 
     // Construir walls
@@ -136,6 +143,14 @@ namespace G4_PCM
         physFatP = new G4PVPlacement(targetRotation, pos2, logicFatP, "physFatP", logicWorld, false, 0, true);
         physMuscleP = new G4PVPlacement(targetRotation, pos3, logicMuscleP, "physMuscleP", logicWorld, false, 0, true);
 
+    }
+
+    void DetectorConstruction::GenericWall()
+    {
+        solidGenericWall = new G4Box("SolidGeneriBox", 0.4 * m, 0.4 * m, (3.15*2) * cm);
+        logicGenericWall = new G4LogicalVolume(solidGenericWall, RealTissue, "LogicGenericBox");
+        G4ThreeVector posGB(0 * cm, 0 * cm, (0) * cm);
+        physGenericWall = new G4PVPlacement(targetRotation, posGB, logicGenericWall, "PhysGenericBox", logicWorld, false, 0, true);
     }
     
     // Construir hueso osteoporótico con poros
@@ -261,7 +276,11 @@ namespace G4_PCM
             0);
 
         // Construcción del brazo
-        if (isArm)
+        if (isGenericWall)
+        {
+            GenericWall(); // 3.15 cm *2
+        }
+        else if (isArm)
         {
             ConstructArm();
         }
@@ -281,6 +300,7 @@ namespace G4_PCM
         {
             ConstructArmWall(); 
         }
+
         
     
 

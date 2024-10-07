@@ -46,6 +46,7 @@ namespace G4_PCM
 	void ConstructArmWall();  
     void ConstructBONE3D();
     void ConstructSOFT3D();
+    void ConstructSOFT3Dbool();
 
         G4LogicalVolume* GetGammaDetector() const { return fGammaDetector; }
 
@@ -64,7 +65,7 @@ namespace G4_PCM
         G4Box *solidWorld, *solidFilter, *solidHuesoTrabecular, *solidHuesoCortical, *solidSkinP, *solidFatP, *solidMuscleP; 
         G4LogicalVolume *logicBone, *logicMuscle, *logicGrasa, *logicSkin, *logicWorld, *logicFilter, *logicTrabecular, *logicCortical, *logicHuesoTrabecular, *logicHuesoCortical, *logicSkinP, *logicFatP, *logicMuscleP, *logicSTL, *logicSTL2, *logicSTL22;
         G4VPhysicalVolume *physBone, *physMuscle, *physGrasa, *physSkin, *physWorld, *physFilter, *physTrabecular, *physCortical, *physHuesoTrabecular, *physHuesoCortical, *physSkinP, *physFatP, *physMuscleP; 
-        G4Material *bone, *vacuum, *E_PbWO4, *skin, *grasa, *muscle, *OsBone, *H, *C, *N, *O, *Mg, *P, *S, *Ca, *W, *F, *trabecularBone, *RealOsBone, *material3D;
+        G4Material *bone, *vacuum, *E_PbWO4, *skin, *grasa, *muscle, *OsBone, *H, *C, *N, *O, *Mg, *P, *S, *Ca, *W, *F, *trabecularBone, *RealOsBone, *material3D, *material3Dsoft;
         G4Tubs *solidBone, *solidMuscle, *solidGrasa, *solidSkin, *solidTrabecular, *solidCortical; 
         G4bool isArm, isSingleBone, isOsBone, isFiltered, isRealisticBone, isNormalBone, isBoneWall, isRealHand, isArmWall;
         G4ThreeVector targetPos, filterPos; 

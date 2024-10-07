@@ -66,6 +66,8 @@ namespace G4_PCM
         
         // Material para el sólido STL
         material3D = nist->FindOrBuildMaterial("G4_B-100_BONE");
+        material3Dsoft = nist->FindOrBuildMaterial("G4_TISSUE_SOFT_ICRU-4");
+        //material3Dsoft = nist->FindOrBuildMaterial("G4_AIR");
 
         // Material para los cristales de PbWO4
         E_PbWO4 = new G4Material("E_PbWO4", 8.28 * g / cm3, 3);
@@ -253,12 +255,12 @@ namespace G4_PCM
     {
         //// Crear el sólido a partir del archivo STL
         G4STL stl; 
-        stlSolid = stl.Read("C:\\Users\\conej\\Documents\\Universidad\\Geant4\\Projects\\Models\\G4_Hand-RealBonesSTABLE.stl");
+        stlSolid = stl.Read("C:\\Users\\conej\\Documents\\Universidad\\Geant4\\Projects\\Models\\BoneLAST.stl");
 
         if (stlSolid) {
             // Crear volumen lógico
             G4LogicalVolume* logicSTL = new G4LogicalVolume(stlSolid, material3D, "STLModelLogical");
-
+            
             // Colocar el modelo en el mundo
             new G4PVPlacement(targetRotation, targetPos, logicSTL, "STLModelPhysical", logicWorld, false, 0, true);
 
@@ -273,14 +275,16 @@ namespace G4_PCM
     {
         //// Crear el sólido a partir del archivo STL
         G4STL stl;
-        stlSolid2 = stl.Read("C:\\Users\\conej\\Documents\\Universidad\\Geant4\\Projects\\Models\\G4_Hand-RealTissueSTABLE.stl");
+        stlSolid2 = stl.Read("C:\\Users\\conej\\Documents\\Universidad\\Geant4\\Projects\\Models\\HAND-HAND-BOOL.stl");
+
+        G4ThreeVector posXD(0 * cm, 0 * cm, -7 * cm);
 
         if (stlSolid2) {
             // Crear volumen lógico
-            G4LogicalVolume* logicSTL2 = new G4LogicalVolume(stlSolid2, material3D, "STLModelLogical2");
+            G4LogicalVolume* logicSTL2 = new G4LogicalVolume(stlSolid2, material3Dsoft, "STLModelLogical2");
 
             // Colocar el modelo en el mundo
-            new G4PVPlacement(targetRotation, targetPos, logicSTL2, "STLModelPhysical2", logicWorld, false, 0, true);
+            new G4PVPlacement(targetRotation, posXD, logicSTL2, "STLModelPhysical2", logicWorld, false, 0, true);
 
             G4cout << "Modelo tissue importado exitosamente" << G4endl;
         }
@@ -288,6 +292,33 @@ namespace G4_PCM
             G4cout << "Modelo tissue no importado" << G4endl;
         }
     }
+
+    void DetectorConstruction::ConstructSOFT3Dbool()
+    {
+        //// Crear el sólido a partir del archivo STL del modelo "tissue"
+        G4STL stl;
+        stlSolid2 = stl.Read("C:\\Users\\conej\\Documents\\Universidad\\Geant4\\Projects\\Models\\HAND-HAND.stl");
+
+        //// Crear el sólido a partir del archivo STL del modelo "bone"
+        stlSolid = stl.Read("C:\\Users\\conej\\Documents\\Universidad\\Geant4\\Projects\\Models\\BoneLAST.stl");
+
+        if (stlSolid && stlSolid2) {
+            // Resta el volumen "bone" del volumen "tissue"
+            G4SubtractionSolid* subtractedSolid = new G4SubtractionSolid("SoftWithBoneHole", stlSolid2, stlSolid, targetRotation, targetPos);
+
+            // Crear el volumen lógico del sólido resultante
+            G4LogicalVolume* logicSubtracted = new G4LogicalVolume(subtractedSolid, material3Dsoft, "STLModelLogicalSubtracted");
+            G4ThreeVector posXD1(0 * cm, 0 * cm, -7 * cm);
+            // Colocar el sólido resultante en el mundo
+            new G4PVPlacement(targetRotation, posXD1, logicSubtracted, "STLModelPhysicalSubtracted", logicWorld, false, 0, true);
+
+            G4cout << "Modelo tissue con hueco de bone importado exitosamente" << G4endl;
+        }
+        else {
+            G4cout << "Modelo bone o tissue no importado correctamente" << G4endl;
+        }
+    }
+
     // Método para construir el detector
     G4VPhysicalVolume* DetectorConstruction::Construct()
     {
@@ -311,8 +342,9 @@ namespace G4_PCM
         // Construcción del brazo
         if (isRealHand)
         {
+            ConstructSOFT3Dbool();
             ConstructBONE3D();
-            ConstructSOFT3D();
+            //ConstructSOFT3D();
         }
         else if (isArm)
         {

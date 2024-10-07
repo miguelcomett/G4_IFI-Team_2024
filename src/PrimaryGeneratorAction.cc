@@ -48,7 +48,7 @@ namespace G4_PCM
 		G4double radius;
 		if (fGunAngle == 0) {
 			// Si el ángulo es 0, define un diámetro de 100 mm
-			radius = 100 * mm;
+			radius = 30 * cm;
 		}
 		else {
 			// Si el ángulo no es 0, usa el diámetro por defecto
@@ -68,12 +68,12 @@ namespace G4_PCM
 		//     y = G4UniformRand() * (2.0 * radius) - radius;
 		// } while (x * x + y * y > radius * radius);
 
-		// Fuente cuadrada (descomentar para activar)
-		//x = G4UniformRand() * (2.0 * radius) - radius;
-		//y = G4UniformRand() * (2.0 * radius) - radius;
-		//G4ThreeVector position = G4ThreeVector(x, y, z);
+		//Fuente cuadrada (descomentar para activar)
+		x = G4UniformRand() * (2.0 * radius) - radius;
+		y = G4UniformRand() * (2.0 * radius) - radius;
+		G4ThreeVector position = G4ThreeVector(x, y, z);
 	
-		//fParticleGun->SetParticlePosition(position);
+		fParticleGun->SetParticlePosition(position);
 
 		// -------------------------------------------------------
 		// Dirección del haz (Cónico o Lineal)
@@ -95,9 +95,9 @@ namespace G4_PCM
 		// -------------------------------------------------------
 
 		// Escáner lineal en el eje X (por defecto activado)
-		x = G4UniformRand() * (2.0 * radius) - radius;
+	/*	x = G4UniformRand() * (2.0 * radius) - radius;
 		G4ThreeVector scannerPositionX = G4ThreeVector(x, 0.0, z);
-		fParticleGun->SetParticlePosition(scannerPositionX);
+		fParticleGun->SetParticlePosition(scannerPositionX);*/
 
 		// Escáner lineal en el eje Y (descomentar para activar)
 		// G4double y_scan_range = scannerRange;

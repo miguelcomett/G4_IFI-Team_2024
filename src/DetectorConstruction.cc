@@ -13,13 +13,13 @@ namespace G4_PCM
         DefineMaterials();
 
         // Selección de arquitectura del objetivo -SELECCIONA UNA-
-        isRealHand = true;    // Mano Realista 3D
+        isRealHand = false;    // Mano Realista 3D
         isArm = false;        // Brazo
         isSingleBone = false; // Solo hueso
 
         // Tipo de hueso -SELECCIONA UNO-
         isNormalBone = false;  // Hueso sólido
-        isRealisticBone = true; // Hueso sólido y trabecular
+        isRealisticBone = false; // Hueso sólido y trabecular
         isBoneWall = false; //Pared de hueso 
         isArmWall = false; //Pared de braso tissue
 

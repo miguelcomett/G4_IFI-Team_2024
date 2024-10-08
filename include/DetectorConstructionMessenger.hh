@@ -3,6 +3,7 @@
 
 #include "G4UImessenger.hh"
 #include "G4UIcmdWithADoubleAndUnit.hh"
+#include "G4UIcmdWithADouble.hh"
 
 namespace G4_PCM
 {
@@ -19,6 +20,7 @@ namespace G4_PCM
     private:
         DetectorConstruction* fDetector;
         G4UIcmdWithADoubleAndUnit* fTargetThicknessCmd;
+        G4UIcmdWithADouble* fTargetAngleCmd;
     };
 }
 

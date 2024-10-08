@@ -5,6 +5,7 @@
 #include "G4VUserDetectorConstruction.hh"
 #include "G4SystemOfUnits.hh"
 #include "G4UIcmdWithADoubleAndUnit.hh"
+#include "G4UIcmdWithADouble.hh"
 #include "DetectorConstruction.hh"
 #include "DetectorConstructionMessenger.hh"
 #include "G4Material.hh"
@@ -36,17 +37,18 @@ namespace G4_PCM
         G4VPhysicalVolume* Construct() override;
 
         void SetTargetThickness(G4double thickness);
+        void SetTargetAngle(G4double angleD);
         void ConstructArm(); 
-	void ConstructSingleBone(); 
-	void ConstructOsBone();
-	void ConstructFilter();
-	void ConstructRealBone(); 
-	void ConstructNormalBone(); 
-	void ConstructBoneWall();
-	void ConstructArmWall();  
-    void ConstructBONE3D();
-    void ConstructSOFT3D();
-    void ConstructSOFT3Dbool();
+	    void ConstructSingleBone(); 
+	    void ConstructOsBone();
+	    void ConstructFilter();
+	    void ConstructRealBone(); 
+	    void ConstructNormalBone(); 
+	    void ConstructBoneWall();
+	    void ConstructArmWall();  
+        void ConstructBONE3D();
+        void ConstructSOFT3D();
+        void ConstructSOFT3Dbool();
 
         G4LogicalVolume* GetGammaDetector() const { return fGammaDetector; }
 
@@ -58,8 +60,10 @@ namespace G4_PCM
 
         G4LogicalVolume* fGammaDetector = nullptr;
         G4double fTargetThickness = 60 * mm; // Valor predeterminado
+        G4double fTargetAngle;           // Valor predeterminado
 
         G4UIcmdWithADoubleAndUnit* fTargetThicknessCmd;
+        G4UIcmdWithADouble* fTargetAngleCmd;
         DetectorConstructionMessenger* fMessenger; // Pointer to the messenger
         
         G4Box *solidWorld, *solidFilter, *solidHuesoTrabecular, *solidHuesoCortical, *solidSkinP, *solidFatP, *solidMuscleP; 

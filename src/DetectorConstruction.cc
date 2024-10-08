@@ -4,7 +4,7 @@ namespace G4_PCM
 {
     // Constructor
     DetectorConstruction::DetectorConstruction()
-        : fTargetThickness(50 * mm), // Valor predeterminado de grosor del objetivo
+        : fTargetThickness(50 * mm), fTargetAngle(0), // Valor predeterminado de grosor del objetivo
         fMessenger(new DetectorConstructionMessenger(this)) // Crear el mensajero
     {
         // Crear una instancia de STLGeometryReader
@@ -33,8 +33,9 @@ namespace G4_PCM
         outerBoneRadius = isRealisticBone ? 2.25 * cm : 1.5 * cm; // Selección del radio en función del tipo de hueso
         innerBoneRadius = 0.0;
 
+
         // Rotación del objetivo
-        targetRotation = new G4RotationMatrix(0, -90 * deg, 0);
+        targetRotation = new G4RotationMatrix(0 * deg, -90 * deg, fTargetAngle * deg);
 
         // Tamaño del detector
         detectorSizeXY = 35 * cm;
@@ -258,6 +259,10 @@ namespace G4_PCM
         stlSolid = stl.Read("C:\\Users\\conej\\Documents\\Universidad\\Geant4\\Projects\\Models\\BoneLAST.stl");
 
         if (stlSolid) {
+
+            G4double targetRot = fTargetAngle;
+            targetRotation = new G4RotationMatrix(0 * deg, -90 * deg, fTargetAngle * deg);
+
             // Crear volumen lógico
             G4LogicalVolume* logicSTL = new G4LogicalVolume(stlSolid, material3D, "STLModelLogical");
             
@@ -280,6 +285,10 @@ namespace G4_PCM
         G4ThreeVector posXD(0 * cm, 0 * cm, -7 * cm);
 
         if (stlSolid2) {
+
+            G4double targetRot = fTargetAngle;
+            targetRotation = new G4RotationMatrix(0 * deg, -90 * deg, fTargetAngle * deg);
+
             // Crear volumen lógico
             G4LogicalVolume* logicSTL2 = new G4LogicalVolume(stlSolid2, material3Dsoft, "STLModelLogical2");
 
@@ -303,6 +312,10 @@ namespace G4_PCM
         stlSolid = stl.Read("C:\\Users\\conej\\Documents\\Universidad\\Geant4\\Projects\\Models\\BoneLAST.stl");
 
         if (stlSolid && stlSolid2) {
+
+            G4double targetRot = fTargetAngle;
+            targetRotation = new G4RotationMatrix(0 * deg, -90 * deg, fTargetAngle * deg);
+
             // Resta el volumen "bone" del volumen "tissue"
             G4SubtractionSolid* subtractedSolid = new G4SubtractionSolid("SoftWithBoneHole", stlSolid2, stlSolid, targetRotation, targetPos);
 
@@ -381,7 +394,7 @@ namespace G4_PCM
             E_PbWO4,
             "Detector");
 
-        G4ThreeVector detectorPos = G4ThreeVector(0, 0, 20 * cm); // Era 20
+        G4ThreeVector detectorPos = G4ThreeVector(0, 0, 30 * cm); // Era 20
         G4RotationMatrix* detRotation = new G4RotationMatrix();
 
         // Colocar el detector
@@ -403,5 +416,10 @@ namespace G4_PCM
     void DetectorConstruction::SetTargetThickness(G4double thickness)
     {
         fTargetThickness = thickness;
+    }
+    // Modificar el grosor del objetivo
+    void DetectorConstruction::SetTargetAngle(G4double angleD)
+    {
+        fTargetAngle = angleD;
     }
 }

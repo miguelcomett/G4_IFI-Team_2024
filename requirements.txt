@@ -1,0 +1,6 @@
+uproot==5.0.7         # Para trabajar con archivos ROOT
+pandas==2.1.1         # Para manipulación de datos y exportación a CSV
+matplotlib==3.8.0     # Para visualización de datos (gráficas)
+numpy==1.24.3         # Para manipulación numérica (arrays, etc.)
+Pillow==10.0.0        # Para cargar y manipular imágenes (librería moderna de PIL)
+tkinter             

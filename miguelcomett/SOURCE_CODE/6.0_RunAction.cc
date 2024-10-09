@@ -6,7 +6,7 @@ MyRunAction::MyRunAction()
 {
     G4AnalysisManager * analysisManager = G4AnalysisManager::Instance();
 
-    if (arguments == 1 || arguments == 3)
+    if (arguments == 1 || arguments == 3 || arguments == 5)
     {
         analysisManager -> CreateNtuple("Photons", "Photons");
         analysisManager -> CreateNtupleIColumn("Event_Count");

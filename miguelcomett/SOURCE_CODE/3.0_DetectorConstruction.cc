@@ -98,7 +98,7 @@ void MyDetectorConstruction::DefineMaterials()
     E_PbWO4->AddElement(nist->FindOrBuildElement("O"), 4);
 
     // Configure material for osteoporotic bone
-    OsBone = new G4Material("OsteoporoticBone", 1.3 * g / cm3, 8);
+    OsBone = new G4Material("OsteoporoticBone", 1.45 * g / cm3, 8);
     OsBone->AddMaterial(nist->FindOrBuildMaterial("G4_H"), 6.4 * perCent);
     OsBone->AddMaterial(nist->FindOrBuildMaterial("G4_C"), 27.8 * perCent);
     OsBone->AddMaterial(nist->FindOrBuildMaterial("G4_N"), 2.7 * perCent);
@@ -131,14 +131,21 @@ void MyDetectorConstruction::ConstructSDandField()
 
 void MyDetectorConstruction::ConstructOsBone() 
 {
-    G4double poreRadius = 100 * um;
+    G4double poreRadius = 0.111 * cm;
     pore = new G4Sphere("Pore", 0, poreRadius, 0 * deg, 360 * deg, 0 * deg, 180 * deg);
     porousBone = solidBone;
+    int numPores = 200;
 
-    for (int i = 1; i < 300; i++) {
-        G4double r = G4UniformRand() * outerBoneRadius;
+    G4double regionMinZ = 0; 
+    G4double regionMaxZ = fTargetThickness / (2*2); 
+    G4double regionMinRadius = 0; 
+    G4double regionMaxRadius = outerBoneRadius;
+
+    for (int i = 1; i < numPores; i++) 
+    {
+        G4double r = G4UniformRand() * (regionMaxRadius - regionMinRadius);
         G4double theta = G4UniformRand() * 360.0 * deg;
-        G4double z = G4UniformRand() * fTargetThickness - fTargetThickness / 2;
+        G4double z = regionMinZ + G4UniformRand() * (regionMaxZ - regionMinZ);
         G4double x = r * std::cos(theta);
         G4double y = r * std::sin(theta);
         G4ThreeVector porePosition = G4ThreeVector(x, y, z);

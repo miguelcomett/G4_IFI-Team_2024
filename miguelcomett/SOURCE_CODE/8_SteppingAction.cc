@@ -7,27 +7,42 @@ MySteppingAction::~MySteppingAction() {}
 
 void MySteppingAction::UserSteppingAction(const G4Step * step)
 {
-    G4LogicalVolume * Volume = step -> GetPreStepPoint() -> GetTouchableHandle() -> GetVolume() -> GetLogicalVolume();
-    const MyDetectorConstruction * detectorConstruction = static_cast < const MyDetectorConstruction *> (G4RunManager::GetRunManager() -> GetUserDetectorConstruction());
-    
-    // G4LogicalVolume * fScoringVolume1 = detectorConstruction -> GetScoringVolume1();
-    // G4LogicalVolume * fScoringVolume2 = detectorConstruction -> GetScoringVolume2();
-    // G4LogicalVolume * fScoringVolume3 = detectorConstruction -> GetScoringVolume3();
-    // if(Volume != fScoringVolume1 || Volume != fScoringVolume2 || Volume != fScoringVolume3) { return; }
-
-    G4LogicalVolume * fScoringVolume = detectorConstruction -> GetScoringVolume();
-    if(Volume != fScoringVolume) { return; }
-
-    G4double EDep = step -> GetTotalEnergyDeposit();
-    fEventAction -> AddEdep(EDep);
-
-    G4StepPoint * endPoint = step -> GetPostStepPoint();
-    G4String procName = endPoint -> GetProcessDefinedStep() -> GetProcessName();
-    Run * run = static_cast <Run *> (G4RunManager::GetRunManager() -> GetNonConstCurrentRun()); 
-    run -> CountProcesses(procName);
 
     if (arguments == 2 || arguments == 4) 
     {
+        G4StepPoint * endPoint = step -> GetPostStepPoint();
+        G4String procName = endPoint -> GetProcessDefinedStep() -> GetProcessName();
+        Run * run = static_cast <Run *> (G4RunManager::GetRunManager() -> GetNonConstCurrentRun()); 
+        run -> CountProcesses(procName);
+
         G4RunManager::GetRunManager() -> AbortEvent();  // kill event after first interaction
     }
+    
+    if (arguments == 5)
+    {
+        const std::vector <const G4Track*> * secondaries = step -> GetSecondaryInCurrentStep();
+
+        for (const auto & secondary : * secondaries)
+        {        
+            if (secondary->GetParentID() != 0) // This ensures we only kill secondaries
+            { 
+                G4Track * nonPrimaryTrack = const_cast <G4Track*> (secondary);
+                nonPrimaryTrack -> SetTrackStatus(fStopAndKill);
+            }
+        }
+
+    }
+
+    if (arguments == 1 || arguments == 3)
+    {
+        G4LogicalVolume * Volume = step -> GetPreStepPoint() -> GetTouchableHandle() -> GetVolume() -> GetLogicalVolume();
+        const MyDetectorConstruction * detectorConstruction = static_cast < const MyDetectorConstruction *> (G4RunManager::GetRunManager() -> GetUserDetectorConstruction());
+        
+        G4LogicalVolume * fScoringVolume = detectorConstruction -> GetScoringVolume();
+        if(Volume != fScoringVolume) { return; }
+
+        G4double EDep = step -> GetTotalEnergyDeposit();
+        fEventAction -> AddEdep(EDep);
+    }
+
 }

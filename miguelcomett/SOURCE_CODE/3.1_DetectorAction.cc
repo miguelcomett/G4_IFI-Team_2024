@@ -22,7 +22,7 @@ G4bool MySensitiveDetector::ProcessHits(G4Step * aStep, G4TouchableHistory * ROh
     G4VPhysicalVolume * detectorVolume = touchable -> GetVolume();
     G4ThreeVector posDetector = detectorVolume -> GetTranslation();
 
-    if (arguments >= 5) { G4cout << "Detector position: " << posDetector << G4endl; }
+    if (arguments >= 7) { G4cout << "Detector position: " << posDetector << G4endl; }
 
     if (arguments == 1 || arguments == 3)
     {
@@ -35,7 +35,13 @@ G4bool MySensitiveDetector::ProcessHits(G4Step * aStep, G4TouchableHistory * ROh
         analysisManager -> FillNtupleDColumn(0, 3, posPhoton[2]);
         analysisManager -> FillNtupleDColumn(0, 4, Wavelength);
         analysisManager -> AddNtupleRow(0);
+    }
 
+    if ( (arguments == 1 || arguments == 3) && arguments != 5) 
+    {
+        G4int Event = G4RunManager::GetRunManager() -> GetCurrentEvent() -> GetEventID();
+        G4AnalysisManager * analysisManager = G4AnalysisManager::Instance();
+        
         analysisManager -> FillNtupleIColumn(1, 0, Event);
         analysisManager -> FillNtupleDColumn(1, 1, posDetector[0]);
         analysisManager -> FillNtupleDColumn(1, 2, posDetector[1]);

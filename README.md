@@ -1,3 +1,5 @@
-# G4_Semana6
+# Graphic UI
 
-hola panas
+Para correr bajar los requierements.txt primero
+
+Posteriormente correr el main.py y arrastrar ya sea un .jpg/.png/.jpeg o un archivo .root

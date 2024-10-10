@@ -19,7 +19,7 @@ def cargar_imagen(ruta_imagen, etiqueta, ventana):
     ancho_original, alto_original = imagen.size
     print(f"Tamaño original de la imagen: {ancho_original}x{alto_original}")
     # Definir el tamaño máximo (por ejemplo, 600x600 píxeles)
-    max_ancho, max_alto = 600, 600
+    max_ancho, max_alto = 550, 400
     # Calcula la relación de aspecto para redimensionar la imagen manteniendo la calidad
     ratio = min(max_ancho / ancho_original, max_alto / alto_original)
     # Solo redimensiona si la imagen es más grande que el tamaño máximo

@@ -24,7 +24,7 @@ G4bool MySensitiveDetector::ProcessHits(G4Step * aStep, G4TouchableHistory * ROh
 
     if (arguments >= 7) { G4cout << "Detector position: " << posDetector << G4endl; }
 
-    if (arguments == 1 || arguments == 3)
+    if (arguments == 1 || arguments == 3 || arguments == 5)
     {
         G4int Event = G4RunManager::GetRunManager() -> GetCurrentEvent() -> GetEventID();
         G4AnalysisManager * analysisManager = G4AnalysisManager::Instance();
@@ -37,11 +37,11 @@ G4bool MySensitiveDetector::ProcessHits(G4Step * aStep, G4TouchableHistory * ROh
         analysisManager -> AddNtupleRow(0);
     }
 
-    if ( (arguments == 1 || arguments == 3) && arguments != 5) 
+    if (arguments == 1 || arguments == 3) 
     {
         G4int Event = G4RunManager::GetRunManager() -> GetCurrentEvent() -> GetEventID();
         G4AnalysisManager * analysisManager = G4AnalysisManager::Instance();
-        
+
         analysisManager -> FillNtupleIColumn(1, 0, Event);
         analysisManager -> FillNtupleDColumn(1, 1, posDetector[0]);
         analysisManager -> FillNtupleDColumn(1, 2, posDetector[1]);

@@ -30,6 +30,7 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
         void ConstructOsBone();
         void ConstructArm();
         void ConstructTissue();
+        void ConstructBoneDivided();
 
     public:
         MyDetectorConstruction();
@@ -44,15 +45,15 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
     
     private:
         G4Box * solidWorld, * solidDetector, * solidRadiator;
-        G4Tubs * solidBone, * solidMuscle, * solidGrasa, * solidSkin, * solidBone2, *prueba; 
+        G4Tubs * solidBone, * solidMuscle, * solidGrasa, * solidSkin, * solidBone2, * prueba, * osteoBone, * healthyBone; 
         G4Sphere * pore;  
         G4VSolid * porousBone; 
         G4RotationMatrix * targetRotation; 
         G4LogicalVolume * logicWorld, * logicRadiator, * logicDetector, 
                         * fScoringVolume, * fScoringVolume1, * fScoringVolume2, * fScoringVolume3,  
-                        * logicBone, * logicMuscle, * logicGrasa, * logicSkin, *pruebaLog;
+                        * logicBone, * logicMuscle, * logicGrasa, * logicSkin, * pruebaLog, * logicOs, * logicHealthy;
         G4VPhysicalVolume * physicalWorld, * physicalRadiator, * physicalDetector, * physBone, * physArm, 
-                          * physMuscle, * physGrasa, * physSkin, *pruebaPhys;
+                          * physMuscle, * physGrasa, * physSkin, * pruebaPhys, * physOs, * physHealthy;
         G4ThreeVector targetPos;
 
         virtual void ConstructSDandField();
@@ -60,17 +61,17 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
         void DefineMaterials();
 
         G4Material * SiO2, * H2O, * Aerogel, * worldMaterial, * Aluminum, * Air, 
-                   * Silicon, * materialTarget, * Wolframium, * V2O5, * Bone, * OsBone, * compactBone, * E_PbWO4, 
+                   * Silicon, * materialTarget, * Wolframium, * V2O5, * Bone, * OsBone, * OsBone2, * compactBone, * E_PbWO4, 
                    * CadTel, * vanadiumGlassMix, * amorphousGlass, * Fat, * Skin, * Muscle;
                    
         G4Element * C, * Al, * N, * O, * V, * Cd, * Te;
 
-        G4bool isArm, isBone, isOsBone, isPlacas;
+        G4bool isArm, isBone, isOsBone, isPlacas, isBoneDivided;
 
-        G4int nColumns, nRows; 
+        G4int nColumns, nRows, numPores; 
         G4GenericMessenger * fDetectorMessenger;  
 
-        G4double thicknessTarget, outerBoneRadius, fTargetThickness;
+        G4double thicknessTarget, innerBoneRadius, outerBoneRadius, boneHeight, poreRadius;
 };
 
 #endif 

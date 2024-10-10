@@ -24,7 +24,7 @@ void MySteppingAction::UserSteppingAction(const G4Step * step)
 
         for (const auto & secondary : * secondaries)
         {        
-            if (secondary->GetParentID() != 0) // This ensures we only kill secondaries
+            if (secondary->GetDefinition()->GetParticleName() == "gamma") // This ensures we only kill secondaries
             { 
                 G4Track * nonPrimaryTrack = const_cast <G4Track*> (secondary);
                 nonPrimaryTrack -> SetTrackStatus(fStopAndKill);

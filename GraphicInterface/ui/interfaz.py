@@ -15,7 +15,7 @@ def on_drop(event, etiqueta, ventana):
     if extension in [".png", ".jpg", ".jpeg"]:  # Si es una imagen
         cargar_imagen(ruta_archivo, etiqueta, ventana)
     elif extension == ".root":  # Si es un archivo ROOT
-        cargar_root(ruta_archivo, ventana)
+        cargar_root(ruta_archivo, ventana, etiqueta)
     else:
         tk.messagebox.showerror("Error", "Tipo de archivo no soportado.")
 

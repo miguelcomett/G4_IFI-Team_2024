@@ -15,7 +15,7 @@ canvas = None  # Para la gráfica en tkinter
 etiqueta_imagen = None  # Etiqueta para la imagen cargada
 
 # Función para cargar y procesar el archivo ROOT y actualizar los widgets
-def cargar_root(ruta_root, ventana):
+def cargar_root(ruta_root, ventana, etiqueta):
     global frame_widgets
     global etiqueta_imagen
     
@@ -30,7 +30,7 @@ def cargar_root(ruta_root, ventana):
 
     # Crear un nuevo frame para contener los widgets de este archivo ROOT
     frame_widgets = ttk.Frame(ventana)
-    frame_widgets.pack(fill="x", padx=5, pady=5)
+    frame_widgets.place(width=320, height=700)
 
     print("Cargando archivo ROOT")
     tree_name = "Photons"
@@ -46,7 +46,7 @@ def cargar_root(ruta_root, ventana):
                 print(f"Tree encontrado: {nombre_tree}")
 
                 # Crear un cuadro desplegable o botón para cada tree en la interfaz
-                crear_widget_tree(frame_widgets, nombre_tree, trees, ventana)
+                crear_widget_tree(frame_widgets, nombre_tree, trees, etiqueta)
 
 # Función que crea un cuadro desplegable o botón para cada tree
 def crear_widget_tree(ventana, nombre_tree, trees, main_ventana):
@@ -84,19 +84,19 @@ def mostrar_branches(trees, frame_tree, main_ventana):
 
     # Crear un Listbox para seleccionar múltiples branches
     listbox_branches_actual = tk.Listbox(frame_tree, selectmode=tk.MULTIPLE, height=5)
-    listbox_branches_actual.pack(side="left", padx=5, pady=5)
+    listbox_branches_actual.pack(side="top", padx=5, pady=5)
 
     # Insertar las branches en el Listbox
     for branch in branches:
         listbox_branches_actual.insert(tk.END, branch)
 
     # Crear un botón para exportar las branches seleccionadas a CSV
-    boton_exportar_csv = ttk.Button(frame_tree, text="Exportar a CSV", command=lambda: exportar_csv(trees, listbox_branches_actual))
-    boton_exportar_csv.pack(side="left", padx=5)
+    boton_exportar_csv = ttk.Button(frame_tree, text="Exportar CSV", command=lambda: exportar_csv(trees, listbox_branches_actual))
+    boton_exportar_csv.pack(side="top", padx=5)
 
     # Crear un botón para visualizar las branches seleccionadas
     boton_visualizar = ttk.Button(frame_tree, text="Visualizar", command=lambda: visualizar_branch(trees, listbox_branches_actual, main_ventana))
-    boton_visualizar.pack(side="left", padx=5, pady=5)
+    boton_visualizar.pack(side="top", padx=5, pady=5)
 
 # Función para exportar las branches seleccionadas a un archivo CSV
 def exportar_csv(trees, listbox_branches):
@@ -139,8 +139,8 @@ def exportar_csv(trees, listbox_branches):
     except Exception as e:
         print(f"Error al exportar branches: {e}")
 
-# Función para visualizar los datos de la branch seleccionada
-def visualizar_branch(trees, listbox_branches, ventana):
+# Función para visualizar los datos de la branch seleccionada como histograma
+def visualizar_branch(trees, listbox_branches, etiqueta_imagen):
     global canvas  # Para la gráfica
 
     # Obtener la primera branch seleccionada
@@ -155,19 +155,26 @@ def visualizar_branch(trees, listbox_branches, ventana):
     # Extraer los datos de la branch seleccionada
     data = trees[branch_seleccionada].array(library="np")
 
-    # Crear la figura para la gráfica
-    fig, ax = plt.subplots()
-    ax.plot(data, label=branch_seleccionada)
-    ax.set_title(f"Datos de {branch_seleccionada}")
-    ax.set_xlabel("Índice")
-    ax.set_ylabel("Valor")
-    ax.legend()
+    # Crear la figura para la gráfica con un tamaño personalizado
+    fig, ax = plt.subplots(figsize=(12, 6))  # Ajusta el tamaño de la gráfica aquí (ancho, alto)
+    
+    # Crear el histograma
+    ax.hist(data, bins=50, color='skyblue', edgecolor='black')  # Histograma con 50 bins ajustables
+    ax.set_title(f"Histograma de {branch_seleccionada}")
+    ax.set_xlabel("Valores")
+    ax.set_ylabel("Frecuencia")
 
     # Si ya existe una gráfica previa, destruirla
     if canvas:
         canvas.get_tk_widget().destroy()
 
-    # Mostrar la gráfica en la ventana de la imagen
-    canvas = FigureCanvasTkAgg(fig, master=ventana)
+    # Mostrar la gráfica en la ventana de la etiqueta_imagen
+    canvas = FigureCanvasTkAgg(fig, master=etiqueta_imagen)
     canvas.draw()
-    canvas.get_tk_widget().pack(side="top", fill="both", expand=True)
+
+    # Configurar la posición del Canvas dentro del Label para que se ajuste correctamente
+    canvas_widget = canvas.get_tk_widget()
+    canvas_widget.place(x=0, y=0, width=etiqueta_imagen.winfo_width(), height=etiqueta_imagen.winfo_height())
+
+    # Si quieres que el canvas se ajuste automáticamente si la ventana cambia de tamaño:
+    etiqueta_imagen.bind("<Configure>", lambda event: canvas_widget.place(x=0, y=0, width=event.width, height=event.height))

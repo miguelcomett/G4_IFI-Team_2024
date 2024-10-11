@@ -24,7 +24,7 @@ def crear_interfaz():
     ventana.title("Interfaz de Procesamiento de Imágenes y Archivos ROOT")
     ventana.geometry("1100x650")
 
-    etiqueta_imagen = tk.Label(ventana, text="Arrastra una imagen o archivo ROOT aquí", width=50, height=22, bg="lightgray")
+    etiqueta_imagen = tk.Label(ventana, text="Arrastra una imagen o archivo ROOT aquí", width=63, height=25, bg="lightgray")
     etiqueta_imagen.pack(padx=10, pady=10)
 
     ventana.drop_target_register(DND_FILES)

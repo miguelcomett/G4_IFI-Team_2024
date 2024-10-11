@@ -1,3 +1,4 @@
+from globales import EstadoGlobal
 import uproot
 import pandas as pd
 import tkinter as tk
@@ -7,30 +8,29 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Variable global para almacenar el frame donde se generan los widgets de los trees
-frame_widgets = None
+# frame_widgets = None
+# etiqueta_imagen = None  # Etiqueta para la imagen cargada
+# canvas = None  # Para la gráfica en tkinter
+estado = EstadoGlobal()  # Obtener la única instancia de la clase
 boton_exportar_csv = None  # Variable global para controlar el botón de exportación
 boton_visualizar = None
 listbox_branches_actual = None  # Variable global para controlar el Listbox actual
-canvas = None  # Para la gráfica en tkinter
-etiqueta_imagen = None  # Etiqueta para la imagen cargada
 
 # Función para cargar y procesar el archivo ROOT y actualizar los widgets
 def cargar_root(ruta_root, ventana, etiqueta):
-    global frame_widgets
-    global etiqueta_imagen
-    
-    # Si hay una imagen mostrada, eliminarla antes de cargar el archivo ROOT
-    if etiqueta_imagen:
-        etiqueta_imagen.destroy()
-        etiqueta_imagen = None
+     # Si hay una imagen cargada, eliminarla pero restaurar el texto en el Label
+    if estado.etiqueta_imagen:
+        # Restablecer el texto y el tamaño original del Label
+        etiqueta.config(text="Arrastra una imagen o archivo ROOT aquí", image='', width=63, height=25)
+        estado.etiqueta_imagen = None  # Limpiar la referencia de la imagen
 
-    # Si ya hay widgets creados (de un archivo previo), eliminarlos
-    if frame_widgets:
-        frame_widgets.destroy()
+    if estado.frame_widgets:
+        estado.frame_widgets.destroy()
 
     # Crear un nuevo frame para contener los widgets de este archivo ROOT
-    frame_widgets = ttk.Frame(ventana)
-    frame_widgets.place(width=320, height=700)
+    estado.frame_widgets = ttk.Frame(ventana)
+    ##Tamaño de todos los widgets
+    estado.frame_widgets.place(width=320, height=700)
 
     print("Cargando archivo ROOT")
     tree_name = "Photons"
@@ -46,7 +46,7 @@ def cargar_root(ruta_root, ventana, etiqueta):
                 print(f"Tree encontrado: {nombre_tree}")
 
                 # Crear un cuadro desplegable o botón para cada tree en la interfaz
-                crear_widget_tree(frame_widgets, nombre_tree, trees, etiqueta)
+                crear_widget_tree(estado.frame_widgets, nombre_tree, trees, etiqueta)
 
 # Función que crea un cuadro desplegable o botón para cada tree
 def crear_widget_tree(ventana, nombre_tree, trees, main_ventana):
@@ -66,17 +66,20 @@ def crear_widget_tree(ventana, nombre_tree, trees, main_ventana):
 def mostrar_branches(trees, frame_tree, main_ventana):
     global boton_exportar_csv  # Usamos la variable global para el botón de exportar
     global listbox_branches_actual  # Usamos la variable global para el Listbox actual
-    global canvas  # Para la gráfica
     global boton_visualizar
     # Si ya existe un Listbox de branches (de un tree anterior), eliminarlo
     if listbox_branches_actual:
         listbox_branches_actual.destroy()
+        listbox_branches_actual = None
         if boton_exportar_csv:
             boton_exportar_csv.destroy()
-        if canvas:
-            canvas.get_tk_widget().destroy()
+            boton_exportar_csv = None
+        if estado.canvas:
+            estado.canvas.get_tk_widget().destroy()
+            estado.canvas = None
     if boton_visualizar:
             boton_visualizar.destroy()
+            boton_visualizar = None
 
     # Obtener las branches (keys) del tree
     branches = trees.keys()
@@ -141,7 +144,6 @@ def exportar_csv(trees, listbox_branches):
 
 # Función para visualizar los datos de la branch seleccionada como histograma
 def visualizar_branch(trees, listbox_branches, etiqueta_imagen):
-    global canvas  # Para la gráfica
 
     # Obtener la primera branch seleccionada
     selected_indices = listbox_branches.curselection()
@@ -155,25 +157,26 @@ def visualizar_branch(trees, listbox_branches, etiqueta_imagen):
     # Extraer los datos de la branch seleccionada
     data = trees[branch_seleccionada].array(library="np")
 
+    # Si ya existe una gráfica previa, destruirla
+    if estado.canvas:
+        estado.canvas.get_tk_widget().destroy()
+        estado.canvas = None
+
     # Crear la figura para la gráfica con un tamaño personalizado
-    fig, ax = plt.subplots(figsize=(12, 6))  # Ajusta el tamaño de la gráfica aquí (ancho, alto)
-    
+    fig, ax = plt.subplots(figsize=(1, 1))  # Ajusta el tamaño de la gráfica aquí (ancho, alto)
+
     # Crear el histograma
     ax.hist(data, bins=50, color='skyblue', edgecolor='black')  # Histograma con 50 bins ajustables
     ax.set_title(f"Histograma de {branch_seleccionada}")
     ax.set_xlabel("Valores")
     ax.set_ylabel("Frecuencia")
 
-    # Si ya existe una gráfica previa, destruirla
-    if canvas:
-        canvas.get_tk_widget().destroy()
-
     # Mostrar la gráfica en la ventana de la etiqueta_imagen
-    canvas = FigureCanvasTkAgg(fig, master=etiqueta_imagen)
-    canvas.draw()
+    estado.canvas = FigureCanvasTkAgg(fig, master=etiqueta_imagen)
+    estado.canvas.draw()
 
     # Configurar la posición del Canvas dentro del Label para que se ajuste correctamente
-    canvas_widget = canvas.get_tk_widget()
+    canvas_widget = estado.canvas.get_tk_widget()
     canvas_widget.place(x=0, y=0, width=etiqueta_imagen.winfo_width(), height=etiqueta_imagen.winfo_height())
 
     # Si quieres que el canvas se ajuste automáticamente si la ventana cambia de tamaño:

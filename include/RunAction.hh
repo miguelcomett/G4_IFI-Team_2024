@@ -3,31 +3,25 @@
 
 #include "G4UserRunAction.hh"
 #include "G4AnalysisManager.hh"
-
-// timing the run
-#include "G4Timer.hh"
-
-// Include EventAction to reset the ntuple registration count
-#include "EventAction.hh"
+#include "G4Timer.hh"  // Timing the run
+#include "EventAction.hh"  // Include EventAction to reset the ntuple registration count
 
 namespace G4_PCM {
 
-    class HitsCollection;
-
     class RunAction : public G4UserRunAction {
     public:
-        RunAction();
-        ~RunAction();
+        RunAction();  // Constructor
+        ~RunAction();  // Destructor
 
-        void BeginOfRunAction(const G4Run* aRun) override;
-        void EndOfRunAction(const G4Run* aRun) override;
+        void BeginOfRunAction(const G4Run* aRun) override;  // Begin run action
+        void EndOfRunAction(const G4Run* aRun) override;  // End run action
 
     private:
-        G4Timer fTimer;
+        G4Timer* timer;  // Timer for tracking elapsed time
 
-        void PrintTime();
+        void PrintTime();  // Helper function to print the time
     };
 
 }
 
-#endif // !G4_PCM_RUN_ACTION_HH
+#endif // G4_PCM_RUN_ACTION_HH

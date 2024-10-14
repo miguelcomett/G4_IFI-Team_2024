@@ -48,7 +48,7 @@ namespace G4_PCM
 		G4double radius;
 		if (fGunAngle == 0) {
 			// Si el ángulo es 0, define un diámetro de 100 mm
-			radius = 30 * cm;
+			radius = 5 * cm;
 		}
 		else {
 			// Si el ángulo no es 0, usa el diámetro por defecto

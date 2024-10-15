@@ -305,32 +305,42 @@ namespace G4_PCM
 
     void DetectorConstruction::ConstructSOFT3Dbool()
     {
-        //// Crear el sólido a partir del archivo STL del modelo "tissue"
+        // Crear el sólido a partir del archivo STL del modelo "tissue"
         G4STL stl;
-        stlSolid2 = stl.Read("C:\\Users\\conej\\Documents\\Universidad\\Geant4\\Projects\\Models2\\TORAX_Real.stl");
+        G4VSolid* stlSolid2 = stl.Read("C:\\Users\\conej\\Documents\\Universidad\\Geant4\\Projects\\Models2\\TORAX_Real.stl");
 
-        //// Crear el sólido a partir del archivo STL del modelo "bone"
-        stlSolid = stl.Read("C:\\Users\\conej\\Documents\\Universidad\\Geant4\\Projects\\Models2\\RIBCAGE_Real.stl");
+        // Crear el sólido a partir del archivo STL del modelo "bone"
+        G4VSolid* stlSolid = stl.Read("C:\\Users\\conej\\Documents\\Universidad\\Geant4\\Projects\\Models2\\RIBCAGE_Real.stl");
 
-        if (stlSolid && stlSolid2) {
+        // Crear el sólido a partir del archivo STL del modelo "TORAX_Real0"
+        G4VSolid* stlSolid3 = stl.Read("C:\\Users\\conej\\Documents\\Universidad\\Geant4\\Projects\\Models2\\TORAX_Real0.stl");
 
+        if (stlSolid && stlSolid2 && stlSolid3) {
+
+            // Definir las matrices de rotación
             G4double targetRot = fTargetAngle;
-            targetRotation = new G4RotationMatrix(0 * deg, -90 * deg, (fTargetAngle+180) * deg);
-            targetRotation0 = new G4RotationMatrix(0 * deg, 0 * deg, (fTargetAngle) * deg);
+            G4RotationMatrix* targetRotation = new G4RotationMatrix(0 * deg, -90 * deg, (fTargetAngle + 180) * deg);
+            G4RotationMatrix* targetRotation0 = new G4RotationMatrix(0 * deg, 0 * deg, fTargetAngle * deg);
 
             // Resta el volumen "bone" del volumen "tissue"
             G4SubtractionSolid* subtractedSolid = new G4SubtractionSolid("SoftWithBoneHole", stlSolid2, stlSolid, targetRotation0, targetPos);
 
-            // Crear el volumen lógico del sólido resultante
-            G4LogicalVolume* logicSubtracted = new G4LogicalVolume(subtractedSolid, grasa, "STLModelLogicalSubtracted");
-            G4ThreeVector posXD1(0 * cm, 0 * cm, 0 * cm);
-            // Colocar el sólido resultante en el mundo
-            new G4PVPlacement(targetRotation, posXD1, logicSubtracted, "STLModelPhysicalSubtracted", logicWorld, false, 0, true);
+            // Resta el volumen "TORAX_Real0" del resultado anterior
+            G4SubtractionSolid* finalSubtractedSolid = new G4SubtractionSolid("SoftWithBoneAndTorax0Hole", subtractedSolid, stlSolid3, targetRotation0, targetPos);
 
-            G4cout << "Modelo tissue con hueco de bone importado exitosamente" << G4endl;
+            // Crear el volumen lógico del sólido resultante
+            G4LogicalVolume* logicFinalSubtracted = new G4LogicalVolume(finalSubtractedSolid, grasa, "STLModelLogicalFinalSubtracted");
+
+            // Definir la posición
+            G4ThreeVector posXD1(0 * cm, 0 * cm, 0 * cm);
+
+            // Colocar el sólido resultante en el mundo
+            new G4PVPlacement(targetRotation, posXD1, logicFinalSubtracted, "STLModelPhysicalFinalSubtracted", logicWorld, false, 0, true);
+
+            G4cout << "Modelo tissue con huecos de bone y TORAX_Real0 importado exitosamente" << G4endl;
         }
         else {
-            G4cout << "Modelo bone o tissue no importado correctamente" << G4endl;
+            G4cout << "Error al importar los modelos STL" << G4endl;
         }
     }
 
@@ -358,7 +368,7 @@ namespace G4_PCM
         if (isRealHand)
         {
             ConstructSOFT3Dbool();
-            //ConstructBONE3D();
+            ConstructBONE3D();
             //ConstructSOFT3D();
         }
         else if (isArm)

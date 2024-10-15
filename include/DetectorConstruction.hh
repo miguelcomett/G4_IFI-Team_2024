@@ -56,6 +56,7 @@ namespace G4_PCM
         // Instancia para la clase STLGeometryReader
         G4TessellatedSolid* stlSolid;
         G4TessellatedSolid* stlSolid2;
+        G4TessellatedSolid* stlSolid3;
         STLGeometryReader* stlReader;
 
         G4LogicalVolume* fGammaDetector = nullptr;

@@ -1,13 +1,9 @@
 /run/numberOfThreads 1
 /run/initialize
 
-#/gun/momentumAmp 100 keV
-#/run/beamOn 100
+/control/shell date
 
-#/gun/momentumAmp 300 keV
-#/run/beamOn 100
+/gun/momentumAmp 40 keV
+/run/beamOn 100
 
-/myDetector/ThicknessTarget 0.7037
-/run/reinitializeGeometry
-/gun/momentumAmp 15.4 keV
-/run/beamOn 1000
+/control/shell date

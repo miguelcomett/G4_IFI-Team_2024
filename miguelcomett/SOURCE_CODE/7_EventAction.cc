@@ -9,7 +9,7 @@ void MyEventAction::BeginOfEventAction(const G4Event *) { fEDep = 0.0; }
 
 void MyEventAction::EndOfEventAction(const G4Event *) 
 { 
-    if(arguments == 1 || arguments == 3) 
+    if(arguments == 1 || arguments == 3 || arguments == 5) 
     { 
         G4int Event = G4RunManager::GetRunManager() -> GetCurrentEvent() -> GetEventID();
 
@@ -21,7 +21,7 @@ void MyEventAction::EndOfEventAction(const G4Event *)
         }
 
         G4AnalysisManager * analysisManager = G4AnalysisManager::Instance();
-        analysisManager -> FillNtupleDColumn(2, 0, fEDep);
-        analysisManager -> AddNtupleRow(2);
+        analysisManager -> FillNtupleDColumn(0, 5, fEDep);
+        analysisManager -> AddNtupleRow(0);
     }
 }

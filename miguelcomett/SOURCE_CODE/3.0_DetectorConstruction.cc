@@ -13,12 +13,12 @@ MyDetectorConstruction::MyDetectorConstruction()
     
     boneHeight = 60 * mm;
     innerBoneRadius = 0.0;
-    outerBoneRadius = 2.25 * cm;
+    outerBoneRadius = 22.5 * mm;
     targetRotation = new G4RotationMatrix(0, 90*deg, 0);
 
     isArm = true;
     isBone = false;
-    isOsBone = true;
+    isOsBone = false;
     isBoneDivided = false;
 
     DefineMaterials();
@@ -195,11 +195,11 @@ void MyDetectorConstruction::ConstructBoneDivided()
 void MyDetectorConstruction::ConstructArm() 
 {
     G4double innerMuscleRadius = outerBoneRadius;
-    G4double outerMuscleRadius = innerMuscleRadius + 2.5 * cm;
+    G4double outerMuscleRadius = innerMuscleRadius + 25 * mm;
     G4double innerGrasaRadius  = outerMuscleRadius;
-    G4double outerGrasaRadius  = innerGrasaRadius + 0.5 * cm;
+    G4double outerGrasaRadius  = innerGrasaRadius + 5 * mm;
     G4double innerSkinRadius   = outerGrasaRadius;
-    G4double outerSkinRadius   = innerSkinRadius + 0.15 * cm;
+    G4double outerSkinRadius   = innerSkinRadius + 1.5 * mm;
 
     if (isBoneDivided) {ConstructBoneDivided();}
     else

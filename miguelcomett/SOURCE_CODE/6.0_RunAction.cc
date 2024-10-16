@@ -14,18 +14,18 @@ MyRunAction::MyRunAction()
         analysisManager -> CreateNtupleDColumn("Y_axis");
         analysisManager -> CreateNtupleDColumn("Z_axis");
         analysisManager -> CreateNtupleDColumn("Photons'_Wavelengths_nm");
+        analysisManager -> CreateNtupleDColumn("Energy_Deposition_keV");
         analysisManager -> FinishNtuple(0);
-        
+    }
+
+    if (arguments == 1 || arguments == 3)
+    {
         analysisManager -> CreateNtuple("Hits", "Hits");
         analysisManager -> CreateNtupleIColumn("Event_Count");
         analysisManager -> CreateNtupleDColumn("X_Detectors");
         analysisManager -> CreateNtupleDColumn("Y_Detectors");
         analysisManager -> CreateNtupleDColumn("Z_Detectors");
         analysisManager -> FinishNtuple(1);
-
-        analysisManager -> CreateNtuple("Scoring", "Scoring");
-        analysisManager -> CreateNtupleDColumn("Energy_Deposition_keV");
-        analysisManager -> FinishNtuple(2);
     }
 
     if (arguments == 2 || arguments == 4)

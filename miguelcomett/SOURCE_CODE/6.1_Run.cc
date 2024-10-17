@@ -45,7 +45,7 @@ void Run::EndOfRun()
             << material -> GetName() << " (density: " 
             << G4BestUnit(density, "Volumic Mass") << ")" << G4endl;
 
-    if (arguments == 2 || arguments == 4) 
+    if (arguments == 3) 
     {
         G4int totalCount = 0;
         G4int survive = 0;  

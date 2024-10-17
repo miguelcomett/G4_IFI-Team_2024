@@ -27,6 +27,7 @@ class MyRunAction : public G4UserRunAction
         
     private:
         Run * fRun = nullptr;
+        G4String dataTitle;
 };
 
 #endif

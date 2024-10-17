@@ -22,11 +22,9 @@ class MyPrimaryGenerator : public G4VUserPrimaryGeneratorAction
         virtual void GeneratePrimaries(G4Event *);
 
         G4ParticleGun * GetParticleGun() const {return fParticleGun;}
-        // G4GeneralParticleSource * GetParticleGun() const {return fParticleSource;}
     
     private:
         G4ParticleGun * fParticleGun;        
-        // G4GeneralParticleSource * fParticleSource; // Fuente de partículas generalizada
 };
 
 #endif

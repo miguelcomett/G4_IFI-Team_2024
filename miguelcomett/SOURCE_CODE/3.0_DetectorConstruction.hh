@@ -50,7 +50,7 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
         G4VSolid * porousBone; 
         G4RotationMatrix * targetRotation; 
         G4LogicalVolume * logicWorld, * logicRadiator, * logicDetector, 
-                        * fScoringVolume, * fScoringVolume1, * fScoringVolume2, * fScoringVolume3,  
+                        * fScoringVolume,
                         * logicBone, * logicMuscle, * logicGrasa, * logicSkin, * pruebaLog, * logicOs, * logicHealthy;
         G4VPhysicalVolume * physicalWorld, * physicalRadiator, * physicalDetector, * physBone, * physArm, 
                           * physMuscle, * physGrasa, * physSkin, * pruebaPhys, * physOs, * physHealthy;

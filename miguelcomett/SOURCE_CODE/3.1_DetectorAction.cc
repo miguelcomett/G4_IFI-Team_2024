@@ -15,6 +15,7 @@ G4bool MySensitiveDetector::ProcessHits(G4Step * aStep, G4TouchableHistory * ROh
     
     G4ThreeVector posPhoton = preStepPoint -> GetPosition();
     G4ThreeVector momPhoton = preStepPoint -> GetMomentum();
+    G4double energyPhoton = momPhoton.mag() / keV;
     G4double Wavelength = (1.239841939 * eV / momPhoton.mag()) *  1E+03;
     
     const G4VTouchable * touchable = aStep -> GetPreStepPoint() -> GetTouchable();
@@ -22,9 +23,9 @@ G4bool MySensitiveDetector::ProcessHits(G4Step * aStep, G4TouchableHistory * ROh
     G4VPhysicalVolume * detectorVolume = touchable -> GetVolume();
     G4ThreeVector posDetector = detectorVolume -> GetTranslation();
 
-    if (arguments >= 7) { G4cout << "Detector position: " << posDetector << G4endl; }
+    if (arguments >= 5) { G4cout << "Detector position: " << posDetector << G4endl; }
 
-    if (arguments == 1 || arguments == 3 || arguments == 5)
+    if (arguments == 1 || arguments == 2 || arguments == 4)
     {
         G4int Event = G4RunManager::GetRunManager() -> GetCurrentEvent() -> GetEventID();
         G4AnalysisManager * analysisManager = G4AnalysisManager::Instance();
@@ -34,10 +35,16 @@ G4bool MySensitiveDetector::ProcessHits(G4Step * aStep, G4TouchableHistory * ROh
         analysisManager -> FillNtupleDColumn(0, 2, posPhoton[1]);
         analysisManager -> FillNtupleDColumn(0, 3, posPhoton[2]);
         analysisManager -> FillNtupleDColumn(0, 4, Wavelength);
+    }
+
+    if ((energyPhoton > 0.1 * keV) && arguments == 4)
+    {
+        G4AnalysisManager * analysisManager = G4AnalysisManager::Instance();
+        analysisManager -> FillNtupleDColumn(0, 5, energyPhoton);
         analysisManager -> AddNtupleRow(0);
     }
 
-    if (arguments == 1 || arguments == 3) 
+    if (arguments == 1 || arguments == 2) 
     {
         G4int Event = G4RunManager::GetRunManager() -> GetCurrentEvent() -> GetEventID();
         G4AnalysisManager * analysisManager = G4AnalysisManager::Instance();

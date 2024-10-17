@@ -9,7 +9,7 @@ MyDetectorConstruction::MyDetectorConstruction()
 
     nColumns = 10;
     nRows    = 10;
-    thicknessTarget = .00005 * mm; 
+    thicknessTarget = 80 * mm; 
     
     boneHeight = 60 * mm;
     innerBoneRadius = 0.0;
@@ -19,7 +19,7 @@ MyDetectorConstruction::MyDetectorConstruction()
     isArm = true;
     isBone = false;
     isOsBone = false;
-    isBoneDivided = false;
+    isBoneDivided = true;
 
     DefineMaterials();
 }
@@ -236,7 +236,7 @@ void MyDetectorConstruction::ConstructArm()
 G4VPhysicalVolume * MyDetectorConstruction::Construct()
 {
     bool check_Overlaps = false;
-    materialTarget = Muscle;
+    materialTarget = Wolframium;
     
     G4double xWorld = 0.5*m;
     G4double yWorld = 0.5*m;
@@ -251,11 +251,11 @@ G4VPhysicalVolume * MyDetectorConstruction::Construct()
     else 
     if (isBone) {ConstructBone();}
     else
-    {
-        solidRadiator = new G4Box("solidRadiator", 0.4*m, 0.4*m, thicknessTarget/2);
+    { 
+        //radiator 
+        solidRadiator = new G4Box("solidRadiator", 0.05*m, 0.05*m, thicknessTarget/2);
         logicRadiator = new G4LogicalVolume(solidRadiator, materialTarget, "logicalRadiator");
         physicalRadiator = new G4PVPlacement(0, G4ThreeVector(0.0, 0.0, 0.25*m), logicRadiator, "PhysicalRadiator", logicWorld, false, 0, true);
-        // -0.48
         fScoringVolume = logicRadiator;
     }
 
@@ -264,12 +264,10 @@ G4VPhysicalVolume * MyDetectorConstruction::Construct()
     logicDetector = new G4LogicalVolume(solidDetector, Silicon, "logicalDetector");
 
     for(G4int i = 0; i < nRows; i++){
-        
         for (G4int j = 0; j < nColumns; j++){
             
-            physicalDetector 
-            = new G4PVPlacement(0, G4ThreeVector(-0.5*m + (i+0.5)*m/nRows, -0.5*m + (j+0.5)*m/nColumns, 0.49*m), 
-            logicDetector, "physicalDetector", logicWorld, false, j + i*nColumns, check_Overlaps);
+            physicalDetector = new G4PVPlacement(0, G4ThreeVector(-0.5*m + (i+0.5)*m/nRows, -0.5*m + (j+0.5)*m/nColumns, 0.49*m), 
+                                logicDetector, "physicalDetector", logicWorld, false, j + i*nColumns, check_Overlaps);
         }
     }
 

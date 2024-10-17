@@ -20,7 +20,7 @@ int main(int argc, char** argv)
 
     G4RunManager * runManager;
 
-    if (argc < 3) 
+    if (argc == 1) 
     {
         runManager = new G4RunManager();
         G4cout << " ----------- Running in single-threaded mode ---------" << G4endl;
@@ -49,7 +49,7 @@ int main(int argc, char** argv)
 
     G4UIExecutive * UI = 0;
     
-    if(argc < 3)
+    if(argc == 1)
     {
         UI = new G4UIExecutive(argc, argv);
         UImanager -> ApplyCommand("/control/execute Visualization.mac");

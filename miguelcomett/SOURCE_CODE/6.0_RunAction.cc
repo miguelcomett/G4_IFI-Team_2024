@@ -4,9 +4,14 @@ extern int arguments;
 
 MyRunAction::MyRunAction()
 {
+    if (arguments == 1 || arguments == 2)
+    {dataTitle = "Energy_Deposition_keV";}
+    else if (arguments == 4)
+    {dataTitle = "Photons'_Energy_keV";}
+
     G4AnalysisManager * analysisManager = G4AnalysisManager::Instance();
 
-    if (arguments == 1 || arguments == 3 || arguments == 5)
+    if (arguments == 1 || arguments == 2 || arguments == 4)
     {
         analysisManager -> CreateNtuple("Photons", "Photons");
         analysisManager -> CreateNtupleIColumn("Event_Count");
@@ -14,11 +19,11 @@ MyRunAction::MyRunAction()
         analysisManager -> CreateNtupleDColumn("Y_axis");
         analysisManager -> CreateNtupleDColumn("Z_axis");
         analysisManager -> CreateNtupleDColumn("Photons'_Wavelengths_nm");
-        analysisManager -> CreateNtupleDColumn("Energy_Deposition_keV");
+        analysisManager -> CreateNtupleDColumn(dataTitle);
         analysisManager -> FinishNtuple(0);
     }
 
-    if (arguments == 1 || arguments == 3)
+    if (arguments == 1 || arguments == 2)
     {
         analysisManager -> CreateNtuple("Hits", "Hits");
         analysisManager -> CreateNtupleIColumn("Event_Count");
@@ -28,7 +33,7 @@ MyRunAction::MyRunAction()
         analysisManager -> FinishNtuple(1);
     }
 
-    if (arguments == 2 || arguments == 4)
+    if (arguments == 3)
     {
         analysisManager -> CreateNtuple("Transportation", "Transportation");
         analysisManager -> CreateNtupleDColumn("Mass_Attenuation");

@@ -42,16 +42,16 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
         virtual G4VPhysicalVolume * Construct();
 
         G4Material * GetMaterial() const {return materialTarget;}
-	    G4double GetThickness() const {return thicknessTarget;}
+	    G4double GetThickness() const {return target_Thickness;}
     
     private:
 
         virtual void ConstructSDandField();
         void DefineMaterials();
         
-        G4int nColumns, nRows, numPores; 
+        G4int DetColumnNum, DetRowNum, numPores; 
         G4GenericMessenger * fDetectorMessenger;  
-        G4double thicknessTarget, innerBoneRadius, outerBoneRadius, boneHeight, poreRadius, xWorld, yWorld, zWorld;
+        G4double target_Thickness, innerBoneRadius, outerBoneRadius, boneHeight, poreRadius, xWorld, yWorld, zWorld;
         G4bool isArm, isBone, isOsBone, isPlacas, isBoneDivided, check_Overlaps;
 
         G4Box    * solidWorld, * solidDetector, * solidRadiator;

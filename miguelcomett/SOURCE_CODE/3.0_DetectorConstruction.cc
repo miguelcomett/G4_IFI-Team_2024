@@ -3,13 +3,12 @@
 MyDetectorConstruction::MyDetectorConstruction()
 {
     fDetectorMessenger = new G4GenericMessenger(this, "/myDetector/", "Detector Construction");
-    fDetectorMessenger -> DeclareProperty("nColumns", nColumns, "Number of columns");
-    fDetectorMessenger -> DeclareProperty("nRows", nRows, "Number of rows");
-    fDetectorMessenger -> DeclareProperty("ThicknessTarget", thicknessTarget, "Thickness of the target");
+    fDetectorMessenger -> DeclareProperty("nColumns", DetColumnNum, "Number of columns");
+    fDetectorMessenger -> DeclareProperty("nRows", DetRowNum, "Number of rows");
+    fDetectorMessenger -> DeclareProperty("ThicknessTarget", target_Thickness, "Thickness of the target");
 
-    nColumns = 10;
-    nRows    = 10;
-    thicknessTarget = 80 * mm; 
+    DetColumnNum = 10, DetRowNum = 10;
+    target_Thickness = 80 * mm; 
     
     boneHeight = 60 * mm;
     innerBoneRadius = 0.0;
@@ -34,9 +33,7 @@ G4VPhysicalVolume * MyDetectorConstruction::Construct()
 
     // Construct the World Volume =====================================================================================
     
-    xWorld = 0.5*m;
-    yWorld = 0.5*m;
-    zWorld = 0.5*m;
+    xWorld = 0.5*m, yWorld = 0.5*m, zWorld = 0.5*m;
 
     solidWorld = new G4Box("SolidWorld", xWorld, yWorld, zWorld);
     logicWorld = new G4LogicalVolume(solidWorld, worldMaterial, "LogicalWorld");
@@ -50,7 +47,7 @@ G4VPhysicalVolume * MyDetectorConstruction::Construct()
     else
     { 
         //radiator 
-        solidRadiator = new G4Box("solidRadiator", 0.05*m, 0.05*m, thicknessTarget/2);
+        solidRadiator = new G4Box("solidRadiator", 0.05*m, 0.05*m, target_Thickness/2);
         logicRadiator = new G4LogicalVolume(solidRadiator, materialTarget, "logicalRadiator");
         physicalRadiator = new G4PVPlacement(0, G4ThreeVector(0.0, 0.0, 0.25*m), logicRadiator, "PhysicalRadiator", logicWorld, false, 0, true);
         fScoringVolume = logicRadiator;
@@ -58,14 +55,14 @@ G4VPhysicalVolume * MyDetectorConstruction::Construct()
 
     // Construct the Detector ========================================================================================
 
-    solidDetector = new G4Box("solidDetector", xWorld/nRows, yWorld/nColumns, 0.01*m);
+    solidDetector = new G4Box("solidDetector", xWorld/DetRowNum, yWorld/DetColumnNum, 0.01*m);
     logicDetector = new G4LogicalVolume(solidDetector, Silicon, "logicalDetector");
 
-    for(G4int i = 0; i < nRows; i++){
-        for (G4int j = 0; j < nColumns; j++){
+    for(G4int i = 0; i < DetRowNum; i++){
+        for (G4int j = 0; j < DetColumnNum; j++){
             
-            physicalDetector = new G4PVPlacement(0, G4ThreeVector(-0.5*m + (i+0.5)*m/nRows, -0.5*m + (j+0.5)*m/nColumns, 0.49*m), 
-                                logicDetector, "physicalDetector", logicWorld, false, j + i*nColumns, check_Overlaps);
+            physicalDetector = new G4PVPlacement(0, G4ThreeVector(-0.5*m + (i+0.5)*m/DetRowNum, -0.5*m + (j+0.5)*m/DetColumnNum, 0.49*m), 
+                                logicDetector, "physicalDetector", logicWorld, false, j + i*DetColumnNum, check_Overlaps);
         }
     }
     

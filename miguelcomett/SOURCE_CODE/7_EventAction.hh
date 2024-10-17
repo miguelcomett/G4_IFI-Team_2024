@@ -19,11 +19,9 @@ class MyEventAction : public G4UserEventAction
         virtual void EndOfEventAction  (const G4Event *);
 
         void AddEDep(G4double EDep);
-        void AddEnergy(G4double Energy);
 
     private:
         G4double fEDep;
-        G4double fEnergy;
 };
 
 #endif

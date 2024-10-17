@@ -7,7 +7,7 @@ MySteppingAction::~MySteppingAction() {}
 
 void MySteppingAction::UserSteppingAction(const G4Step * step)
 {
-    if (arguments == 1 || arguments == 2)
+    if (arguments == 1 || arguments == 2 || arguments == 4)
     {
         G4LogicalVolume * Volume = step -> GetPreStepPoint() -> GetTouchableHandle() -> GetVolume() -> GetLogicalVolume();
         const MyDetectorConstruction * detectorConstruction = static_cast < const MyDetectorConstruction *> (G4RunManager::GetRunManager() -> GetUserDetectorConstruction());
@@ -29,31 +29,16 @@ void MySteppingAction::UserSteppingAction(const G4Step * step)
         G4RunManager::GetRunManager() -> AbortEvent();  // kill event after first interaction
     }
 
-    G4bool gamma = false;
     G4bool noSecondaries = false;
-    if (arguments == 4)
+    if (arguments == 4 && noSecondaries)
     {
         const std::vector<const G4Track*>* secondaries = step -> GetSecondaryInCurrentStep();
 
-        if (gamma)
+        for (const auto & secondary : * secondaries)
         {
-            for (const auto & secondary : * secondaries)
-            {        
-                if (secondary -> GetDefinition() -> GetParticleName() == "gamma")
-                { 
-                    G4Track* nonPrimaryTrack = const_cast<G4Track*>(secondary);
-                    nonPrimaryTrack -> SetTrackStatus(fStopAndKill); // Kill gamma secondaries
-                }
-            }
+            G4Track * nonPrimaryTrack = const_cast<G4Track*>(secondary);
+            nonPrimaryTrack -> SetTrackStatus(fStopAndKill);
         }
-        else
-        if (noSecondaries)
-        {
-            for (const auto & secondary : * secondaries)
-            {
-                G4Track * nonPrimaryTrack = const_cast<G4Track*>(secondary);
-                nonPrimaryTrack -> SetTrackStatus(fStopAndKill);
-            }
-        }
+
     }
 }

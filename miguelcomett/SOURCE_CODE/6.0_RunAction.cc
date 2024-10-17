@@ -4,14 +4,9 @@ extern int arguments;
 
 MyRunAction::MyRunAction()
 {
-    if (arguments == 1 || arguments == 2)
-    {dataTitle = "Energy_Deposition_keV";}
-    else if (arguments == 4)
-    {dataTitle = "Photons'_Energy_keV";}
-
     G4AnalysisManager * analysisManager = G4AnalysisManager::Instance();
 
-    if (arguments == 1 || arguments == 2 || arguments == 4)
+    if (arguments == 1 || arguments == 2)
     {
         analysisManager -> CreateNtuple("Photons", "Photons");
         analysisManager -> CreateNtupleIColumn("Event_Count");
@@ -19,18 +14,18 @@ MyRunAction::MyRunAction()
         analysisManager -> CreateNtupleDColumn("Y_axis");
         analysisManager -> CreateNtupleDColumn("Z_axis");
         analysisManager -> CreateNtupleDColumn("Photons'_Wavelengths_nm");
-        analysisManager -> CreateNtupleDColumn(dataTitle);
         analysisManager -> FinishNtuple(0);
-    }
 
-    if (arguments == 1 || arguments == 2)
-    {
+        analysisManager -> CreateNtuple("Energy", "Energy");
+        analysisManager -> CreateNtupleDColumn("Energy_Deposition_keV");
+        analysisManager -> FinishNtuple(1);
+
         analysisManager -> CreateNtuple("Hits", "Hits");
         analysisManager -> CreateNtupleIColumn("Event_Count");
         analysisManager -> CreateNtupleDColumn("X_Detectors");
         analysisManager -> CreateNtupleDColumn("Y_Detectors");
         analysisManager -> CreateNtupleDColumn("Z_Detectors");
-        analysisManager -> FinishNtuple(1);
+        analysisManager -> FinishNtuple(2);
     }
 
     if (arguments == 3)
@@ -40,6 +35,19 @@ MyRunAction::MyRunAction()
         analysisManager -> CreateNtupleDColumn("Energy_keV");
         analysisManager -> CreateNtupleDColumn("Ratio");
         analysisManager -> FinishNtuple(0);
+    }
+
+    if (arguments == 4)
+    {
+        analysisManager -> CreateNtuple("Photons", "Photons");
+        analysisManager -> CreateNtupleDColumn("X_axis");
+        analysisManager -> CreateNtupleDColumn("Y_axis");
+        analysisManager -> CreateNtupleDColumn("Photons'_Wavelengths_nm");
+        analysisManager -> FinishNtuple(0);
+
+        analysisManager -> CreateNtuple("Energy", "Energy");
+        analysisManager -> CreateNtupleDColumn("Photons'_Energy_keV");
+        analysisManager -> FinishNtuple(1);
     }
 }
 

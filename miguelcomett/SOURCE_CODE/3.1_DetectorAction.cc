@@ -15,7 +15,7 @@ G4bool MySensitiveDetector::ProcessHits(G4Step * aStep, G4TouchableHistory * ROh
     
     G4ThreeVector posPhoton = preStepPoint -> GetPosition();
     G4ThreeVector momPhoton = preStepPoint -> GetMomentum();
-    G4double energyPhoton = momPhoton.mag() / keV;
+    // G4double energyPhoton = momPhoton.mag() / keV;
     G4double Wavelength = (1.239841939 * eV / momPhoton.mag()) *  1E+03;
     
     const G4VTouchable * touchable = aStep -> GetPreStepPoint() -> GetTouchable();
@@ -25,35 +25,33 @@ G4bool MySensitiveDetector::ProcessHits(G4Step * aStep, G4TouchableHistory * ROh
 
     if (arguments >= 5) { G4cout << "Detector position: " << posDetector << G4endl; }
 
-    if (arguments == 1 || arguments == 2 || arguments == 4)
+    G4int Event = G4RunManager::GetRunManager() -> GetCurrentEvent() -> GetEventID();
+    G4AnalysisManager * analysisManager = G4AnalysisManager::Instance();
+    
+    if (arguments == 1 || arguments == 2)
     {
-        G4int Event = G4RunManager::GetRunManager() -> GetCurrentEvent() -> GetEventID();
-        G4AnalysisManager * analysisManager = G4AnalysisManager::Instance();
-
         analysisManager -> FillNtupleIColumn(0, 0, Event);
         analysisManager -> FillNtupleDColumn(0, 1, posPhoton[0]);
         analysisManager -> FillNtupleDColumn(0, 2, posPhoton[1]);
         analysisManager -> FillNtupleDColumn(0, 3, posPhoton[2]);
-        analysisManager -> FillNtupleDColumn(0, 4, Wavelength);
-    }
-
-    if ((energyPhoton > 0.1 * keV) && arguments == 4)
-    {
-        G4AnalysisManager * analysisManager = G4AnalysisManager::Instance();
-        analysisManager -> FillNtupleDColumn(0, 5, energyPhoton);
+        if (Wavelength > 0.0) 
+            analysisManager -> FillNtupleDColumn(0, 4, Wavelength);
         analysisManager -> AddNtupleRow(0);
+        
+        analysisManager -> FillNtupleIColumn(2, 0, Event);
+        analysisManager -> FillNtupleDColumn(2, 1, posDetector[0]);
+        analysisManager -> FillNtupleDColumn(2, 2, posDetector[1]);
+        analysisManager -> FillNtupleDColumn(2, 3, posDetector[2]);
+        analysisManager -> AddNtupleRow(2);
     }
 
-    if (arguments == 1 || arguments == 2) 
+    if (arguments == 4)
     {
-        G4int Event = G4RunManager::GetRunManager() -> GetCurrentEvent() -> GetEventID();
-        G4AnalysisManager * analysisManager = G4AnalysisManager::Instance();
-
-        analysisManager -> FillNtupleIColumn(1, 0, Event);
-        analysisManager -> FillNtupleDColumn(1, 1, posDetector[0]);
-        analysisManager -> FillNtupleDColumn(1, 2, posDetector[1]);
-        analysisManager -> FillNtupleDColumn(1, 3, posDetector[2]);
-        analysisManager -> AddNtupleRow(1);
+        analysisManager -> FillNtupleDColumn(0, 0, posPhoton[0]);
+        analysisManager -> FillNtupleDColumn(0, 1, posPhoton[1]);
+        if (Wavelength > 0.0) 
+            analysisManager -> FillNtupleDColumn(0, 2, Wavelength);
+        analysisManager -> AddNtupleRow(0);
     }
     
     return true;

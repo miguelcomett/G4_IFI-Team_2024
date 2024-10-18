@@ -10,6 +10,7 @@ MyDetectorConstruction::MyDetectorConstruction()
     fDetectorMessenger -> DeclareProperty("ThicknessTarget", target_Thickness, "Thickness of the target");
 
     DetColumnNum = 10, DetRowNum = 10;
+    materialTarget = Bone;
     
     boneHeight = 60 * mm;
     innerBoneRadius = 0.0;
@@ -56,7 +57,6 @@ void MyDetectorConstruction::ConstructSDandField()
 
 void MyDetectorConstruction::ConstructTarget()
 {
-    materialTarget = Wolframium;
     target_Thickness = 10 * mm; 
 
     Radiator_Position = G4ThreeVector(0.0, 0.0, 0.25*m);
@@ -146,13 +146,13 @@ void MyDetectorConstruction::ConstructArmDivided()
     osteoBone = new G4Tubs("Healty_Bone", innerBoneRadius, outerBoneRadius, boneHeight/4, 0.0, 360.0*deg);
     healthyBone = new G4Tubs("Osteo_Bone",  innerBoneRadius, outerBoneRadius, boneHeight/4, 0.0, 360.0*deg);
     
-    position_1 = G4ThreeVector(0, boneHeight/2, 0);
+    osteo_position = G4ThreeVector(0, boneHeight/2, 0);
     logicOs = new G4LogicalVolume(osteoBone, OsBone, "LogicOs");
-    physOs  = new G4PVPlacement(targetRotation, position_1, logicOs, "physOs", logicWorld, false, 0, true);
+    physOs  = new G4PVPlacement(targetRotation, osteo_position, logicOs, "physOs", logicWorld, false, 0, true);
 
-    pos_2 = G4ThreeVector(0, -boneHeight/2, 0);
+    healthy_position = G4ThreeVector(0, -boneHeight/2, 0);
     logicHealthy = new G4LogicalVolume(healthyBone, Bone, "LogiHealthy");
-    physHealthy  = new G4PVPlacement(targetRotation, pos_2, logicHealthy, "physHealthy", logicWorld, false, 0, true);
+    physHealthy  = new G4PVPlacement(targetRotation, healthy_position, logicHealthy, "physHealthy", logicWorld, false, 0, true);
 }
 
 

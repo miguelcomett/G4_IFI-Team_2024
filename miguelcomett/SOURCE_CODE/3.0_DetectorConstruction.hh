@@ -68,7 +68,7 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
         G4VPhysicalVolume * physicalWorld, * physicalRadiator, * physicalDetector, * physBone, * physArm, 
                           * physMuscle, * physGrasa, * physSkin, * physOs, * physHealthy;
                         
-        G4ThreeVector targetPos, DetectorPosition, porePosition, position_1, pos_2, Radiator_Position;
+        G4ThreeVector targetPos, DetectorPosition, porePosition, osteo_position, healthy_position, Radiator_Position;
         G4RotationMatrix * targetRotation; 
 
         G4Element  * C, * Al, * N, * O, * V, * Cd, * Te, * W;

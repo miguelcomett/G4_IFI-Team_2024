@@ -5,6 +5,366 @@
 /gun/energy 80 keV
 
 
+/det/Angle 180
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 181
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 182
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 183
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 184
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 185
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 186
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 187
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 188
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 189
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 190
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 191
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 192
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 193
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 194
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 195
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 196
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 197
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 198
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 199
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 200
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 201
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 202
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 203
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 204
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 205
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 206
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 207
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 208
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 209
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 210
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 211
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 212
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 213
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 214
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 215
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 216
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 217
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 218
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 219
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 220
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 221
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 222
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 223
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 224
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 225
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 226
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 227
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 228
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 229
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 230
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 231
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 232
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 233
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 234
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 235
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 236
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 237
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 238
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 239
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 240
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 241
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 242
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 243
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 244
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 245
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 246
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 247
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 248
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 249
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 250
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 251
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 252
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 253
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 254
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 255
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 256
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 257
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 258
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 259
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 260
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 261
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 262
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 263
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 264
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 265
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 266
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 267
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 268
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
+/det/Angle 269
+/run/reinitializeGeometry
+/run/beamOn 10000000
+
 /det/Angle 270
 /run/reinitializeGeometry
 /run/beamOn 10000000

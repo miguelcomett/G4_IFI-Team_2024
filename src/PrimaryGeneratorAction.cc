@@ -76,8 +76,8 @@ namespace G4_PCM
 		G4double meanDist = 0.5;
 		G4double stdDev = 0.5 * keV;
 		G4double Dist = G4RandGauss::shoot(meanDist, stdDev);
-		x = Dist * (2.0 * radius) - radius;
-		y = ((Dist * (2.0 * radius) - radius)-150);
+		x = G4UniformRand() * (2.0 * radius) - radius;
+		y = ((G4UniformRand() * (2.0 * radius) - radius)-150);
 		G4ThreeVector position = G4ThreeVector(x, y, z);
 	
 		fParticleGun->SetParticlePosition(position);

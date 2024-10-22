@@ -1,7 +1,0 @@
-/home/alosnamon/G4_IFI-Team_2024-RealTube/G4XRTube_vf/build/CMakeFiles/install/strip.dir
-/home/alosnamon/G4_IFI-Team_2024-RealTube/G4XRTube_vf/build/CMakeFiles/install/local.dir
-/home/alosnamon/G4_IFI-Team_2024-RealTube/G4XRTube_vf/build/CMakeFiles/install.dir
-/home/alosnamon/G4_IFI-Team_2024-RealTube/G4XRTube_vf/build/CMakeFiles/list_install_components.dir
-/home/alosnamon/G4_IFI-Team_2024-RealTube/G4XRTube_vf/build/CMakeFiles/rebuild_cache.dir
-/home/alosnamon/G4_IFI-Team_2024-RealTube/G4XRTube_vf/build/CMakeFiles/edit_cache.dir
-/home/alosnamon/G4_IFI-Team_2024-RealTube/G4XRTube_vf/build/CMakeFiles/xrayTube.dir

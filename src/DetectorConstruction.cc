@@ -429,8 +429,8 @@ namespace G4_PCM
 
         G4LogicalVolume* logicDetector = new G4LogicalVolume(
             solidDetector,
-            E_PbWO4,
-            //silicon,
+            //E_PbWO4,
+            silicon,
             "Detector");
 
         G4ThreeVector detectorPos = G4ThreeVector(0, 0, 100 * cm); // Era 20

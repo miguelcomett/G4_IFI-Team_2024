@@ -12,7 +12,7 @@ namespace G4_PCM
 {
 
 	PrimaryGeneratorAction::PrimaryGeneratorAction()
-		: fPgun(-50 * cm), fGunAngle(20), // Valor predeterminado
+		: fPgun(-5 * cm), fGunAngle(0), // Valor predeterminado
 		fMessenger(new PrimaryGeneratorMessenger(this)) // Crear el mensajero
 	{
 		// set up particle gun
@@ -20,9 +20,9 @@ namespace G4_PCM
 		fParticleGun = new G4ParticleGun(nParticles);
 
 		// define particle properties
-		const G4String& particleName = "gamma";
+		const G4String& particleName = "e-";
 
-		G4ThreeVector momentumDirection = G4ThreeVector(0, 0, 1);
+		G4ThreeVector momentumDirection = G4ThreeVector(0, 1, 0);
 
 		// default particle kinematic
 		G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
@@ -48,7 +48,7 @@ namespace G4_PCM
 		G4double radius;
 		if (fGunAngle == 0) {
 			// Si el ángulo es 0, define un diámetro de 100 mm
-			radius = 30 * cm;
+			radius = 1 * cm;
 		}
 		else {
 			// Si el ángulo no es 0, usa el diámetro por defecto
@@ -56,7 +56,7 @@ namespace G4_PCM
 		}
 
 		// Definir posición inicial de la partícula
-		G4double x, y, z = fPgun; // Establece z en -5 cm (ajusta según sea necesario)
+		G4double x, z, y = fPgun; // Establece z en -5 cm (ajusta según sea necesario)
 
 		// -------------------------------------------------------
 		// Fuente de posición (Radial o Cuadrada)
@@ -70,10 +70,14 @@ namespace G4_PCM
 
 		//Fuente cuadrada (descomentar para activar)
 		x = G4UniformRand() * (2.0 * radius) - radius;
-		y = G4UniformRand() * (2.0 * radius) - radius;
+		z = G4UniformRand() * (2.0 * radius) - radius;
+		/*x = 0;
+		z = 0;*/
 		G4ThreeVector position = G4ThreeVector(x, y, z);
 	
 		fParticleGun->SetParticlePosition(position);
+		G4ThreeVector momentumDirection = G4ThreeVector(0.0, 1.0, 0.0); // Dirección hacia el eje Y
+		fParticleGun->SetParticleMomentumDirection(momentumDirection);
 
 		// -------------------------------------------------------
 		// Dirección del haz (Cónico o Lineal)

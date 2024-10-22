@@ -1,7 +1,7 @@
 /run/initialize
 
 /Pgun/Angle 0
-/Pgun/Z -50 cm
+/Pgun/Z -20 cm
 /run/reinitializeGeometry
-/gun/energy 70 keV
-/run/beamOn 1000
+/gun/energy 140 keV
+/run/beamOn 10000000

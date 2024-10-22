@@ -37,18 +37,21 @@ namespace G4_PCM
 
         void SetTargetThickness(G4double thickness);
         void ConstructArm(); 
-	void ConstructSingleBone(); 
-	void ConstructOsBone();
-	void ConstructFilter();
-	void ConstructRealBone(); 
-	void ConstructNormalBone(); 
-	void ConstructBoneWall();
-	void ConstructArmWall();  
-    void ConstructBONE3D();
-    void ConstructSOFT3D();
-    void ConstructSOFT3Dbool();
+	    void ConstructSingleBone(); 
+	    void ConstructOsBone();
+	    void ConstructFilter();
+	    void ConstructRealBone(); 
+	    void ConstructNormalBone(); 
+	    void ConstructBoneWall();
+	    void ConstructArmWall();  
+        void ConstructBONE3D();
+        void ConstructSOFT3D();
+        void ConstructSOFT3Dbool();
+        void ConstructTungstenPlate();
+        void ConstructVacuumBox();
 
         G4LogicalVolume* GetGammaDetector() const { return fGammaDetector; }
+        G4LogicalVolume* GetBoxDestroyer() const { return fBoxDestroyer; }
 
     private:
         // Instancia para la clase STLGeometryReader
@@ -57,19 +60,20 @@ namespace G4_PCM
         STLGeometryReader* stlReader;
 
         G4LogicalVolume* fGammaDetector = nullptr;
+        G4LogicalVolume* fBoxDestroyer = nullptr;
         G4double fTargetThickness = 60 * mm; // Valor predeterminado
 
         G4UIcmdWithADoubleAndUnit* fTargetThicknessCmd;
         DetectorConstructionMessenger* fMessenger; // Pointer to the messenger
         
         G4Box *solidWorld, *solidFilter, *solidHuesoTrabecular, *solidHuesoCortical, *solidSkinP, *solidFatP, *solidMuscleP; 
-        G4LogicalVolume *logicBone, *logicMuscle, *logicGrasa, *logicSkin, *logicWorld, *logicFilter, *logicTrabecular, *logicCortical, *logicHuesoTrabecular, *logicHuesoCortical, *logicSkinP, *logicFatP, *logicMuscleP, *logicSTL, *logicSTL2, *logicSTL22;
+        G4LogicalVolume *logicBone, *logicMuscle, *logicGrasa, *logicSkin, *logicWorld, *logicFilter, *logicTrabecular, *logicCortical, *logicHuesoTrabecular, *logicHuesoCortical, *logicSkinP, *logicFatP, *logicMuscleP, *logicSTL, *logicSTL2, *logicSTL22, * logicTungstenPlate, * logicTungstenShell;
         G4VPhysicalVolume *physBone, *physMuscle, *physGrasa, *physSkin, *physWorld, *physFilter, *physTrabecular, *physCortical, *physHuesoTrabecular, *physHuesoCortical, *physSkinP, *physFatP, *physMuscleP; 
-        G4Material *bone, *vacuum, *E_PbWO4, *skin, *grasa, *muscle, *OsBone, *H, *C, *N, *O, *Mg, *P, *S, *Ca, *W, *F, *trabecularBone, *RealOsBone, *material3D, *material3Dsoft;
+        G4Material *bone, *vacuum, * vacuum1, *E_PbWO4, *skin, *grasa, *muscle, *OsBone, *H, *C, *N, *O, *Mg, *P, *S, *Ca, *W, *F, *trabecularBone, *RealOsBone, *material3D, *material3Dsoft, *tungsten, * silicon;
         G4Tubs *solidBone, *solidMuscle, *solidGrasa, *solidSkin, *solidTrabecular, *solidCortical; 
         G4bool isArm, isSingleBone, isOsBone, isFiltered, isRealisticBone, isNormalBone, isBoneWall, isRealHand, isArmWall;
         G4ThreeVector targetPos, filterPos; 
-        G4RotationMatrix *targetRotation; 
+        G4RotationMatrix *targetRotation, *plateRotation, *BoxRotation;
         G4Sphere *pore;  
         G4VSolid *porousBone; 
         G4double outerBoneRadius, detectorSizeXY, detectorSizeZ, filterThick, innerBoneRadius, r; 

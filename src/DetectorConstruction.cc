@@ -4,7 +4,7 @@ namespace G4_PCM
 {
     // Constructor
     DetectorConstruction::DetectorConstruction()
-        : fTargetThickness(50 * mm), // Valor predeterminado de grosor del objetivo
+        : fTargetThickness(10 * mm), // Valor predeterminado de grosor del objetivo 10k joya
         fMessenger(new DetectorConstructionMessenger(this)) // Crear el mensajero
     {
         // Crear una instancia de STLGeometryReader
@@ -62,7 +62,10 @@ namespace G4_PCM
         muscle = nist->FindOrBuildMaterial("G4_MUSCLE_SKELETAL_ICRP");
         skin = nist->FindOrBuildMaterial("G4_SKIN_ICRP");
         grasa = nist->FindOrBuildMaterial("G4_ADIPOSE_TISSUE_ICRP");
-        vacuum = nist->FindOrBuildMaterial("G4_AIR");
+        //vacuum = nist->FindOrBuildMaterial("G4_AIR");
+        vacuum = nist->FindOrBuildMaterial("G4_Galactic");
+        tungsten = nist->FindOrBuildMaterial("G4_W");
+        silicon = nist->FindOrBuildMaterial("G4_Si");
         
         // Material para el sólido STL
         material3D = nist->FindOrBuildMaterial("G4_B-100_BONE");
@@ -319,6 +322,50 @@ namespace G4_PCM
         }
     }
 
+    // Construir una placa de tungsteno
+    void DetectorConstruction::ConstructTungstenPlate()
+    {
+        // Dimensiones de la placa (ancho, alto, grosor)
+        G4double plateWidth = 10.0 * cm;
+        G4double plateHeight = fTargetThickness;
+        G4double plateThickness = 10.0 * cm;
+
+        // Crear la geometría de la placa (una caja)
+        G4Box* solidTungstenPlate = new G4Box("TungstenPlate", plateWidth / 2.0, plateHeight / 2.0, plateThickness / 2.0);
+
+        // Definir el volumen lógico de la placa usando el material tungsteno
+        G4LogicalVolume* logicTungstenPlate = new G4LogicalVolume(solidTungstenPlate, tungsten, "LogicTungstenPlate");
+
+        // Crear rotación en una línea (45 grados en X, 30 en Y, 60 en Z)
+        plateRotation = new G4RotationMatrix(0, -17 * deg, 0);
+
+        // Posición de la placa
+        G4ThreeVector platePosition(0, 0, 0); // Posición de la placa
+
+        // Colocar el volumen físico de la placa en el mundo lógico
+        new G4PVPlacement(plateRotation, platePosition, logicTungstenPlate, "physTungstenPlate", logicWorld, false, 0);
+    }
+
+    // Construir una caja de vacío (cubo de 5x5x5 cm)
+    void DetectorConstruction::ConstructVacuumBox()
+    {
+        G4double vacuumSize = 50.0 * cm;
+        G4Box* solidVacuumBox = new G4Box("VacuumBox", vacuumSize / 2.0, vacuumSize / 2.0, vacuumSize / 2.0);
+        G4LogicalVolume* logicVacuumBox = new G4LogicalVolume(solidVacuumBox, vacuum1, "LogicVacuumBox");
+        G4ThreeVector vacuumPosition(0, 0, 7*cm);
+        // new G4PVPlacement(0, vacuumPosition, logicVacuumBox, "physVacuumBox", logicWorld, false, 0);
+
+        G4ThreeVector vacuumPosition1(0, 0, 7*cm);
+        BoxRotation = new G4RotationMatrix(0, 0 * deg, 0);
+        G4double tungstenBoxSize = vacuumSize*1.1;
+        G4Box* solidTungstenBox = new G4Box("TungstenBox", tungstenBoxSize / 2.0, tungstenBoxSize / 2.0, tungstenBoxSize / 2.0);
+        G4SubtractionSolid* solidTungstenShell = new G4SubtractionSolid("TungstenShell", solidTungstenBox, solidVacuumBox, BoxRotation, vacuumPosition1);
+        G4LogicalVolume* logicTungstenShell = new G4LogicalVolume(solidTungstenShell, tungsten, "LogicTungstenShell");
+        new G4PVPlacement(0, vacuumPosition1, logicTungstenShell, "physTungstenShell", logicWorld, false, 0);
+    }
+
+
+
     // Método para construir el detector
     G4VPhysicalVolume* DetectorConstruction::Construct()
     {
@@ -338,6 +385,10 @@ namespace G4_PCM
             nullptr,
             false,
             0);
+
+
+        ConstructTungstenPlate();
+        ConstructVacuumBox();
 
         // Construcción del brazo
         if (isRealHand)
@@ -379,9 +430,10 @@ namespace G4_PCM
         G4LogicalVolume* logicDetector = new G4LogicalVolume(
             solidDetector,
             E_PbWO4,
+            //silicon,
             "Detector");
 
-        G4ThreeVector detectorPos = G4ThreeVector(0, 0, 20 * cm); // Era 20
+        G4ThreeVector detectorPos = G4ThreeVector(0, 0, 100 * cm); // Era 20
         G4RotationMatrix* detRotation = new G4RotationMatrix();
 
         // Colocar el detector
@@ -395,6 +447,8 @@ namespace G4_PCM
 
         // Definir este detector como el detector gamma
         fGammaDetector = logicDetector;
+        fBoxDestroyer = logicTungstenShell;
+        //fBoxDestroyer = logicWorld;
 
         return physWorld;
     }

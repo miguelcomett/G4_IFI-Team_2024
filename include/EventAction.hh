@@ -6,6 +6,7 @@
 #include "G4ThreeVector.hh"
 #include "G4UnitsTable.hh"
 #include "G4SystemOfUnits.hh"
+#include <G4Track.hh>
 
 // Forward declaration of RunAction
 namespace G4_PCM {
@@ -24,6 +25,7 @@ namespace G4_PCM {
 
         void AddEnergy(G4double energy);
         void SetPosition(G4ThreeVector pos);
+        void AddWeight(G4double weight);
 
         void Print();
 
@@ -34,6 +36,7 @@ namespace G4_PCM {
     private:
         G4double fEnergy;
         G4ThreeVector fPosition;
+        G4double fWeight;
 
         // Static variable to count the number of ntuple registrations
         static int fNtupleRegistrationCount;

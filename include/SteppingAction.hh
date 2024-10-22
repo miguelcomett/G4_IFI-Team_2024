@@ -18,6 +18,7 @@ namespace G4_PCM {
 
 	private:
 		G4LogicalVolume* fGammaDetector = nullptr;
+		G4LogicalVolume* fBoxDestroyer = nullptr;
 
 		EventAction* feventAction;
 

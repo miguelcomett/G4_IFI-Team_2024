@@ -7,6 +7,7 @@ namespace G4_PCM {
 
     EventAction::EventAction(RunAction*) {
         fEnergy = 0. / keV;
+        fWeight = 0;
     }
 
     void EventAction::BeginOfEventAction(const G4Event* anEvent) {
@@ -19,6 +20,11 @@ namespace G4_PCM {
 
     void EventAction::SetPosition(G4ThreeVector p) {
         fPosition = p;
+    }
+
+    void EventAction::AddWeight(G4double w)
+    {
+        fWeight = w;
     }
 
     void EventAction::EndOfEventAction(const G4Event* anEvent) {
@@ -34,6 +40,9 @@ namespace G4_PCM {
             man->FillNtupleDColumn(0, posYColumnId, fPosition.getY());
             man->FillNtupleDColumn(0, posZColumnId, fPosition.getZ());
             man->AddNtupleRow(0);
+            man->FillH1(0, fEnergy, fWeight);
+
+            //man->FillH1(0, fEnergy, fWeight);
 
             // Increment the registration count
             ++fNtupleRegistrationCount;

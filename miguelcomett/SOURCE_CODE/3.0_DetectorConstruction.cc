@@ -146,11 +146,11 @@ void MyDetectorConstruction::ConstructArmDivided()
     osteoBone = new G4Tubs("Healty_Bone", innerBoneRadius, outerBoneRadius, boneHeight/4, 0.0, 360.0*deg);
     healthyBone = new G4Tubs("Osteo_Bone",  innerBoneRadius, outerBoneRadius, boneHeight/4, 0.0, 360.0*deg);
     
-    osteo_position = G4ThreeVector(0, boneHeight/2, 0);
+    osteo_position = G4ThreeVector(0, boneHeight/4, 0);
     logicOs = new G4LogicalVolume(osteoBone, OsBone, "LogicOs");
     physOs  = new G4PVPlacement(targetRotation, osteo_position, logicOs, "physOs", logicWorld, false, 0, true);
 
-    healthy_position = G4ThreeVector(0, -boneHeight/2, 0);
+    healthy_position = G4ThreeVector(0, -boneHeight/4, 0);
     logicHealthy = new G4LogicalVolume(healthyBone, Bone, "LogiHealthy");
     physHealthy  = new G4PVPlacement(targetRotation, healthy_position, logicHealthy, "physHealthy", logicWorld, false, 0, true);
 }

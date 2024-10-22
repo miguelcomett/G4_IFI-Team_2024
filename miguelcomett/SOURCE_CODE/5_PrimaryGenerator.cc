@@ -20,7 +20,7 @@ MyPrimaryGenerator::~MyPrimaryGenerator() {delete fParticleGun;}
 void MyPrimaryGenerator::GeneratePrimaries(G4Event * anEvent)
 { 
     G4double x0, y0, z0;
-    G4double radius = 10.0;
+    G4double radius = 6.5;
 
     x0 = 2 * (G4UniformRand() - 0.5);
     y0 = 2 * (G4UniformRand() - 0.5);

@@ -42,7 +42,6 @@ MyRunAction::MyRunAction()
         analysisManager -> CreateNtuple("Photons", "Photons");
         analysisManager -> CreateNtupleDColumn("X_axis");
         analysisManager -> CreateNtupleDColumn("Y_axis");
-        analysisManager -> CreateNtupleDColumn("Photons'_Wavelengths_nm");
         analysisManager -> FinishNtuple(0);
 
         analysisManager -> CreateNtuple("Energy", "Energy");

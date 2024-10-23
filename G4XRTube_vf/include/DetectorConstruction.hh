@@ -42,6 +42,9 @@
 #include "G4GenericMessenger.hh"
 #include "G4SystemOfUnits.hh"
 
+#include "G4STL.hh"
+#include "STLGeometryReader.hh"
+
 class G4LogicalVolume;
 class G4Material;
 class DetectorMessenger;
@@ -66,10 +69,23 @@ public:
   G4double GetFilterThickness();
   void ConstructArm(); 
   void ConstructRealBone(); 
+  
+  void ConstructBONE3D();
+  void ConstructSOFT3D();
+  void ConstructSOFT3Dbool();
 
 private:
+// Instancia para la clase STLGeometryReader
+  G4TessellatedSolid* stlSolid;
+  G4TessellatedSolid* stlSolid2;
+  G4TessellatedSolid* stlSolid3;
+  STLGeometryReader* stlReader;
+  G4Material *material3D, *material3Dsoft;
+  G4LogicalVolume *logicSTL, *logicSTL2, *logicSTL22; 
+  
+  //Construction instances
   G4VPhysicalVolume *worldPV;
-  G4double fAnodeAngle, fFilterThickness;
+  G4double fAnodeAngle, fFilterThickness, fTargetAngle;
   G4Material *fWorldMater;
   G4Material *fAnodeMaterial;
   G4Material *fFilterMaterial;
@@ -83,6 +99,9 @@ private:
   G4RotationMatrix *targetRotation; 
 
   DetectorMessenger *fDetectorMessenger;
+  
+  //OPTIONS
+  G4bool isArm, isTorax; 
 
 private:
   G4VPhysicalVolume *ConstructVolumes();

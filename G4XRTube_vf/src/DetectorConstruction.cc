@@ -42,6 +42,7 @@
 #include "G4PVReplica.hh"
 #include "G4GlobalMagFieldMessenger.hh"
 #include "G4AutoDelete.hh"
+#include "G4SubtractionSolid.hh"
 
 #include "G4SDManager.hh"
 
@@ -70,8 +71,10 @@ DetectorConstruction::DetectorConstruction()
 {
     fAnodeAngle = 10. * deg;
     fFilterThickness = 1.3 * mm;
+    fTargetAngle = 0.; 
     DefineMaterials();
     fDetectorMessenger = new DetectorMessenger(this);
+    stlReader = new STLGeometryReader();
     
     //Create simple arm
     outerBoneRadius = 2.25 * cm; 
@@ -81,6 +84,9 @@ DetectorConstruction::DetectorConstruction()
     targetX = 0.0 * cm; 
     targetY = 0.0 * cm; 
     targetZ = -92 *cm; 
+    
+    isArm = false; 
+    isTorax = true; 
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -88,6 +94,8 @@ DetectorConstruction::DetectorConstruction()
 DetectorConstruction::~DetectorConstruction()
 {
     delete fDetectorMessenger;
+    // Liberar memori
+    delete stlReader;
 }
 
 G4VPhysicalVolume *DetectorConstruction::Construct()
@@ -140,6 +148,100 @@ void DetectorConstruction::ConstructRealBone()
 
 }
 
+
+// Método para construir mano con base en modelo STL 3D
+void DetectorConstruction::ConstructBONE3D()
+{
+//// Crear el sólido a partir del archivo STL
+    G4STL stl; 
+    stlSolid = stl.Read("C:\\Users\\conej\\Documents\\Universidad\\Geant4\\Projects\\Models2\\RIBCAGE_Real.stl");
+
+    if (stlSolid) {
+
+        G4double targetRot = fTargetAngle;
+        targetRotation = new G4RotationMatrix(0 * deg, -90 * deg, (fTargetAngle+180) * deg);
+
+    // Crear volumen lógico
+        G4LogicalVolume* logicSTL = new G4LogicalVolume(stlSolid, material3D, "STLModelLogical");
+    
+    // Colocar el modelo en el mundo
+        new G4PVPlacement(targetRotation, G4ThreeVector(targetX, targetY, targetZ), logicSTL, "STLModelPhysical", worldLV, false, 0, fCheckOverlaps);
+
+        G4cout << "Modelo bone importado exitosamente" << G4endl;
+    }
+    else {
+        G4cout << "Modelo bone no importado" << G4endl;
+    }
+}
+
+void DetectorConstruction::ConstructSOFT3D()
+{
+//// Crear el sólido a partir del archivo STL
+    G4STL stl;
+    stlSolid2 = stl.Read("C:\\Users\\conej\\Documents\\Universidad\\Geant4\\Projects\\Models2\\TORAX_Real.stl");
+
+    G4ThreeVector posXD(0 * cm, 0 * cm, 0 * cm);
+
+    if (stlSolid2) {
+
+        G4double targetRot = fTargetAngle;
+        targetRotation = new G4RotationMatrix(0 * deg, -90 * deg, (fTargetAngle+180) * deg);
+
+    // Crear volumen lógico
+        G4LogicalVolume* logicSTL2 = new G4LogicalVolume(stlSolid2, material3Dsoft, "STLModelLogical2");
+
+    // Colocar el modelo en el mundo
+        new G4PVPlacement(targetRotation, posXD, logicSTL2, "STLModelPhysical2", worldLV, false, 0, fCheckOverlaps);
+
+        G4cout << "Modelo tissue importado exitosamente" << G4endl;
+    }
+    else {
+        G4cout << "Modelo tissue no importado" << G4endl;
+    }
+}
+
+void DetectorConstruction::ConstructSOFT3Dbool()
+{
+// Crear el sólido a partir del archivo STL del modelo "tissue"
+    G4STL stl;
+    G4VSolid* stlSolid2 = stl.Read("C:\\Users\\A01067387\\Documents\\Models2\\TORAX_Real.stl");
+
+        // Crear el sólido a partir del archivo STL del modelo "bone"
+    G4VSolid* stlSolid = stl.Read("C:\\Users\\A01067387\\Documents\\Models2\\RIBCAGE_Real.stl");
+
+        // Crear el sólido a partir del archivo STL del modelo "TORAX_Real0"
+    G4VSolid* stlSolid3 = stl.Read("C:\\Users\\A01067387\\Documents\\Models2\\TORAX_Real0.stl");
+
+    if (stlSolid && stlSolid2 && stlSolid3) {
+
+            // Definir las matrices de rotación
+        G4double targetRot = fTargetAngle;
+        G4RotationMatrix* targetRotation = new G4RotationMatrix(0 * deg, -90 * deg, (fTargetAngle + 180) * deg);
+        G4RotationMatrix* targetRotation0 = new G4RotationMatrix(0 * deg, 0 * deg, 0 * deg);
+        G4RotationMatrix* targetRotation1 = new G4RotationMatrix(0 * deg, 0 * deg, 0 * deg);
+
+            // Resta el volumen "bone" del volumen "tissue"
+        G4SubtractionSolid* subtractedSolid = new G4SubtractionSolid("SoftWithBoneHole", stlSolid2, stlSolid, targetRotation0, G4ThreeVector(targetX, targetY, targetZ));
+            
+            // Resta el volumen "TORAX_Real0" del resultado anterior
+        G4SubtractionSolid* finalSubtractedSolid = new G4SubtractionSolid("SoftWithBoneAndTorax0Hole", subtractedSolid, stlSolid3, targetRotation1, G4ThreeVector(targetX, targetY, targetZ));
+
+            // Crear el volumen lógico del sólido resultante
+        G4LogicalVolume* logicFinalSubtracted = new G4LogicalVolume(finalSubtractedSolid, grasa, "STLModelLogicalFinalSubtracted");
+
+            // Definir la posición
+        G4ThreeVector posXD1(0 * cm, 0 * cm, 0 * cm);
+
+            // Colocar el sólido resultante en el mundo
+        new G4PVPlacement(targetRotation, posXD1, logicFinalSubtracted, "STLModelPhysicalFinalSubtracted", worldLV, false, 0, true);
+
+        G4cout << "Modelo tissue con huecos de bone y TORAX_Real0 importado exitosamente" << G4endl;
+    }
+    else {
+        G4cout << "Error al importar los modelos STL" << G4endl;
+    }
+}
+
 void DetectorConstruction::DefineMaterials()
 {
     // Lead material defined using NIST Manager
@@ -179,6 +281,9 @@ void DetectorConstruction::DefineMaterials()
     grasa = nistManager->FindOrBuildMaterial("G4_ADIPOSE_TISSUE_ICRP");
     trabecularBone = nistManager->FindOrBuildMaterial("G4_B-100_BONE");
     bone = nistManager->FindOrBuildMaterial("G4_BONE_CORTICAL_ICRP");
+    // Material para el sólido STL
+    material3D = nistManager->FindOrBuildMaterial("G4_B-100_BONE");
+    material3Dsoft = nistManager->FindOrBuildMaterial("G4_TISSUE_SOFT_ICRP");
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -257,8 +362,17 @@ G4VPhysicalVolume *DetectorConstruction::ConstructVolumes()
                       false,                    // no boolean operation
                       0,                        // copy number
                       fCheckOverlaps);          // overlaps checking
-    //Construct the arm
-    ConstructArm(); 
+    //Check options
+    //Construct arm
+    if (isArm)
+    {
+    	ConstructArm();
+    } 
+    else if (isTorax)
+    {
+        ConstructSOFT3Dbool();
+        ConstructBONE3D();
+    }
     // Anode: ...
     // anode parameters:
     //

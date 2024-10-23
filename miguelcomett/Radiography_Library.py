@@ -369,7 +369,7 @@ def Fixed_CNR(image_path, save_as, coords_signal, coords_bckgrnd):
 
     if save_as != '': plt.savefig('RESULTS/' + save_as + '.png', bbox_inches = 'tight', dpi = 900)
 
-# 6.0 ========================================================================================================================================================
+# 6.1 ========================================================================================================================================================
 
 def Denoise_EdgeDetection(path, isArray, sigma_color, sigma_spatial):
 
@@ -403,6 +403,83 @@ def Denoise_EdgeDetection(path, isArray, sigma_color, sigma_spatial):
     plt.show()
 
     return denoised_image
+
+# 6.2 ========================================================================================================================================================
+
+def Denoise(array, isHann, alpha, save_as, isCrossSection):
+    
+    import numpy as np
+    from scipy.fft import fft2, fftshift, ifft2
+    import matplotlib.pyplot as plt
+    from scipy import signal
+
+    image = array
+
+    fft_image = fft2(image)
+    fft_image = fftshift(fft_image)
+
+    rows, cols = image.shape
+
+    if isHann == True:
+    
+        l = rows * alpha
+        a = np.hanning(l)
+        b = np.hanning(l)
+
+        padding_size = rows - len(a)
+        left_padding = padding_size // 2
+        right_padding = padding_size - left_padding
+        a = np.pad(a, (left_padding, right_padding), mode='constant')
+
+        padding_size = cols - len(b)
+        left_padding = padding_size // 2
+        right_padding = padding_size - left_padding
+        b = np.pad(b, (left_padding, right_padding), mode='constant')
+
+        window = np.outer(a, b)
+
+    else:
+
+        a = signal.windows.tukey(rows, alpha)
+        b = signal.windows.tukey(rows, alpha)
+        window = np.outer(a, b)
+
+    fft_image_2 = fft_image * (window)
+    fft_image = fftshift(fft_image_2)
+    fft_image = (ifft2(fft_image))
+    fft_image = (np.abs(fft_image))
+
+    if isCrossSection == True:
+        
+        plt.figure(figsize = (7, 3))
+        plt.subplot(1, 2, 1)
+        plt.plot(a)
+        plt.title('Window')
+        plt.subplot(1, 2, 2)
+        plt.plot(np.abs((fft_image_2[:][rows//2])))
+        plt.title('F. Transform Slice')
+
+        plt.figure(figsize = (7, 3))
+        plt.subplot(1, 2, 1)
+        plt.plot(image[:][rows//2])
+        plt.title('Original Slice')
+        plt.subplot(1, 2, 2)
+        plt.plot(np.abs(fft_image[:][rows//2]))
+        plt.title('Denoised Slice')
+
+    plt.figure(figsize = (8, 4))
+    plt.subplot(1, 2, 1)
+    plt.title('Original Image')
+    plt.imshow(image, cmap = 'gray')
+    plt.axis('off')
+    plt.subplot(1, 2, 2)
+    plt.title('Filtered Image')
+    plt.imshow(fft_image, cmap = 'gray')
+    plt.axis('off')
+    if save_as != '': plt.savefig('Results/' + save_as + '.png', dpi = 900)
+    plt.show()
+
+    return fft_image
 
 # 7.0 ========================================================================================================================================================
 

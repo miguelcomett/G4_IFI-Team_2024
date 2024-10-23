@@ -420,4 +420,22 @@ def BisectionFixedEnergyStep(directory, mac_filename, root_filename, outputcsv_n
     results_df = pd.DataFrame(results)
     results_df.to_csv(output_file, index=False)
 
-# 1.1 ========================================================================================================================================================
+# 4.1 ========================================================================================================================================================
+
+def PlotsFormatting():
+    
+    import pandas as pd
+    import matplotlib.pyplot as plt
+    
+    SIZE_DEFAULT = 12
+    SIZE_LARGE = 14
+
+    plt.rc("font", family = 'Century Expanded')  
+    plt.rc("font", weight = "normal")  
+    plt.rc("font",  size      = SIZE_DEFAULT)  
+    plt.rc("axes",  titlesize = SIZE_LARGE  )  
+    plt.rc("axes",  labelsize = SIZE_DEFAULT)  
+    plt.rc("xtick", labelsize = SIZE_DEFAULT)  
+    plt.rc("ytick", labelsize = SIZE_DEFAULT)  
+
+# end ========================================================================================================================================================

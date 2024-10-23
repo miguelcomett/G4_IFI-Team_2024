@@ -128,68 +128,137 @@ def Heatmap_from_Dask(x_data, y_data, size, log_factor, x_shift, y_shift, save_a
 
     return normal_map, x_edges, y_edges
 
-# 4.0 ========================================================================================================================================================
+# 4.1 ========================================================================================================================================================
 
+def LoadRoots(directory, rootnames, tree_name, x_branch, y_branch):
 
+    x_1, y_1 = Root_to_Dask(directory, rootnames[0], tree_name, x_branch, y_branch)
+    x_2, y_2 = Root_to_Dask(directory, rootnames[1], tree_name, x_branch, y_branch)
+    print("Dataframes created")
 
-# 6.1 ========================================================================================================================================================
+    return x_1, y_1, x_2, y_2
+
+def IsolateTissues(low_energy_img, high_energy_img, save_as):
+
+    from scipy.ndimage import gaussian_filter
+    import matplotlib.pyplot as plt
+
+    U_b_l = 0.7519 # mu1
+    U_b_h = 0.3012 # mu2
+    U_t_l = 0.26 # mu3
+    U_t_h = 0.18 # mu4
+
+    SLS_Bone = ( (U_t_h/U_t_l) * low_energy_img) - high_energy_img
+    SLS_Tissue = high_energy_img - ( low_energy_img * (U_b_h/U_b_l) )
+
+    sigma = 10
+    high_energy_filter = gaussian_filter(high_energy_img, sigma = sigma)
+    SSH_Bone = ( (U_t_h/U_t_l) * low_energy_img) - high_energy_filter
+    SSH_Tissue = high_energy_filter - ( low_energy_img * (U_b_h/U_b_l) )
+
+    sigma = 100
+    wn = 1
+    tissue_filter = 1 - (gaussian_filter(SSH_Tissue, sigma = sigma) * wn)
+    ACNR_Bone = SSH_Bone - (tissue_filter)
+    # acnr_bone[acnr_bone < 0.0] = 0
+
+    fig, ax = plt.subplots(1, 4, figsize=(12, 6))
+    img1 = ax[0].imshow(low_energy_img, cmap='gray')
+    ax[0].set_title("Low Energy")
+    img2 = ax[1].imshow(high_energy_img, cmap='gray')
+    ax[1].set_title("High Energy")
+    img7 = ax[2].imshow(SSH_Bone, cmap='gray')
+    ax[2].set_title("Bone [SSH]")
+    img8 = ax[3].imshow(ACNR_Bone, cmap='gray')
+    ax[3].set_title("Bone [ACNR + SSH]")
+    plt.tight_layout()
+    if save_as != '': plt.savefig('Results/' + save_as + '.png', bbox_inches = 'tight', dpi = 900)
+    plt.show()
+
+    # ACNR 2____________
+    # w = U_t_h / U_t_l
+    # wc = U_b_h / U_b_l
+    # wn = 0.1
+    # sigma = 15
+    # low  = - (wn * wc * gaussian_filter(low_energy_img, sigma = sigma) ) + (w * low_energy_img)
+    # high = - high_energy_img + ( wn * gaussian_filter(high_energy_img, sigma = sigma))
+    # acnr2 = low + high
+
+    return SSH_Bone, ACNR_Bone
+
+def BMO(SLS_Bone, SLS_Tissue):
+
+    import matplotlib.pyplot as plt
+
+    U_b_l = 0.7519 # mu1
+    U_b_h = 0.3012 # mu2
+    U_t_l = 0.26 # mu3
+    U_t_h = 0.18 # mu4
+
+    Thick_cons_bone = (U_t_l) / ( (U_t_h * U_b_l) - (U_t_l * U_b_h) )
+    thickness_bone = Thick_cons_bone * SLS_Bone
+    Thick_cons_tissue = (U_t_l) / ( (U_t_l * U_b_h) - (U_t_h * U_b_l) )
+    thickness_tissue = Thick_cons_tissue * SLS_Tissue
+
+    plt.figure(figsize = (12, 3))
+    plt.subplot(1, 3, 1)
+    plt.imshow(thickness_bone)
+    plt.colorbar()
+    plt.subplot(1, 3, 2)
+    plt.plot(thickness_bone[120,:])
+    plt.subplot(1, 3, 3)
+    plt.plot(thickness_bone[:,120])
+    plt.show()
+
+    return thickness_bone
+
+# 5.1 ========================================================================================================================================================
 
 def Interactive_CNR(cropped_image):
-    
+
     import numpy as np
     import matplotlib.pyplot as plt
-    import numpy as np
-    from PIL import Image
-    %matplotlib widget
-    %matplotlib tk
 
     data = np.array(cropped_image)
-
     fig, ax = plt.subplots()
-    heatmap = ax.imshow(data, cmap = 'gray')
+    heatmap = ax.imshow(data, cmap='gray')
 
     rectangles = []
-    start_pos = None
-    signal_avg = 0
-    background_avg = 0
-    background_std = 0
+    start_pos = [None]  # Using a list to store coordinates
+    signal_avg = [0]
+    background_avg = [0]
+    background_std = [0]
 
     def on_press(event):
-
-        global start_pos, rectangles
         if event.inaxes != ax: return
-        start_pos = (event.xdata, event.ydata)
-        rect = plt.Rectangle(start_pos, 1, 1, fill = False, color = 'yellow', lw = 2)
+        start_pos[0] = (event.xdata, event.ydata)
+        rect = plt.Rectangle(start_pos[0], 1, 1, fill=False, color='blue', lw=1)
         ax.add_patch(rect)
         rectangles.append(rect)
-        
+
         if len(rectangles) > 2:
             first_rect = rectangles.pop(0)
             second_rect = rectangles.pop(0)
             first_rect.remove()
             second_rect.remove()
-        
+
         fig.canvas.draw()
 
     def on_motion(event):
-
-        global start_pos
-        if start_pos is None or event.inaxes != ax: return
-        width = event.xdata - start_pos[0]
-        height = event.ydata - start_pos[1]
-        rect = rectangles[-1]  # Get the most recent rectangle
+        if start_pos[0] is None or event.inaxes != ax: return
+        width = event.xdata - start_pos[0][0]
+        height = event.ydata - start_pos[0][1]
+        rect = rectangles[-1]
         rect.set_width(width)
         rect.set_height(height)
         fig.canvas.draw()
 
     def on_release(event):
-
-        global start_pos, signal_avg, background_avg, background_std
-        if start_pos is None or event.inaxes != ax: return
+        if start_pos[0] is None or event.inaxes != ax: return
         end_pos = (event.xdata, event.ydata)
 
-        x1 = start_pos[0]
-        y1 = start_pos[1]
+        x1 = start_pos[0][0]
+        y1 = start_pos[0][1]
         x2 = end_pos[0]
         y2 = end_pos[1]
 
@@ -201,8 +270,8 @@ def Interactive_CNR(cropped_image):
                 if y2 > y1: signal = data[round(y1):round(y2), round(x2):round(x1)]
                 else:       signal = data[round(y2):round(y1), round(x2):round(x1)]
 
-            signal_avg = np.average(signal)
-            print("Signal avg: "+str(signal_avg))
+            signal_avg[0] = np.average(signal)
+            print("Signal avg: "+str(signal_avg[0]))
         else:
             if x2 > x1:
                 if y2 > y1: background = data[round(y1):round(y2), round(x1):round(x2)]
@@ -211,14 +280,14 @@ def Interactive_CNR(cropped_image):
                 if y2 > y1: background = data[round(y1):round(y2), round(x2):round(x1)]
                 else:       background = data[round(y2):round(y1), round(x2):round(x1)]
 
-            background_avg = np.average(background)
-            background_std = np.std(background)
-            print("Background avg: "+str(background_avg))
-            print("Background std dev: "+str(background_std))
-            cnr = (signal_avg-background_avg)/background_std
-            print("CNR: "+str(cnr)+'\n')
+            background_avg[0] = np.average(background)
+            background_std[0] = np.std(background)
+            print("Background avg: "+str(background_avg[0]))
+            print("Background std dev: "+str(background_std[0]))
+            cnr = (signal_avg[0] - background_avg[0]) / background_std[0]
+            print("CNR: " + str(cnr) + '\n')
 
-        start_pos = None
+        start_pos[0] = None
 
     fig.canvas.mpl_connect('button_press_event', on_press)
     fig.canvas.mpl_connect('motion_notify_event', on_motion)
@@ -226,7 +295,7 @@ def Interactive_CNR(cropped_image):
 
     plt.show()
 
-# 6.2 ========================================================================================================================================================
+# 5.2 ========================================================================================================================================================
 
 def Fixed_CNR(image_path, save_as, coords_signal, coords_bckgrnd):
     
@@ -300,25 +369,21 @@ def Fixed_CNR(image_path, save_as, coords_signal, coords_bckgrnd):
 
     if save_as != '': plt.savefig('RESULTS/' + save_as + '.png', bbox_inches = 'tight', dpi = 900)
 
-# 7.0 ========================================================================================================================================================
+# 6.0 ========================================================================================================================================================
 
-def Denoise_EdgeDetection(array_name, array, image_name, image):
+def Denoise_EdgeDetection(path, isArray, sigma_color, sigma_spatial):
 
     from skimage.restoration import denoise_bilateral
     import matplotlib.pyplot as plt
     from PIL import Image
     import numpy as np
     
-    if array & image == True:
-        print('Choose one option')
+    if isArray == True:
+        original_image = np.array(path)
     else:
-        if array == True:
-            original_image = Image.open(directory + image_name)
-        else:
-            if image == True:
-                original_image = np.array(original_image)
+        original_image = Image.open(path)
         
-    denoised_image = denoise_bilateral(original_image, sigma_color = 0.05, sigma_spatial = 20, channel_axis = None)
+    denoised_image = denoise_bilateral(original_image, sigma_color = sigma_color, sigma_spatial = sigma_spatial, channel_axis = None)
 
     save_as = ''
 
@@ -326,19 +391,20 @@ def Denoise_EdgeDetection(array_name, array, image_name, image):
 
     plt.subplot(1, 2, 1)
     plt.imshow(denoised_image, cmap = 'gray')
-    # plt.title('Denoised Image')
+    plt.title('Denoised Image')
     plt.axis('off')
     if save_as != '': plt.savefig('RESULTS/' + save_as + '.png', bbox_inches = 'tight', dpi = 900)
 
     plt.subplot(1, 2, 2)
     plt.imshow(original_image, cmap = 'gray')
-    # plt.title('Original Image')
+    plt.title('Original Image')
     plt.axis('off')
 
     plt.show()
 
-# 8.0 ========================================================================================================================================================
+    return denoised_image
 
+# 7.0 ========================================================================================================================================================
 
 def Plotly_Heatmap(array, xlim, ylim, title, x_label, y_label, annotation, width, height, save_as):
 

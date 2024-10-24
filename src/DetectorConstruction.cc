@@ -4,7 +4,7 @@ namespace G4_PCM
 {
     // Constructor
     DetectorConstruction::DetectorConstruction()
-        : fTargetThickness(50 * mm), fTargetAngle(0), // Valor predeterminado de grosor del objetivo
+        : fTargetThickness(50 * mm), fTargetAngle(90), // Valor predeterminado de grosor del objetivo
         fMessenger(new DetectorConstructionMessenger(this)) // Crear el mensajero
     {
         // Crear una instancia de STLGeometryReader
@@ -257,7 +257,7 @@ namespace G4_PCM
     {
         //// Crear el sólido a partir del archivo STL
         G4STL stl; 
-        stlSolid = stl.Read("C:\\Users\\conej\\Documents\\Universidad\\Geant4\\Projects\\Models2\\RIBCAGE_Real.stl");
+        stlSolid = stl.Read("C:\\Users\\A01067387\\Documents\\Models2\\RIBCAGE_Real.stl");
 
         if (stlSolid) {
 
@@ -307,7 +307,7 @@ namespace G4_PCM
     {
         //// Crear el sólido a partir del archivo STL
         G4STL stl;
-        stlSolid2 = stl.Read("C:\\Users\\conej\\Documents\\Universidad\\Geant4\\Projects\\Models2\\TORAX_Real.stl");
+        stlSolid2 = stl.Read("C:\\Users\\A01067387\\Documents\\Models2\\TORAX_Real.stl");
 
         G4ThreeVector posXD(0 * cm, 0 * cm, 0 * cm);
 
@@ -333,26 +333,27 @@ namespace G4_PCM
     {
         // Crear el sólido a partir del archivo STL del modelo "tissue"
         G4STL stl;
-        G4VSolid* stlSolid2 = stl.Read("C:\\Users\\conej\\Documents\\Universidad\\Geant4\\Projects\\Models2\\TORAX_Real.stl");
+        G4VSolid* stlSolid2 = stl.Read("C:\\Users\\A01067387\\Documents\\Models2\\TORAX_Real.stl");
 
         // Crear el sólido a partir del archivo STL del modelo "bone"
-        G4VSolid* stlSolid = stl.Read("C:\\Users\\conej\\Documents\\Universidad\\Geant4\\Projects\\Models2\\RIBCAGE_Real.stl");
+        G4VSolid* stlSolid = stl.Read("C:\\Users\\A01067387\\Documents\\Models2\\RIBCAGE_Real.stl");
 
         // Crear el sólido a partir del archivo STL del modelo "TORAX_Real0"
-        G4VSolid* stlSolid3 = stl.Read("C:\\Users\\conej\\Documents\\Universidad\\Geant4\\Projects\\Models2\\TORAX_Real0.stl");
+        G4VSolid* stlSolid3 = stl.Read("C:\\Users\\A01067387\\Documents\\Models2\\TORAX_Real0.stl");
 
         if (stlSolid && stlSolid2 && stlSolid3) {
 
             // Definir las matrices de rotación
             G4double targetRot = fTargetAngle;
             G4RotationMatrix* targetRotation = new G4RotationMatrix(0 * deg, -90 * deg, (fTargetAngle + 180) * deg);
-            G4RotationMatrix* targetRotation0 = new G4RotationMatrix(0 * deg, 0 * deg, fTargetAngle * deg);
+            G4RotationMatrix* targetRotation0 = new G4RotationMatrix(0 * deg, 0 * deg, 0 * deg);
+            G4RotationMatrix* targetRotation1 = new G4RotationMatrix(0 * deg, 0 * deg, 0 * deg);
 
             // Resta el volumen "bone" del volumen "tissue"
             G4SubtractionSolid* subtractedSolid = new G4SubtractionSolid("SoftWithBoneHole", stlSolid2, stlSolid, targetRotation0, targetPos);
-
+            
             // Resta el volumen "TORAX_Real0" del resultado anterior
-            G4SubtractionSolid* finalSubtractedSolid = new G4SubtractionSolid("SoftWithBoneAndTorax0Hole", subtractedSolid, stlSolid3, targetRotation0, targetPos);
+            G4SubtractionSolid* finalSubtractedSolid = new G4SubtractionSolid("SoftWithBoneAndTorax0Hole", subtractedSolid, stlSolid3, targetRotation1, targetPos);
 
             // Crear el volumen lógico del sólido resultante
             G4LogicalVolume* logicFinalSubtracted = new G4LogicalVolume(finalSubtractedSolid, grasa, "STLModelLogicalFinalSubtracted");
@@ -433,7 +434,7 @@ namespace G4_PCM
             E_PbWO4,
             "Detector");
 
-        G4ThreeVector detectorPos = G4ThreeVector(0, 0, 30 * cm); // Era 20
+        G4ThreeVector detectorPos = G4ThreeVector(0, 0, 50 * cm); // Era 20
         G4RotationMatrix* detRotation = new G4RotationMatrix();
 
         // Colocar el detector

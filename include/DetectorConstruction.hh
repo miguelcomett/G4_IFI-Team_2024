@@ -76,7 +76,11 @@ namespace G4_PCM
         G4Tubs *solidBone, *solidMuscle, *solidGrasa, *solidSkin, *solidTrabecular, *solidCortical; 
         G4bool isArm, isSingleBone, isOsBone, isFiltered, isRealisticBone, isNormalBone, isBoneWall, isRealHand, isArmWall;
         G4ThreeVector targetPos, filterPos; 
+<<<<<<< HEAD
         G4RotationMatrix *targetRotation, * targetRotation0, * targetRotationOR;
+=======
+        G4RotationMatrix *targetRotation, *targetRotation0, *targetRotation1;
+>>>>>>> ccd3b7f52fe913705310b65f975b45d8b3555c58
         G4Sphere *pore;  
         G4VSolid *porousBone; 
         G4double outerBoneRadius, detectorSizeXY, detectorSizeZ, filterThick, innerBoneRadius, r; 

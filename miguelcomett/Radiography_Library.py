@@ -114,9 +114,9 @@ def Heatmap_from_Dask(x_data, y_data, size, log_factor, x_shift, y_shift, save_a
     x_edges = x_edges.compute()  
     y_edges = y_edges.compute()
 
-    maxi = np.max(heatmap) 
-    normal_map = np.log( maxi / (heatmap + log_factor) )
-    # normal_map = heatmap
+    maxi = np.max(heatmap)
+    heatmap[heatmap == 0] = log_factor
+    normal_map = np.log(maxi / heatmap)
 
     plt.figure(figsize = (14, 4))
     plt.subplot(1, 3, 1)
@@ -140,7 +140,7 @@ def LoadRoots(directory, rootnames, tree_name, x_branch, y_branch):
 
     return x_1, y_1, x_2, y_2
 
-def IsolateTissues(low_energy_img, high_energy_img, save_as):
+def IsolateTissues(low_energy_img, high_energy_img, save_in, save_as_1, save_as_2, save_as_3, save_as_4):
 
     from scipy.ndimage import gaussian_filter
     import matplotlib.pyplot as plt
@@ -164,18 +164,44 @@ def IsolateTissues(low_energy_img, high_energy_img, save_as):
     ACNR_Bone = SSH_Bone - (tissue_filter)
     # acnr_bone[acnr_bone < 0.0] = 0
 
-    fig, ax = plt.subplots(1, 4, figsize=(12, 6))
-    img1 = ax[0].imshow(low_energy_img, cmap='gray')
-    ax[0].set_title("Low Energy")
-    img2 = ax[1].imshow(high_energy_img, cmap='gray')
-    ax[1].set_title("High Energy")
-    img7 = ax[2].imshow(SSH_Bone, cmap='gray')
-    ax[2].set_title("Bone [SSH]")
-    img8 = ax[3].imshow(ACNR_Bone, cmap='gray')
-    ax[3].set_title("Bone [ACNR + SSH]")
-    plt.tight_layout()
-    if save_as != '': plt.savefig('Results/' + save_as + '.png', bbox_inches = 'tight', dpi = 900)
-    plt.show()
+    plt.imshow(low_energy_img, cmap='gray')
+    plt.axis('off')
+    if save_as_1 != '': plt.savefig(save_in + save_as_1 + 'png', bbox_inches='tight', dpi=900)
+    plt.close()
+    plt.imshow(high_energy_img, cmap='gray')
+    plt.axis('off')
+    if save_as_2 != '': plt.savefig(save_in + save_as_2 + 'png', bbox_inches='tight', dpi=900)
+    plt.close()
+    plt.imshow(SSH_Bone, cmap='gray')
+    plt.axis('off')
+    if save_as_3 != '': plt.savefig(save_in + save_as_3 + 'png', bbox_inches='tight', dpi=900)
+    plt.close()
+    plt.imshow(ACNR_Bone, cmap='gray')
+    plt.axis('off')
+    if save_as_4 != '': plt.savefig(save_in + save_as_4 + 'png', bbox_inches='tight', dpi=900)
+    plt.close()
+
+    plt.figure(figsize=(12, 6))
+
+    plt.subplot(1, 4, 1)
+    plt.imshow(low_energy_img, cmap='gray')
+    plt.axis('off')
+    plt.title("Low Energy")
+
+    plt.subplot(1, 4, 2)
+    plt.imshow(high_energy_img, cmap='gray')
+    plt.axis('off')
+    plt.title("High Energy")
+
+    plt.subplot(1, 4, 3)
+    plt.imshow(SSH_Bone, cmap='gray')
+    plt.axis('off')
+    plt.title("Bone [SSH]")
+
+    plt.subplot(1, 4, 4)
+    plt.imshow(ACNR_Bone, cmap='gray')
+    plt.axis('off')
+    plt.title("Bone [ACNR + SSH]")
 
     # ACNR 2____________
     # w = U_t_h / U_t_l

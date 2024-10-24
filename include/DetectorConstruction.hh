@@ -49,6 +49,7 @@ namespace G4_PCM
         void ConstructBONE3D();
         void ConstructSOFT3D();
         void ConstructSOFT3Dbool();
+        void ConstructORGANS();
 
         G4LogicalVolume* GetGammaDetector() const { return fGammaDetector; }
 
@@ -57,6 +58,7 @@ namespace G4_PCM
         G4TessellatedSolid* stlSolid;
         G4TessellatedSolid* stlSolid2;
         G4TessellatedSolid* stlSolid3;
+        G4TessellatedSolid* stlSolidOR;
         STLGeometryReader* stlReader;
 
         G4LogicalVolume* fGammaDetector = nullptr;
@@ -74,7 +76,7 @@ namespace G4_PCM
         G4Tubs *solidBone, *solidMuscle, *solidGrasa, *solidSkin, *solidTrabecular, *solidCortical; 
         G4bool isArm, isSingleBone, isOsBone, isFiltered, isRealisticBone, isNormalBone, isBoneWall, isRealHand, isArmWall;
         G4ThreeVector targetPos, filterPos; 
-        G4RotationMatrix *targetRotation, * targetRotation0;
+        G4RotationMatrix *targetRotation, * targetRotation0, * targetRotationOR;
         G4Sphere *pore;  
         G4VSolid *porousBone; 
         G4double outerBoneRadius, detectorSizeXY, detectorSizeZ, filterThick, innerBoneRadius, r; 

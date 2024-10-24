@@ -277,6 +277,32 @@ namespace G4_PCM
         }
     }
 
+    // Método para construir órgano con base en modelo STL 3D
+    void DetectorConstruction::ConstructORGANS()
+    {
+        //// Crear el sólido a partir del archivo STL
+        G4STL stl;
+        stlSolidOR = stl.Read("C:\\Users\\conej\\Documents\\Universidad\\Geant4\\Projects\\Models2\\LUNGS.stl");
+
+        if (stlSolidOR) {
+
+            G4double targetRot = fTargetAngle;
+            targetRotationOR = new G4RotationMatrix(0 * deg, -90 * deg, (fTargetAngle + 180) * deg);
+
+            // Crear volumen lógico
+            G4LogicalVolume* logicSTLOR = new G4LogicalVolume(stlSolidOR, Ca, "STLModelLogicalOR");
+
+            // Colocar el modelo en el mundo
+            new G4PVPlacement(targetRotationOR, targetPos, logicSTLOR, "STLModelPhysicalOR", logicWorld, false, 0, true);
+
+            G4cout << "Modelo LUNGS importado exitosamente" << G4endl;
+        }
+        else {
+            G4cout << "Modelo LUNGS no importado" << G4endl;
+        }
+    }
+
+
     void DetectorConstruction::ConstructSOFT3D()
     {
         //// Crear el sólido a partir del archivo STL
@@ -369,6 +395,7 @@ namespace G4_PCM
         {
             ConstructSOFT3Dbool();
             ConstructBONE3D();
+            ConstructORGANS();
             //ConstructSOFT3D();
         }
         else if (isArm)

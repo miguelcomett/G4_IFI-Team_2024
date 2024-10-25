@@ -4,7 +4,7 @@ namespace G4_PCM
 {
     // Constructor
     DetectorConstruction::DetectorConstruction()
-        : fTargetThickness(50 * mm), fTargetAngle(90), // Valor predeterminado de grosor del objetivo
+        : fTargetThickness(50 * mm), fTargetAngle(0), // Valor predeterminado de grosor del objetivo
         fMessenger(new DetectorConstructionMessenger(this)) // Crear el mensajero
     {
         // Crear una instancia de STLGeometryReader
@@ -283,22 +283,27 @@ namespace G4_PCM
         //// Crear el sólido a partir del archivo STL
         G4STL stl;
         stlSolidOR = stl.Read("C:\\Users\\conej\\Documents\\Universidad\\Geant4\\Projects\\Models2\\LUNGS.stl");
+        stlSolidOR2 = stl.Read("C:\\Users\\conej\\Documents\\Universidad\\Geant4\\Projects\\Models2\\HEART.stl");
 
-        if (stlSolidOR) {
+        if (stlSolidOR && stlSolidOR2) {
 
             G4double targetRot = fTargetAngle;
             targetRotationOR = new G4RotationMatrix(0 * deg, -90 * deg, (fTargetAngle + 180) * deg);
 
             // Crear volumen lógico
             G4LogicalVolume* logicSTLOR = new G4LogicalVolume(stlSolidOR, Ca, "STLModelLogicalOR");
+            G4LogicalVolume* logicSTLOR2 = new G4LogicalVolume(stlSolidOR2, Mg, "STLModelLogicalOR2");
 
             // Colocar el modelo en el mundo
             new G4PVPlacement(targetRotationOR, targetPos, logicSTLOR, "STLModelPhysicalOR", logicWorld, false, 0, true);
+            new G4PVPlacement(targetRotationOR, targetPos, logicSTLOR2, "STLModelPhysicalOR2", logicWorld, false, 0, true);
 
             G4cout << "Modelo LUNGS importado exitosamente" << G4endl;
+            G4cout << "Modelo HEART importado exitosamente" << G4endl;
         }
         else {
             G4cout << "Modelo LUNGS no importado" << G4endl;
+            G4cout << "Modelo HEART no importado" << G4endl;
         }
     }
 

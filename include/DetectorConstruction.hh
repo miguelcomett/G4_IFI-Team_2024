@@ -59,6 +59,7 @@ namespace G4_PCM
         G4TessellatedSolid* stlSolid2;
         G4TessellatedSolid* stlSolid3;
         G4TessellatedSolid* stlSolidOR;
+        G4TessellatedSolid* stlSolidOR2;
         STLGeometryReader* stlReader;
 
         G4LogicalVolume* fGammaDetector = nullptr;

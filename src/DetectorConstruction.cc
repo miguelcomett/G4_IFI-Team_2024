@@ -57,7 +57,8 @@ namespace G4_PCM
         muscle = nist->FindOrBuildMaterial("G4_MUSCLE_SKELETAL_ICRP");
         skin = nist->FindOrBuildMaterial("G4_SKIN_ICRP");
         grasa = nist->FindOrBuildMaterial("G4_ADIPOSE_TISSUE_ICRP");
-        vacuum = nist->FindOrBuildMaterial("G4_AIR");
+        //vacuum = nist->FindOrBuildMaterial("G4_AIR")
+        vacuum = nist->FindOrBuildMaterial("G4_Galactic");
 
         // Material para los cristales de PbWO4
         E_PbWO4 = new G4Material("E_PbWO4", 8.28 * g / cm3, 3);
@@ -100,6 +101,8 @@ namespace G4_PCM
         RealTissue->AddMaterial(muscle, 79.36 * perCent);
         RealTissue->AddMaterial(grasa, 15.87 * perCent);
         RealTissue->AddMaterial(skin, 4.77 * perCent);
+
+        SoftTissue = nist->FindOrBuildMaterial("G4_TISSUE_SOFT_ICRP");
     }
 
     // Construir walls
@@ -147,8 +150,8 @@ namespace G4_PCM
 
     void DetectorConstruction::GenericWall()
     {
-        solidGenericWall = new G4Box("SolidGeneriBox", 0.4 * m, 0.4 * m, (3.15*2) * cm);
-        logicGenericWall = new G4LogicalVolume(solidGenericWall, RealTissue, "LogicGenericBox");
+        solidGenericWall = new G4Box("SolidGenericBox", 0.4 * m, 0.4 * m, fTargetThickness); //(3.15*2) * cm
+        logicGenericWall = new G4LogicalVolume(solidGenericWall, SoftTissue, "LogicGenericBox");
         G4ThreeVector posGB(0 * cm, 0 * cm, (0) * cm);
         physGenericWall = new G4PVPlacement(targetRotation, posGB, logicGenericWall, "PhysGenericBox", logicWorld, false, 0, true);
     }

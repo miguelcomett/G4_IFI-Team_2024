@@ -12,7 +12,7 @@ namespace G4_PCM
 {
 
 	PrimaryGeneratorAction::PrimaryGeneratorAction()
-		: fPgun(-50 * cm), fGunAngle(20), // Valor predeterminado
+		: fPgun(-50 * cm), fGunAngle(0), // Valor predeterminado
 		fMessenger(new PrimaryGeneratorMessenger(this)) // Crear el mensajero
 	{
 		// set up particle gun
@@ -48,7 +48,7 @@ namespace G4_PCM
 		G4double radius;
 		if (fGunAngle == 0) {
 			// Si el ángulo es 0, define un diámetro de 100 mm
-			radius = 100 * mm;
+			radius = 1 * mm;
 		}
 		else {
 			// Si el ángulo no es 0, usa el diámetro por defecto

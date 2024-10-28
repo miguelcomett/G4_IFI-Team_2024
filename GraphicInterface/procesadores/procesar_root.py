@@ -39,17 +39,26 @@ def cargar_root(ruta_root, ventana, etiqueta):
     with uproot.open(ruta_root) as file:
         # La información del classnames nos dará la clave (file.keys())
         for key, value in file.classnames().items():
+            print(f"Nombre del objeto: {key}, Tipo del objeto: {value}")
         #Class names nos indicara si es un tree o no
             if value == "TTree":
                 trees = file[key]
                 nombre_tree = key[:-2]  # Eliminar el ";1" del nombre
                 print(f"Tree encontrado: {nombre_tree}")
+                typeT = 0
 
                 # Crear un cuadro desplegable o botón para cada tree en la interfaz
-                crear_widget_tree(estado.frame_widgets, nombre_tree, trees, etiqueta)
-
+                crear_widget_tree(estado.frame_widgets, nombre_tree, trees, etiqueta, typeT)
+            elif value == "TH1D":
+                hist = file[key]  # Aquí obtienes el histograma
+                nombre_hist = key[:-2]  # Eliminar el ";1" del nombre
+                print(f"Histograma TH1D encontrado: {nombre_hist}")
+                typeT = 1
+                crear_widget_tree(estado.frame_widgets, nombre_hist, hist, etiqueta, typeT)
+                # Aquí podrías procesar el histograma
+                #procesar_histograma(hist)
 # Función que crea un cuadro desplegable o botón para cada tree
-def crear_widget_tree(ventana, nombre_tree, trees, main_ventana):
+def crear_widget_tree(ventana, nombre_tree, trees, main_ventana, typeT):
     # Frame para contener el tree y las branches
     frame_tree = ttk.Frame(ventana)
     frame_tree.pack(fill="x", padx=5, pady=5)
@@ -59,11 +68,11 @@ def crear_widget_tree(ventana, nombre_tree, trees, main_ventana):
     etiqueta.pack(side="left", padx=5)
 
     # Crear un botón que mostrará las branches al hacer clic
-    boton_branches = ttk.Button(frame_tree, text="Mostrar branches", command=lambda: mostrar_branches(trees, frame_tree, main_ventana))
+    boton_branches = ttk.Button(frame_tree, text="Mostrar branches", command=lambda: mostrar_branches(trees, frame_tree, main_ventana, typeT))
     boton_branches.pack(side="left", padx=5)
 
 # Función que muestra las branches de un tree y permite la selección múltiple
-def mostrar_branches(trees, frame_tree, main_ventana):
+def mostrar_branches(trees, frame_tree, main_ventana, typeT):
     global boton_exportar_csv  # Usamos la variable global para el botón de exportar
     global listbox_branches_actual  # Usamos la variable global para el Listbox actual
     global boton_visualizar
@@ -82,24 +91,31 @@ def mostrar_branches(trees, frame_tree, main_ventana):
             boton_visualizar = None
 
     # Obtener las branches (keys) del tree
-    branches = trees.keys()
-    print(f"Branches: {branches}")
+    if typeT == 0:
+        branches = trees.keys()
+        print(f"Tree Branches: {branches}")
+        # Crear un Listbox para seleccionar múltiples branches
+        listbox_branches_actual = tk.Listbox(frame_tree, selectmode=tk.MULTIPLE, height=5)
+        listbox_branches_actual.pack(side="top", padx=5, pady=5)
 
-    # Crear un Listbox para seleccionar múltiples branches
-    listbox_branches_actual = tk.Listbox(frame_tree, selectmode=tk.MULTIPLE, height=5)
-    listbox_branches_actual.pack(side="top", padx=5, pady=5)
+        # Insertar las branches en el Listbox
+        for branch in branches:
+            listbox_branches_actual.insert(tk.END, branch)
+         # Crear un botón para exportar las branches seleccionadas a CSV
+        boton_exportar_csv = ttk.Button(frame_tree, text="Exportar CSV", command=lambda: exportar_csv(trees, listbox_branches_actual))
+        boton_exportar_csv.pack(side="top", padx=5)
 
-    # Insertar las branches en el Listbox
-    for branch in branches:
-        listbox_branches_actual.insert(tk.END, branch)
+        # Crear un botón para visualizar las branches seleccionadas
+        boton_visualizar = ttk.Button(frame_tree, text="Visualizar", command=lambda: visualizar_branch(trees, listbox_branches_actual, main_ventana))
+        boton_visualizar.pack(side="top", padx=5, pady=5)
+    elif typeT == 1:
+        print("Histogram data")
+        # Crear un botón para visualizar las branches seleccionadas
+        boton_visualizar = ttk.Button(frame_tree, text="Visualizar", command=lambda: visualizar_hist(trees, main_ventana))
+        boton_visualizar.pack(side="top", padx=5, pady=5)
 
-    # Crear un botón para exportar las branches seleccionadas a CSV
-    boton_exportar_csv = ttk.Button(frame_tree, text="Exportar CSV", command=lambda: exportar_csv(trees, listbox_branches_actual))
-    boton_exportar_csv.pack(side="top", padx=5)
 
-    # Crear un botón para visualizar las branches seleccionadas
-    boton_visualizar = ttk.Button(frame_tree, text="Visualizar", command=lambda: visualizar_branch(trees, listbox_branches_actual, main_ventana))
-    boton_visualizar.pack(side="top", padx=5, pady=5)
+    
 
 # Función para exportar las branches seleccionadas a un archivo CSV
 def exportar_csv(trees, listbox_branches):
@@ -181,3 +197,39 @@ def visualizar_branch(trees, listbox_branches, etiqueta_imagen):
 
     # Si quieres que el canvas se ajuste automáticamente si la ventana cambia de tamaño:
     etiqueta_imagen.bind("<Configure>", lambda event: canvas_widget.place(x=0, y=0, width=event.width, height=event.height))
+
+# Función para visualizar los datos de la branch seleccionada como histograma
+def visualizar_hist(hist,  etiqueta_imagen):
+    print("Procesando histograma")
+     # Si ya existe una gráfica previa, destruirla
+    if estado.canvas:
+        estado.canvas.get_tk_widget().destroy()
+        estado.canvas = None
+    # Función para procesar y plotear el histograma
+    # Extraer el contenido del histograma
+    valores = hist.values()  # Los valores en cada bin
+    bordes = hist.axis().edges()  # Los bordes de los bins
+
+    # Crear la figura para la gráfica con un tamaño personalizado
+    fig, ax = plt.subplots(figsize=(1, 1))  # Ajusta el tamaño de la gráfica aquí (ancho, alto)
+    # Plotear el histograma
+     # Crear el histograma
+    ax.hist(bordes[:-1], bins=bordes, weights=valores, histtype='step', label=hist.name)
+    ax.set_title(f"Histograma: {hist.name}")
+    ax.set_xlabel("Valores")
+    ax.set_ylabel("Frecuencia")
+    ax.set_xlim(0, 200)  # limite_x debe ser una tupla (xmin, xmax)
+
+
+    # Mostrar la gráfica en la ventana de la etiqueta_imagen
+    estado.canvas = FigureCanvasTkAgg(fig, master=etiqueta_imagen)
+    estado.canvas.draw()
+
+    # Configurar la posición del Canvas dentro del Label para que se ajuste correctamente
+    canvas_widget = estado.canvas.get_tk_widget()
+    canvas_widget.place(x=0, y=0, width=etiqueta_imagen.winfo_width(), height=etiqueta_imagen.winfo_height())
+
+    # Si quieres que el canvas se ajuste automáticamente si la ventana cambia de tamaño:
+    etiqueta_imagen.bind("<Configure>", lambda event: canvas_widget.place(x=0, y=0, width=event.width, height=event.height))
+
+    #

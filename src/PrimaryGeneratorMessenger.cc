@@ -20,12 +20,19 @@ namespace G4_PCM
         fPgunAngleCmd->SetGuidance("Set the source angle.");
         fPgunAngleCmd->SetParameterName("angle", true);
         //fPgunAngleCmd->SetDefaultUnit("deg");
+        
+        fParticleModeCmd = new G4UIcmdWithAnInteger("/Pgun/Mode", this); 
+        fParticleModeCmd->SetGuidance("Set the particle mode");
+        fParticleModeCmd->SetGuidance("0 monocromatic energy");
+        fParticleModeCmd->SetGuidance("1 real custom spectrum"); 
+        fParticleModeCmd->SetParameterName("mode", true);
     }
 
     PrimaryGeneratorMessenger::~PrimaryGeneratorMessenger()
     {
         delete fPgunCmd;
         delete fPgunAngleCmd; 
+        delete fParticleModeCmd; 
     }
 
     void PrimaryGeneratorMessenger::SetNewValue(G4UIcommand* command, G4String newValue)
@@ -41,6 +48,12 @@ namespace G4_PCM
             G4double angle = fPgunAngleCmd->GetNewDoubleValue(newValue);
             G4cout << "Command received: /Pgun/Angle " << angle << G4endl;
             fGun->SetGunAngle(angle);
+        }
+        if (command == fParticleModeCmd)
+        {
+            G4int mode = fParticleModeCmd->GetNewIntValue(newValue); 
+            G4cout << "Command received: /Pgun/Mode " << mode << G4endl;
+            fGun->SetGunMode(mode);
         }
     }
 }

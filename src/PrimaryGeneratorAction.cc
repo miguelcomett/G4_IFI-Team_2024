@@ -12,7 +12,8 @@ namespace G4_PCM
 {
 
 	PrimaryGeneratorAction::PrimaryGeneratorAction()
-		: fPgun(-50 * cm), fGunAngle(20), // Valor predeterminado
+		: fPgun(-50 * cm), fGunAngle(20), fGunMode(0), 
+		energy(80 * keV),// Valor predeterminado
 		fMessenger(new PrimaryGeneratorMessenger(this)) // Crear el mensajero
 	{
 		// set up particle gun
@@ -30,6 +31,9 @@ namespace G4_PCM
 			= particleTable->FindParticle(particleName);
 		fParticleGun->SetParticleDefinition(particle);
 		fParticleGun->SetParticleMomentumDirection(momentumDirection);
+		
+		// Function to realSpectrum
+		InitFunction(); 
 
 	}
 
@@ -118,8 +122,22 @@ namespace G4_PCM
 		// G4double energy = G4RandGauss::shoot(meanEnergy, stdDev);
 
 		// Energía fija (por defecto activada)
-		//G4double energy = 10 * keV;
-		//fParticleGun->SetParticleEnergy(energy);
+		//Energia mode
+		if (fGunMode == 0)
+		{	 //Energia monocromatica
+			fParticleGun->SetParticleEnergy(energy);
+		}
+		
+		else if (fGunMode == 1)
+		{
+			G4double realEnergy = InverseCumul(); //Espectro real
+			fParticleGun->SetParticleEnergy(realEnergy);
+		}
+		else
+		{
+			fParticleGun->SetParticleEnergy(energy);
+			G4cout << "No valid mode. Standard value applied." << G4endl; 
+		}
 
 		// -------------------------------------------------------
 		// Generar el evento primario
@@ -160,4 +178,116 @@ namespace G4_PCM
 			G4cout << "Source Angle Changed." << G4endl;
 		}
 	}
+	
+	void PrimaryGeneratorAction::SetGunMode(G4int mode)
+	{
+		G4cout << "Setting mode to: " << mode << G4endl; 
+		if(mode == 0)
+		{
+			fGunMode = 0; 
+			G4cout << "Monocromatic Mode" << G4endl ;
+		}
+		else if(mode == 1)
+		{
+			fGunMode = 1; 
+			G4cout << "Real Spectrum Selected" << G4endl; 
+		}
+		else
+		{
+			G4cout << "No mode selected. Default value applied." << G4endl; 
+		}
+		
+	
+	}
+	
+	void PrimaryGeneratorAction::InitFunction()
+	{
+		// tabulated function 
+		// Y is assumed positive, linear per segment, continuous
+		//
+		std::vector<G4double> xx;
+		std::vector<G4double> yy;
+		fNPoints = 0;
+
+		// Leer los datos desde el archivo "datos.txt"
+		ReadSpectrumFromFile("fSpectrum.txt", xx, yy, fNPoints);
+
+		// Mostrar los datos leídos y la cantidad de puntos
+		G4cout << "Número de puntos leídos: " << fNPoints << G4endl;
+		for (size_t i = 0; i < xx.size(); ++i) {
+			G4cout << "Energía: " << xx[i] / keV << " keV, Intensidad: " << yy[i] << G4endl;
+		}
+
+
+		//copy arrays in std::vector and compute fMax
+		//
+		fX.resize(fNPoints); fY.resize(fNPoints);
+		fYmax = 0.;
+		for (G4int j=0; j<fNPoints; j++) {
+			fX[j] = xx[j]; fY[j] = yy[j];
+			if (fYmax < fY[j]) fYmax = fY[j];
+		};
+
+		//compute slopes
+		//
+		fSlp.resize(fNPoints);
+		for (G4int j=0; j<fNPoints-1; j++) { 
+			fSlp[j] = (fY[j+1] - fY[j])/(fX[j+1] - fX[j]);
+		};
+
+		//compute cumulative function
+		//
+		fYC.resize(fNPoints);  
+		fYC[0] = 0.;
+		for (G4int j=1; j<fNPoints; j++) {
+			fYC[j] = fYC[j-1] + 0.5*(fY[j] + fY[j-1])*(fX[j] - fX[j-1]);
+		};     
+	}
+	//Fcuntion to estimate counts
+	G4double PrimaryGeneratorAction::InverseCumul()
+	{
+	  // tabulated function
+	  // Y is assumed positive, linear per segment, continuous 
+	  // --> cumulative function is second order polynomial
+	  // (see Particle Data Group: pdg.lbl.gov --> Monte Carlo techniques)
+	  
+	  //choose y randomly
+	  G4double Yrndm = G4UniformRand()*fYC[fNPoints-1];
+	  //find bin
+	  G4int j = fNPoints-2;
+	  while ((fYC[j] > Yrndm) && (j > 0)) j--;
+	  //y_rndm --> x_rndm :  fYC(x) is second order polynomial
+	  G4double Xrndm = fX[j];
+	  G4double a = fSlp[j];
+	  if (a != 0.) {
+	    G4double b = fY[j]/a, c = 2*(Yrndm - fYC[j])/a;
+	    G4double delta = b*b + c;
+	    G4int sign = 1; if (a < 0.) sign = -1;
+	    Xrndm += sign*std::sqrt(delta) - b;    
+	  } else if (fY[j] > 0.) {
+	    Xrndm += (Yrndm - fYC[j])/fY[j];
+	  };
+	  return Xrndm;
+	}
+	//Function to fill the vectors
+	void PrimaryGeneratorAction::ReadSpectrumFromFile(const std::string& filename, std::vector<G4double>& xx, std::vector<G4double>& yy, G4int& fNPoints) {
+        	std::ifstream infile(filename);
+		if (!infile) {
+        		G4cerr << "Error opening file: " << filename << G4endl;
+        		return;
+    		}
+
+    		G4double energy, intensity;
+    		fNPoints = 0; // Inicializar el número de puntos
+
+    		while (infile >> energy >> intensity) {
+        // Convertir energía de keV a las unidades internas de Geant4
+        		xx.push_back(energy * keV);
+        		yy.push_back(intensity);
+        		fNPoints++; // Incrementar el contador de puntos
+    		}
+
+    		infile.close();
+		}
+	
 }

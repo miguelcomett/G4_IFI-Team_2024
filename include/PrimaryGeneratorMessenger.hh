@@ -4,6 +4,7 @@
 #include "G4UImessenger.hh"
 #include "G4UIcmdWithADoubleAndUnit.hh"
 #include "G4UIcmdWithADouble.hh"
+#include "G4UIcmdWithAnInteger.hh"
 
 namespace G4_PCM
 {
@@ -19,6 +20,7 @@ namespace G4_PCM
         PrimaryGeneratorAction* fGun;
         G4UIcmdWithADoubleAndUnit* fPgunCmd; 
         G4UIcmdWithADouble *fPgunAngleCmd;
+        G4UIcmdWithAnInteger *fParticleModeCmd; 
     };
 }
 

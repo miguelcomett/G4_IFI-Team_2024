@@ -38,7 +38,7 @@ namespace G4_PCM {
 		}
 
 		// Register all the energy to the eventAction while it's in the detector.
-		feventAction->AddEnergy(step->GetTotalEnergyDeposit());
+		feventAction->AddEnergy(step->GetPreStepPoint()->GetKineticEnergy());
 		
 	}
 	

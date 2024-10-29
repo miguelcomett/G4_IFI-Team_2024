@@ -103,6 +103,12 @@ namespace G4_PCM
         RealTissue->AddMaterial(skin, 4.77 * perCent);
 
         SoftTissue = nist->FindOrBuildMaterial("G4_TISSUE_SOFT_ICRP");
+
+        //Lung
+        G4double lungDensity = 0.3 * g / cm3;
+        lung = new G4Material("LungMaterial", lungDensity, 2);
+        lung->AddMaterial(vacuum, 0.8);
+        lung->AddMaterial(SoftTissue, 0.2);
     }
 
     // Construir walls
@@ -151,7 +157,7 @@ namespace G4_PCM
     void DetectorConstruction::GenericWall()
     {
         solidGenericWall = new G4Box("SolidGenericBox", 0.4 * m, 0.4 * m, fTargetThickness); //(3.15*2) * cm
-        logicGenericWall = new G4LogicalVolume(solidGenericWall, SoftTissue, "LogicGenericBox");
+        logicGenericWall = new G4LogicalVolume(solidGenericWall, lung, "LogicGenericBox");
         G4ThreeVector posGB(0 * cm, 0 * cm, (0) * cm);
         physGenericWall = new G4PVPlacement(targetRotation, posGB, logicGenericWall, "PhysGenericBox", logicWorld, false, 0, true);
     }

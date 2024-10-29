@@ -114,8 +114,8 @@ def Heatmap_from_Dask(x_data, y_data, size, log_factor, x_shift, y_shift, save_a
     x_edges = x_edges.compute()  
     y_edges = y_edges.compute()
 
-    maxi = np.max(heatmap)
     heatmap[heatmap == 0] = log_factor
+    maxi = np.max(heatmap)
     normal_map = np.log(maxi / heatmap)
 
     plt.figure(figsize = (14, 4))
@@ -140,7 +140,7 @@ def LoadRoots(directory, rootnames, tree_name, x_branch, y_branch):
 
     return x_1, y_1, x_2, y_2
 
-def IsolateTissues(low_energy_img, high_energy_img, save_in, save_as_1, save_as_2, save_as_3, save_as_4):
+def IsolateTissues(low_energy_img, high_energy_img, sigma1, sigma2, wn, save_in, save_as_1, save_as_2, save_as_3, save_as_4, save_as_5, save_as_6):
 
     from scipy.ndimage import gaussian_filter
     import matplotlib.pyplot as plt
@@ -150,69 +150,83 @@ def IsolateTissues(low_energy_img, high_energy_img, save_in, save_as_1, save_as_
     U_t_l = 0.26 # mu3
     U_t_h = 0.18 # mu4
 
-    SLS_Bone = ( (U_t_h/U_t_l) * low_energy_img) - high_energy_img
+    SLS_Bone = ( (U_t_h/U_t_l) * low_energy_img ) - high_energy_img
     SLS_Tissue = high_energy_img - ( low_energy_img * (U_b_h/U_b_l) )
 
-    sigma = 10
-    high_energy_filter = gaussian_filter(high_energy_img, sigma = sigma)
+    high_energy_filter = gaussian_filter(high_energy_img, sigma = sigma1)
     SSH_Bone = ( (U_t_h/U_t_l) * low_energy_img) - high_energy_filter
     SSH_Tissue = high_energy_filter - ( low_energy_img * (U_b_h/U_b_l) )
 
-    sigma = 100
-    wn = 1
-    tissue_filter = 1 - (gaussian_filter(SSH_Tissue, sigma = sigma) * wn)
-    ACNR_Bone = SSH_Bone - (tissue_filter)
-    # acnr_bone[acnr_bone < 0.0] = 0
+    tissue_filter_1 = 1 - (gaussian_filter(SLS_Tissue, sigma = sigma1))
+    ACNR_Bone = SLS_Bone - tissue_filter_1
+
+    tissue_filter_2 = 1 - (gaussian_filter(SSH_Tissue, sigma = sigma2) * wn)
+    ACNR_SSH_Bone = SSH_Bone - (tissue_filter_2)
+
+    w = U_t_h / U_t_l
+    wc = U_b_h / U_b_l
+    low  = - (wn * wc * gaussian_filter(low_energy_img, sigma = sigma1) ) + (w * low_energy_img)
+    high = - high_energy_img + ( wn * gaussian_filter(high_energy_img, sigma = sigma1))
+    ACNR_LONG_bone = low + high
 
     plt.imshow(low_energy_img, cmap='gray')
     plt.axis('off')
-    if save_as_1 != '': plt.savefig(save_in + save_as_1 + 'png', bbox_inches='tight', dpi=900)
+    if save_as_1 != '': plt.savefig(save_in + save_as_1, bbox_inches = 'tight', dpi = 600)
     plt.close()
     plt.imshow(high_energy_img, cmap='gray')
     plt.axis('off')
-    if save_as_2 != '': plt.savefig(save_in + save_as_2 + 'png', bbox_inches='tight', dpi=900)
+    if save_as_2 != '': plt.savefig(save_in + save_as_2, bbox_inches = 'tight', dpi = 600)
+    plt.close()
+    plt.imshow(SLS_Bone, cmap='gray')
+    plt.axis('off')
+    if save_as_3 != '': plt.savefig(save_in + save_as_3, bbox_inches = 'tight', dpi = 600)
     plt.close()
     plt.imshow(SSH_Bone, cmap='gray')
     plt.axis('off')
-    if save_as_3 != '': plt.savefig(save_in + save_as_3 + 'png', bbox_inches='tight', dpi=900)
+    if save_as_4 != '': plt.savefig(save_in + save_as_4, bbox_inches = 'tight', dpi = 600)
     plt.close()
     plt.imshow(ACNR_Bone, cmap='gray')
     plt.axis('off')
-    if save_as_4 != '': plt.savefig(save_in + save_as_4 + 'png', bbox_inches='tight', dpi=900)
+    if save_as_5 != '': plt.savefig(save_in + save_as_5, bbox_inches = 'tight', dpi = 600)
+    plt.close()
+    plt.imshow(ACNR_SSH_Bone, cmap='gray')
+    plt.axis('off')
+    if save_as_6 != '': plt.savefig(save_in + save_as_6, bbox_inches = 'tight', dpi = 600)
     plt.close()
 
-    plt.figure(figsize=(12, 6))
+    plt.figure(figsize=(18, 9))
 
-    plt.subplot(1, 4, 1)
+    plt.subplot(2, 3, 1)
     plt.imshow(low_energy_img, cmap='gray')
     plt.axis('off')
     plt.title("Low Energy")
 
-    plt.subplot(1, 4, 2)
+    plt.subplot(2, 3, 2)
     plt.imshow(high_energy_img, cmap='gray')
     plt.axis('off')
     plt.title("High Energy")
 
-    plt.subplot(1, 4, 3)
+    plt.subplot(2, 3, 3)
+    plt.imshow(SLS_Bone, cmap='gray')
+    plt.axis('off')
+    plt.title("Bone [SLS]")
+
+    plt.subplot(2, 3, 4)
     plt.imshow(SSH_Bone, cmap='gray')
     plt.axis('off')
     plt.title("Bone [SSH]")
 
-    plt.subplot(1, 4, 4)
+    plt.subplot(2, 3, 5)
     plt.imshow(ACNR_Bone, cmap='gray')
     plt.axis('off')
+    plt.title("Bone [ACNR]")
+
+    plt.subplot(2, 3, 6)
+    plt.imshow(ACNR_SSH_Bone, cmap='gray')
+    plt.axis('off')
     plt.title("Bone [ACNR + SSH]")
-
-    # ACNR 2____________
-    # w = U_t_h / U_t_l
-    # wc = U_b_h / U_b_l
-    # wn = 0.1
-    # sigma = 15
-    # low  = - (wn * wc * gaussian_filter(low_energy_img, sigma = sigma) ) + (w * low_energy_img)
-    # high = - high_energy_img + ( wn * gaussian_filter(high_energy_img, sigma = sigma))
-    # acnr2 = low + high
-
-    return SSH_Bone, ACNR_Bone
+   
+    return SLS_Bone, SSH_Bone, ACNR_Bone, ACNR_SSH_Bone
 
 def BMO(SLS_Bone, SLS_Tissue):
 

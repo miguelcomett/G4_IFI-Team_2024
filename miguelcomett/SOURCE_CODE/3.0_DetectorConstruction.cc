@@ -17,10 +17,10 @@ MyDetectorConstruction::MyDetectorConstruction()
     outerBoneRadius = 22.5 * mm;
     targetRotation = new G4RotationMatrix(0, 90*deg, 0);
     
-    isArm = true;
+    isArm = false;
     isBone = false;
     isOsBone = false;
-    isArmDivided = true;
+    isArmDivided = false;
 }
 
 MyDetectorConstruction::~MyDetectorConstruction(){}
@@ -216,9 +216,14 @@ void MyDetectorConstruction::DefineMaterials()
 
     Bone = nist -> FindOrBuildMaterial("G4_B-100_BONE"); 
     compactBone = nist->FindOrBuildMaterial("G4_BONE_COMPACT_ICRU");
+    Muscle = nist -> FindOrBuildMaterial("G4_MUSCLE_SKELETAL_ICRP");
     Fat = nist -> FindOrBuildMaterial("G4_ADIPOSE_TISSUE_ICRP");
     Skin = nist -> FindOrBuildMaterial("G4_SKIN_ICRP");
-    Muscle = nist -> FindOrBuildMaterial("G4_MUSCLE_SKELETAL_ICRP");
+
+    TissueMix = new G4Material("TissueMix", 1.036 * g/cm3, 3); 
+    TissueMix -> AddMaterial(Muscle, 79.36 * perCent); 
+    TissueMix -> AddMaterial(Fat,    15.87 * perCent); 
+    TissueMix -> AddMaterial(Skin,   04.77 * perCent);
 
     OsBone  =  new G4Material("OsteoporoticBone", 0.80 *g/cm3, 8);
     OsBone -> AddMaterial(nist -> FindOrBuildMaterial("G4_H"),  06.4 * perCent);

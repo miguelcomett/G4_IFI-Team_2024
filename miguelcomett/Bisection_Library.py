@@ -274,7 +274,7 @@ def BisectionFixedEnergyStep(directory, mac_filename, root_filename, outputcsv_n
     from tqdm import tqdm
     
     executable_file = "Sim"
-    run_sim = f"./{executable_file} {mac_filename} . ."
+    run_sim = f"./{executable_file} {mac_filename}"
     output_file = os.path.join(directory + 'ROOT/' + outputcsv_name)
 
     results = []

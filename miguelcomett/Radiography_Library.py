@@ -140,7 +140,8 @@ def LoadRoots(directory, rootnames, tree_name, x_branch, y_branch):
 
     return x_1, y_1, x_2, y_2
 
-def IsolateTissues(low_energy_img, high_energy_img, sigma1, sigma2, wn, save_in, save_as_1, save_as_2, save_as_3, save_as_4, save_as_5, save_as_6):
+def IsolateTissues(low_energy_img, high_energy_img, sigma1, sigma2, wn, save_in, 
+                   save_as_1, save_as_2, save_as_3, save_as_4, save_as_5, save_as_6, save_as_7, save_as_8):
 
     from scipy.ndimage import gaussian_filter
     import matplotlib.pyplot as plt
@@ -158,6 +159,7 @@ def IsolateTissues(low_energy_img, high_energy_img, sigma1, sigma2, wn, save_in,
 
     ACNR_Bone = SLS_Bone + gaussian_filter(SLS_Tissue, sigma = sigma1) - 1
     ACNR_SSH_Bone = SSH_Bone + (gaussian_filter(SSH_Tissue, sigma = sigma2) * wn) - 1
+    ACNR_Tissue = SLS_Tissue + gaussian_filter(SLS_Bone, sigma = sigma1) - 1
 
     # w  = U_t_h / U_t_l
     # wc = U_b_h / U_b_l
@@ -167,33 +169,33 @@ def IsolateTissues(low_energy_img, high_energy_img, sigma1, sigma2, wn, save_in,
 
     plt.imshow(low_energy_img, cmap='gray'); plt.axis('off')
     if save_as_1 != '': plt.savefig(save_in + save_as_1, bbox_inches = 'tight', dpi = 600); plt.close()
-    
     plt.imshow(high_energy_img, cmap='gray'); plt.axis('off')
     if save_as_2 != '': plt.savefig(save_in + save_as_2, bbox_inches = 'tight', dpi = 600); plt.close()
-
     plt.imshow(SLS_Bone, cmap='gray'); plt.axis('off')
     if save_as_3 != '': plt.savefig(save_in + save_as_3, bbox_inches = 'tight', dpi = 600); plt.close()
-
-    plt.imshow(SSH_Bone, cmap='gray'); plt.axis('off')
+    plt.imshow(SLS_Tissue, cmap='gray'); plt.axis('off')
     if save_as_4 != '': plt.savefig(save_in + save_as_4, bbox_inches = 'tight', dpi = 600); plt.close()
-
+    plt.imshow(SSH_Bone, cmap='gray'); plt.axis('off')
+    if save_as_5 != '': plt.savefig(save_in + save_as_4, bbox_inches = 'tight', dpi = 600); plt.close()
+    plt.imshow(SSH_Tissue, cmap='gray'); plt.axis('off')
+    if save_as_6 != '': plt.savefig(save_in + save_as_5, bbox_inches = 'tight', dpi = 600); plt.close()
     plt.imshow(ACNR_Bone, cmap='gray'); plt.axis('off')
-    if save_as_5 != '': plt.savefig(save_in + save_as_5, bbox_inches = 'tight', dpi = 600); plt.close()
+    if save_as_7 != '': plt.savefig(save_in + save_as_6, bbox_inches = 'tight', dpi = 600); plt.close()
+    plt.imshow(ACNR_Tissue, cmap='gray'); plt.axis('off')
+    if save_as_8 != '': plt.savefig(save_in + save_as_4, bbox_inches = 'tight', dpi = 600); 
+    plt.close()
 
-    plt.imshow(ACNR_SSH_Bone, cmap='gray');plt.axis('off')
-    if save_as_6 != '': plt.savefig(save_in + save_as_6, bbox_inches = 'tight', dpi = 600); plt.close()
-
-    plt.figure(figsize = (18, 9))
-    plt.subplot(2, 3, 1); plt.imshow(low_energy_img,    cmap='gray'); plt.axis('off');  plt.title("Low Energy")
-    plt.subplot(2, 3, 2); plt.imshow(high_energy_img,   cmap='gray'); plt.axis('off');  plt.title("High Energy")
-    plt.subplot(2, 3, 3); plt.imshow(SLS_Bone,          cmap='gray'); plt.axis('off');  plt.title("Bone [SLS]")
-    plt.subplot(2, 3, 4); plt.imshow(SSH_Bone,          cmap='gray'); plt.axis('off');  plt.title("Bone [SSH]")
-    plt.subplot(2, 3, 5); plt.imshow(ACNR_Bone,         cmap='gray'); plt.axis('off');  plt.title("Bone [ACNR]")
-    plt.subplot(2, 3, 6); plt.imshow(ACNR_SSH_Bone,     cmap='gray'); plt.axis('off');  plt.title("Bone [ACNR + SSH]")
-
-    plt.figure(figsize = (14, 7))
-    plt.subplot(1, 2, 1); plt.imshow(SLS_Tissue, cmap='gray'); plt.axis('off'); plt.title("SLS_Tissue")
-    plt.subplot(1, 3, 2); plt.imshow(SSH_Tissue, cmap='gray'); plt.axis('off'); plt.title("SSH_Tissue")
+    plt.figure(figsize = (18, 10))
+    plt.tight_layout()
+    plt.subplot(2, 4, 1); plt.imshow(low_energy_img,    cmap='gray'); plt.axis('off');  plt.title("Low Energy")
+    plt.subplot(2, 4, 2); plt.imshow(high_energy_img,   cmap='gray'); plt.axis('off');  plt.title("High Energy")
+    plt.subplot(2, 4, 3); plt.imshow(SLS_Bone,          cmap='gray'); plt.axis('off');  plt.title("Bone [SLS]")
+    plt.subplot(2, 4, 4); plt.imshow(SLS_Tissue,        cmap='gray'); plt.axis('off');  plt.title("Tissue [SLS]")
+    plt.subplot(2, 4, 5); plt.imshow(SSH_Bone,          cmap='gray'); plt.axis('off');  plt.title("Bone [SSH]")
+    plt.subplot(2, 4, 6); plt.imshow(SSH_Tissue,        cmap='gray'); plt.axis('off');  plt.title("Tissue [SSh]")
+    plt.subplot(2, 4, 7); plt.imshow(ACNR_Bone,         cmap='gray'); plt.axis('off');  plt.title("Bone [ACNR]")
+    # plt.subplot(2, 4, 8); plt.imshow(ACNR_SSH_Bone,     cmap='gray'); plt.axis('off');  plt.title("Bone [ACNR + SSH]")
+    plt.subplot(2, 4, 8); plt.imshow(ACNR_Tissue,       cmap='gray'); plt.axis('off');  plt.title("Tissue [ACNR]")
    
     return SLS_Bone, SSH_Bone, ACNR_Bone, ACNR_SSH_Bone
 
@@ -203,8 +205,10 @@ def BMO(SLS_Bone, SLS_Tissue):
 
     U_b_l = 0.7519 # mu1
     U_b_h = 0.3012 # mu2
-    U_t_l = 0.26 # mu3
-    U_t_h = 0.18 # mu4
+    # U_t_l = 0.26 # mu3
+    # U_t_h = 0.18 # mu4
+    U_t_l = 0.281
+    U_t_h = 0.192
 
     Thick_cons_bone = (U_t_l) / ( (U_t_h * U_b_l) - (U_t_l * U_b_h) )
     thickness_bone = Thick_cons_bone * SLS_Bone

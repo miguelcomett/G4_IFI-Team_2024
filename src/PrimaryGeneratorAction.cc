@@ -52,7 +52,7 @@ namespace G4_PCM
 		G4double radius;
 		if (fGunAngle == 0) {
 			// Si el ángulo es 0, define un diámetro de 100 mm
-			radius = 10 * cm;
+			radius = 15 * cm;
 		}
 		else {
 			// Si el ángulo no es 0, usa el diámetro por defecto
@@ -79,7 +79,7 @@ namespace G4_PCM
 	/*	x = (Dist * (2.0 * radius) - radius);
 		y = ((Dist * (2.0 * radius) - radius)-0);*/
 		x = G4UniformRand() * (2.0 * radius) - radius;
-		y = ((G4UniformRand() * (2.0 * radius) - radius)-150);
+		y = ((G4UniformRand() * (2.0 * radius) - radius)+10);
 		G4ThreeVector position = G4ThreeVector(x, y, z);
 	
 		fParticleGun->SetParticlePosition(position);

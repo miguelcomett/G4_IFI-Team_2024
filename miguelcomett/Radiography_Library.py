@@ -590,7 +590,7 @@ def Calculate_Projections(directory, roots, tree_name, x_branch, y_branch, dimen
         else: htmp_array, xlim, ylim = CT_Heatmap_from_Dask(x_data, y_data, size_x, size_y, log_factor, x_shift, y_shift)
         htmps[i] = htmp_array
 
-    return htmps
+    return htmps, xlim, ylim
 
 def save_htmps_csv(htmps, roots, csv_folder):
     
@@ -623,7 +623,7 @@ def htmps_from_csv(roots, csv_folder):
 
     return htmps
 
-def RadonReconstruction(roots, htmps, slices):
+def RadonReconstruction(roots, htmps, slices, xlim):
 
     from skimage.transform import iradon
     import numpy as np; import matplotlib.pyplot as plt
@@ -631,7 +631,7 @@ def RadonReconstruction(roots, htmps, slices):
 
     height = len(htmps[0])
     n = height/(slices+1)
-    hs = np.round(np.arange(n, height, n)).astype(int)
+    heights = np.round(np.arange(n, height, n)).astype(int)
 
     start = roots[0]
     end = roots[1]
@@ -640,21 +640,21 @@ def RadonReconstruction(roots, htmps, slices):
     thetas = np.arange(start, end+1, deg)
     reconstructed_imgs = np.zeros(slices, dtype="object")
 
-    for i, layer in enumerate(hs):
+    for i, layer in enumerate(heights):
 
         p = np.array([heatmap[layer] for heatmap in htmps]).T
         reconstructed_imgs[i] = iradon(p, theta = thetas)
 
     # plt.figure(figsize = (6,6)); plt.imshow(reconstructed_imgs[slices//2], cmap = 'gray'); plt.colorbar(); plt.show()
     
-    fig = go.Figure(go.Heatmap(z = reconstructed_imgs[0], x = hs, y = hs))
+    fig = go.Figure(go.Heatmap(z = reconstructed_imgs[0], x = xlim, y = xlim))
     fig.update_layout(width = 800, height = 800, xaxis = dict(autorange = 'reversed'), yaxis = dict(autorange = 'reversed'))
     fig.show()
 
     return reconstructed_imgs
 
 
-def coefficients_to_HU(reconstructed_imgs, slices, mu_water):
+def coefficients_to_HU(reconstructed_imgs, slices, mu_water, xlim):
 
     import numpy as np; import plotly.graph_objects as go; import plotly.io as pio
 
@@ -667,11 +667,77 @@ def coefficients_to_HU(reconstructed_imgs, slices, mu_water):
         HU_images[i] = np.round(1000 * ((reconstructed_imgs[i] - mu_water) / mu_water)).astype(int)
         HU_images[i][HU_images[i] < air_parameter] = -1000
 
-    fig = go.Figure(go.Heatmap(z = reconstructed_imgs[0], x = hs, y = hs, colorscale = [[0, 'black'], [1, 'white']],))
+    fig = go.Figure(go.Heatmap(z = reconstructed_imgs[0], x = xlim, y = xlim, colorscale = [[0, 'black'], [1, 'white']],))
     fig.update_layout(width = 800, height = 800, xaxis = dict(autorange = 'reversed'), yaxis = dict(autorange = 'reversed'))
     fig.show()
 
     return HU_images
+
+def export_to_dicom(HU_images, size_y, slices, directory):
+
+    import numpy as np; import pydicom; from pydicom.dataset import Dataset, FileDataset; from pydicom.uid import ExplicitVRLittleEndian
+
+    image2d = HU_images[0].astype(np.uint16)
+
+    print("Setting file meta information...")
+
+    meta = pydicom.Dataset()
+    meta.MediaStorageSOPClassUID = pydicom.uid.CTImageStorage
+    meta.MediaStorageSOPInstanceUID = pydicom.uid.generate_uid()
+    meta.TransferSyntaxUID = pydicom.uid.ImplicitVRLittleEndian  
+
+    ds = Dataset()
+    ds.file_meta = meta
+
+    ds.is_little_endian = True
+    ds.is_implicit_VR = False
+
+    ds.SOPClassUID = pydicom.uid.CTImageStorage 
+    ds.PatientName = "NAME^NONE"
+    ds.PatientID = "NOID"
+
+    ds.Modality = "CT"
+    ds.SeriesInstanceUID = pydicom.uid.generate_uid()
+    ds.StudyInstanceUID = pydicom.uid.generate_uid()
+    ds.FrameOfReferenceUID = pydicom.uid.generate_uid()
+    ds.SeriesNumber = 4
+
+    ds.BitsStored = 16
+    ds.BitsAllocated = 16
+    ds.SamplesPerPixel = 1
+    ds.HighBit = 15
+
+    ds.Rows = image2d.shape[0]
+    ds.Columns = image2d.shape[1]
+    ds.AcquisitionNumber = 1
+
+    ds.ImageOrientationPatient = r"1\0\0\0\1\0"
+    ds.ImageType = r"ORIGINAL\PRIMARY\AXIAL"
+
+    ds.RescaleIntercept = "0"
+    ds.RescaleSlope = "1"
+    ds.PixelSpacing = r"0.5\0.5"
+    ds.PhotometricInterpretation = "MONOCHROME2"
+    ds.PixelRepresentation = 1
+    # ds.RescaleIntercept = "-1024"
+    ds.RescaleType = 'HU'
+
+    pydicom.dataset.validate_file_meta(ds.file_meta, enforce_standard=True)
+
+    print("Setting pixel data...")
+    i = 0
+    for image in HU_images:
+        thickness = (size_y * 2)/slices
+        image2d = image.astype(np.uint16)
+        ds.PixelData = image2d.tobytes()
+        name = directory + f"I{i}.dcm"
+        ds.SliceThickness = str(thickness)
+        ds.SpacingBetweenSlices = str(thickness)
+        ds.ImagePositionPatient = f"0\\0\\{thickness * i}"
+        ds.SliceLocation = str(thickness * i)+'00'
+        ds.InstanceNumber = i+1
+        ds.save_as(name)
+        i += 1
 
 
 # end ========================================================================================================================================================

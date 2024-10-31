@@ -50,14 +50,23 @@ namespace G4_PCM
         void ConstructSOFT3D();
         void ConstructSOFT3Dbool();
         void ConstructORGANS();
+        void ConstructInner();
 
         G4LogicalVolume* GetGammaDetector() const { return fGammaDetector; }
 
     private:
         // Instancia para la clase STLGeometryReader
         G4TessellatedSolid* stlSolid;
+        G4TessellatedSolid* stlSolid0;
+        G4TessellatedSolid* stlSolid1;
         G4TessellatedSolid* stlSolid2;
         G4TessellatedSolid* stlSolid3;
+        G4TessellatedSolid* stlSolid4;
+        G4TessellatedSolid* stlSolid00;
+        G4TessellatedSolid* stlSolid11;
+        G4TessellatedSolid* stlSolid22;
+        G4TessellatedSolid* stlSolid33;
+        G4TessellatedSolid* stlSolid44;
         G4TessellatedSolid* stlSolidOR;
         G4TessellatedSolid* stlSolidOR2;
         STLGeometryReader* stlReader;
@@ -73,14 +82,15 @@ namespace G4_PCM
         G4Box *solidWorld, *solidFilter, *solidHuesoTrabecular, *solidHuesoCortical, *solidSkinP, *solidFatP, *solidMuscleP; 
         G4LogicalVolume *logicBone, *logicMuscle, *logicGrasa, *logicSkin, *logicWorld, *logicFilter, *logicTrabecular, *logicCortical, *logicHuesoTrabecular, *logicHuesoCortical, *logicSkinP, *logicFatP, *logicMuscleP, *logicSTL, *logicSTL2, *logicSTL22;
         G4VPhysicalVolume *physBone, *physMuscle, *physGrasa, *physSkin, *physWorld, *physFilter, *physTrabecular, *physCortical, *physHuesoTrabecular, *physHuesoCortical, *physSkinP, *physFatP, *physMuscleP; 
-        G4Material *bone, *vacuum, *E_PbWO4, *skin, *grasa, *muscle, *OsBone, *H, *C, *N, *O, *Mg, *P, *S, *Ca, *W, *F, *trabecularBone, *RealOsBone, *material3D, *material3Dsoft;
+        G4Material *bone, *vacuum, *E_PbWO4, *skin, *grasa, *muscle, *OsBone, *H, *C, *N, *O, *Mg, *P, *S, *Ca, *W, *F, *trabecularBone, *RealOsBone, *material3D, *material3Dsoft,* TissueMix,* lung;
         G4Tubs *solidBone, *solidMuscle, *solidGrasa, *solidSkin, *solidTrabecular, *solidCortical; 
         G4bool isArm, isSingleBone, isOsBone, isFiltered, isRealisticBone, isNormalBone, isBoneWall, isRealHand, isArmWall;
         G4ThreeVector targetPos, filterPos; 
-        G4RotationMatrix *targetRotation, * targetRotation0, * targetRotationOR,* targetRotation1;
+        G4RotationMatrix *targetRotation, * targetRotation0, * targetRotationOR,* targetRotation1, * targetRotation2;
         G4Sphere *pore;  
         G4VSolid *porousBone; 
         G4double outerBoneRadius, detectorSizeXY, detectorSizeZ, filterThick, innerBoneRadius, r; 
+        G4SubtractionSolid* finalSubtractedSolidTORAX;
         
         void DefineMaterials();
         

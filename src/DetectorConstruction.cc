@@ -64,6 +64,12 @@ namespace G4_PCM
         skin = nist->FindOrBuildMaterial("G4_SKIN_ICRP");
         grasa = nist->FindOrBuildMaterial("G4_ADIPOSE_TISSUE_ICRP");
         vacuum = nist->FindOrBuildMaterial("G4_AIR");
+
+        TissueMix = new G4Material("TissueMix", 1.036 * g / cm3, 3);
+        TissueMix->AddMaterial(muscle, 79.36 * perCent);
+        TissueMix->AddMaterial(grasa, 15.87 * perCent);
+        TissueMix->AddMaterial(skin, 04.77 * perCent);
+
         
         // Material para el sólido STL
         material3D = nist->FindOrBuildMaterial("G4_B-100_BONE");
@@ -76,6 +82,11 @@ namespace G4_PCM
         E_PbWO4->AddElement(nist->FindOrBuildElement("Pb"), 1);
         E_PbWO4->AddElement(nist->FindOrBuildElement("W"), 1);
         E_PbWO4->AddElement(nist->FindOrBuildElement("O"), 4);
+
+        G4double lungDensity = 0.3 * g / cm3;
+        lung = new G4Material("LungMaterial", lungDensity, 2);
+        lung->AddMaterial(vacuum, 0.8);
+        lung->AddMaterial(material3Dsoft, 0.2);
 
         // Material para hueso osteoporótico
         H = nist->FindOrBuildMaterial("G4_H");
@@ -265,10 +276,10 @@ namespace G4_PCM
             targetRotation = new G4RotationMatrix(0 * deg, -90 * deg, (fTargetAngle+180) * deg);
 
             // Crear volumen lógico
-            G4LogicalVolume* logicSTL = new G4LogicalVolume(stlSolid, material3D, "STLModelLogical");
+            G4LogicalVolume* logicSTL = new G4LogicalVolume(stlSolid, material3D, "STLModelLogicalBone");
             
             // Colocar el modelo en el mundo
-            new G4PVPlacement(targetRotation, targetPos, logicSTL, "STLModelPhysical", logicWorld, false, 0, true);
+            new G4PVPlacement(targetRotation, targetPos, logicSTL, "STLModelPhysicalBone", logicWorld, false, 0, true);
 
             G4cout << "Modelo bone importado exitosamente" << G4endl;
         }
@@ -291,8 +302,8 @@ namespace G4_PCM
             targetRotationOR = new G4RotationMatrix(0 * deg, -90 * deg, (fTargetAngle + 180) * deg);
 
             // Crear volumen lógico
-            G4LogicalVolume* logicSTLOR = new G4LogicalVolume(stlSolidOR, Ca, "STLModelLogicalOR");
-            G4LogicalVolume* logicSTLOR2 = new G4LogicalVolume(stlSolidOR2, Mg, "STLModelLogicalOR2");
+            G4LogicalVolume* logicSTLOR = new G4LogicalVolume(stlSolidOR, lung, "STLModelLogicalOR");
+            G4LogicalVolume* logicSTLOR2 = new G4LogicalVolume(stlSolidOR2, muscle, "STLModelLogicalOR2");
 
             // Colocar el modelo en el mundo
             new G4PVPlacement(targetRotationOR, targetPos, logicSTLOR, "STLModelPhysicalOR", logicWorld, false, 0, true);
@@ -358,10 +369,10 @@ namespace G4_PCM
             G4SubtractionSolid* subtractedSolid = new G4SubtractionSolid("SoftWithBoneHole", stlSolid2, stlSolid, targetRotation0, targetPos);
             
             // Resta el volumen "TORAX_Real0" del resultado anterior
-            G4SubtractionSolid* finalSubtractedSolid = new G4SubtractionSolid("SoftWithBoneAndTorax0Hole", subtractedSolid, stlSolid3, targetRotation1, targetPos);
+            finalSubtractedSolidTORAX = new G4SubtractionSolid("SoftWithBoneAndTorax0Hole", subtractedSolid, stlSolid3, targetRotation1, targetPos);
 
             // Crear el volumen lógico del sólido resultante
-            G4LogicalVolume* logicFinalSubtracted = new G4LogicalVolume(finalSubtractedSolid, grasa, "STLModelLogicalFinalSubtracted");
+            G4LogicalVolume* logicFinalSubtracted = new G4LogicalVolume(finalSubtractedSolidTORAX, TissueMix, "STLModelLogicalFinalSubtracted");
 
             // Definir la posición
             G4ThreeVector posXD1(0 * cm, 0 * cm, 0 * cm);
@@ -375,6 +386,48 @@ namespace G4_PCM
             G4cout << "Error al importar los modelos STL" << G4endl;
         }
     }
+
+    void DetectorConstruction::ConstructInner()
+    {
+        G4STL stl;
+        G4VSolid* stlSolid00 = stl.Read("C:\\Users\\conej\\Documents\\Universidad\\Geant4\\Projects\\Models2\\TORAX_Real0.stl");
+        G4VSolid* stlSolid33 = stl.Read("C:\\Users\\conej\\Documents\\Universidad\\Geant4\\Projects\\Models2\\RIBCAGE_Real.stl");
+        G4VSolid* stlSolid11 = stl.Read("C:\\Users\\conej\\Documents\\Universidad\\Geant4\\Projects\\Models2\\LUNGS.stl");
+        G4VSolid* stlSolid22 = stl.Read("C:\\Users\\conej\\Documents\\Universidad\\Geant4\\Projects\\Models2\\HEART.stl");
+        /*G4VSolid* stlSolid4 = stl.Read("C:\\Users\\conej\\Documents\\Universidad\\Geant4\\Projects\\Models2\\TORAX_Real.stl");*/
+
+        if (stlSolid00 && stlSolid11 && stlSolid22 && stlSolid33) {
+
+            // Definir las matrices de rotación
+            G4double targetRot = fTargetAngle;
+            G4RotationMatrix* targetRotation = new G4RotationMatrix(0 * deg, -90 * deg, (fTargetAngle + 180) * deg);
+            G4RotationMatrix* targetRotation0 = new G4RotationMatrix(0 * deg, 0 * deg, 0 * deg);
+            G4RotationMatrix* targetRotation1 = new G4RotationMatrix(0 * deg, 0 * deg, 0 * deg);
+            G4RotationMatrix* targetRotation2 = new G4RotationMatrix(0 * deg, 0 * deg, 0 * deg);
+
+
+            // Resta de volumenes
+            G4SubtractionSolid* subtractedSolid = new G4SubtractionSolid("Soft0", stlSolid00, stlSolid11, targetRotation0, targetPos);
+            G4SubtractionSolid* finalSubtractedSolid = new G4SubtractionSolid("Soft1", subtractedSolid, stlSolid22, targetRotation1, targetPos);
+            G4SubtractionSolid* finalfinalSubtractedSolid = new G4SubtractionSolid("Soft2", finalSubtractedSolid, stlSolid33, targetRotation2, targetPos);
+            //G4SubtractionSolid* finalfinalfinalSubtractedSolid = new G4SubtractionSolid("Soft3", finalfinalSubtractedSolid, finalSubtractedSolidTORAX, targetRotation2, targetPos);
+
+            // Crear el volumen lógico del sólido resultante
+            G4LogicalVolume* logicFinalSubtracted = new G4LogicalVolume(finalfinalSubtractedSolid, grasa, "STLModelLogicalFinalSubstractedInner");
+
+            // Definir la posición
+            G4ThreeVector posXD1(0 * cm, 0 * cm, 0 * cm);
+
+            // Colocar el sólido resultante en el mundo
+            new G4PVPlacement(targetRotation, posXD1, logicFinalSubtracted, "STLModelPhysicalFinalSubtractedInner", logicWorld, false, 0, true);
+
+            G4cout << "Modelo Inner" << G4endl;
+        }
+        else {
+            G4cout << "Error al importar Innner" << G4endl;
+        }
+    }
+
 
     // Método para construir el detector
     G4VPhysicalVolume* DetectorConstruction::Construct()
@@ -400,8 +453,10 @@ namespace G4_PCM
         if (isRealHand)
         {
             ConstructSOFT3Dbool();
+            ConstructInner();
             ConstructBONE3D();
             ConstructORGANS();
+     
             //ConstructSOFT3D();
         }
         else if (isArm)

@@ -33,7 +33,7 @@ namespace G4_PCM
 		fParticleGun->SetParticleMomentumDirection(momentumDirection);
 		
 		// Function to realSpectrum
-		InitFunction(); 
+		//InitFunction(); 
 
 	}
 
@@ -76,13 +76,10 @@ namespace G4_PCM
 		G4double meanDist = 0.5;
 		G4double stdDev = 0.5 * keV;
 		G4double Dist = G4RandGauss::shoot(meanDist, stdDev);
-<<<<<<< HEAD
-		x = (Dist * (2.0 * radius) - radius);
-		y = ((Dist * (2.0 * radius) - radius)-0);
-=======
+	/*	x = (Dist * (2.0 * radius) - radius);
+		y = ((Dist * (2.0 * radius) - radius)-0);*/
 		x = G4UniformRand() * (2.0 * radius) - radius;
 		y = ((G4UniformRand() * (2.0 * radius) - radius)-150);
->>>>>>> 80126243b1cc01bb26ba60226eb890bb85b99504
 		G4ThreeVector position = G4ThreeVector(x, y, z);
 	
 		fParticleGun->SetParticlePosition(position);

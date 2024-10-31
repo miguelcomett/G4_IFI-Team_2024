@@ -75,6 +75,9 @@ namespace G4_PCM
         P = nist->FindOrBuildMaterial("G4_P");
         S = nist->FindOrBuildMaterial("G4_S");
         Ca = nist->FindOrBuildMaterial("G4_Ca");
+        W = nist->FindOrBuildMaterial("G4_W");
+        Cu = nist->FindOrBuildMaterial("G4_Cu");
+        Sn = nist->FindOrBuildMaterial("G4_Sn");
         OsBone = new G4Material("OsteoporoticBone", 1.3 * g / cm3, 8);
         OsBone->AddMaterial(H, 6.4 * perCent);
         OsBone->AddMaterial(C, 27.8 * perCent);
@@ -103,6 +106,13 @@ namespace G4_PCM
         RealTissue->AddMaterial(skin, 4.77 * perCent);
 
         SoftTissue = nist->FindOrBuildMaterial("G4_TISSUE_SOFT_ICRP");
+
+        newTissue = new G4Material("newTissue", 1.02 * g / cm3, 5);
+        newTissue->AddMaterial(H, 10.5 * perCent);
+        newTissue->AddMaterial(C, 25.6 * perCent);
+        newTissue->AddMaterial(N, 2.7 * perCent);
+        newTissue->AddMaterial(O, 61.2 * perCent);
+        newTissue->AddMaterial(P, 0.2 * perCent);
 
         //Lung
         G4double lungDensity = 0.3 * g / cm3;
@@ -156,8 +166,8 @@ namespace G4_PCM
 
     void DetectorConstruction::GenericWall()
     {
-        solidGenericWall = new G4Box("SolidGenericBox", 0.4 * m, 0.4 * m, fTargetThickness); //(3.15*2) * cm
-        logicGenericWall = new G4LogicalVolume(solidGenericWall, lung, "LogicGenericBox");
+        solidGenericWall = new G4Box("SolidGenericBox", 0.4 * m, 0.4 * m, fTargetThickness/2); //(3.15*2) * cm
+        logicGenericWall = new G4LogicalVolume(solidGenericWall, W, "LogicGenericBox");
         G4ThreeVector posGB(0 * cm, 0 * cm, (0) * cm);
         physGenericWall = new G4PVPlacement(targetRotation, posGB, logicGenericWall, "PhysGenericBox", logicWorld, false, 0, true);
     }

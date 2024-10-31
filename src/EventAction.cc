@@ -22,7 +22,7 @@ namespace G4_PCM {
     }
 
     void EventAction::EndOfEventAction(const G4Event* anEvent) {
-        if (fEnergy > 0.0) {
+        //if (fEnergy > 0.0) {
             G4int energyColumnId = 0;
             G4int posXColumnId = 1;
             G4int posYColumnId = 2;
@@ -37,7 +37,7 @@ namespace G4_PCM {
 
             // Increment the registration count
             ++fNtupleRegistrationCount;
-        }
+        //}
     }
 
     void EventAction::Print() {

@@ -545,7 +545,7 @@ def CT_Heatmap_from_Dask(x_data, y_data, size_x, size_y, log_factor, x_shift, y_
     maxi = np.max(heatmap)
     log_map = np.log(maxi/(heatmap + log_factor)) / (pixel_size * 0.1)
 
-    plt.imshow(log_map, cmap = 'gray', extent=[x_edges[0], x_edges[-1], y_edges[0], y_edges[-1]])
+    # plt.imshow(log_map, cmap = 'gray', extent=[x_edges[0], x_edges[-1], y_edges[0], y_edges[-1]])
 
     return log_map, x_edges, y_edges
 
@@ -564,39 +564,19 @@ def Calculate_Projections(directory, roots, tree_name, x_branch, y_branch, dimen
     y_shift = dimensions[3]
 
     sims = np.arange(start, end+1, deg)
-    htmps = np.zeros(len(sims), dtype=object)
 
-    for i, sim in tqdm(enumerate(sims), desc = 'Calculating heatmaps', unit = ' heatmaps', leave = True):
+    for i, sim in tqdm(start, end, deg, desc = 'Calculating heatmaps', unit = ' Heatmaps', leave = True):
                     #    dynamic_ncols=True, bar_format='{desc}: {percentage:3.0f}%|{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}, {rate_fmt}{postfix}]'):
         
         root_name = "/Sim" + str(round(sim))
 
         x_data, y_data = Root_to_Dask(directory, root_name, tree_name, x_branch, y_branch)
-        # if i == 0:
         htmp_array, xlim, ylim = CT_Heatmap_from_Dask(x_data, y_data, size_x, size_y, log_factor, x_shift, y_shift, pixel_size)
-        # else: htmp_array, xlim, ylim = CT_Heatmap_from_Dask(x_data, y_data, size_x, size_y, log_factor, x_shift, y_shift, pixel_size)
 
         name = csv_folder + f"/Sim{round(sims[i])}.csv"
         np.savetxt(name, htmp_array, delimiter=',', fmt='%.5f')
 
-        htmps[i] = htmp_array
-
-    return htmps, xlim, ylim
-
-
-# def save_htmps_csv(htmps, roots, csv_folder):
-    
-#     import numpy as np
-
-#     start = roots[0]
-#     end = roots[1]
-#     deg = roots[2]
-#     sims = np.arange(start, end+1, deg)
-
-#     for i, htmp in enumerate(htmps):
-
-#         name = csv_folder + f"Sim{round(sims[i])}.csv"
-#         np.savetxt(name, htmp, delimiter=',', fmt='%.5f')
+    return htmp_array, xlim, ylim
 
 
 def htmps_from_csv(roots, csv_folder):

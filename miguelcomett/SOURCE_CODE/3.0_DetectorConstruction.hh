@@ -28,38 +28,30 @@
 
 class MyDetectorConstruction : public G4VUserDetectorConstruction
 {   
+    public:
+
+        MyDetectorConstruction();
+        ~MyDetectorConstruction() override;
+
+        void DefineMaterials();
+        void ConstructSDandField() override;
+        G4VPhysicalVolume * Construct() override;
+
         void ConstructTarget();
         void ConstructBone();
         void ConstructOsteoporoticBone();
         void ConstructArm();
         void ConstructTissue();
         void ConstructArmDivided();
-
         void ConstructThorax();
 
-        // void ConstructBONE3D();
-        // void ConstructSOFT3D();
-        // void ConstructSOFT3Dbool();
-        // void ConstructORGANS();
-
-    public:
-
-        MyDetectorConstruction();
-        ~MyDetectorConstruction();
-
-        G4LogicalVolume * GetScoringVolume() const {return fScoringVolume;}
-
-        virtual G4VPhysicalVolume * Construct();
-
+        G4LogicalVolume * GetScoringVolume() const {return ScoringVolume;}
         G4Material * GetMaterial() const {return materialTarget;}
 	    G4double GetThickness() const {return target_Thickness;}
     
     private:
 
-        virtual void ConstructSDandField();
-        void DefineMaterials();
-        
-        G4GenericMessenger * fDetectorMessenger;
+        G4GenericMessenger * DetectorMessenger;
 
         G4int DetColumnNum, DetRowNum, numPores; 
         G4double target_Thickness, innerBoneRadius, outerBoneRadius, boneHeight, poreRadius, xWorld, yWorld, zWorld, 
@@ -74,7 +66,7 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
         G4VSolid * porousBone; 
 
         G4LogicalVolume   * logicWorld, * logicRadiator, * logicDetector, * logicBone, * logicMuscle, 
-                          * logicGrasa, * logicSkin, * logicOs, * logicHealthy, * fScoringVolume,
+                          * logicGrasa, * logicSkin, * logicOs, * logicHealthy, * ScoringVolume,
                           * logicLungs, * logicHeart, * finalSubtractedSolid, * logicRibcage;
         G4VPhysicalVolume * physicalWorld, * physicalRadiator, * physicalDetector, * physBone, * physArm, 
                           * physMuscle, * physGrasa, * physSkin, * physOs, * physHealthy;

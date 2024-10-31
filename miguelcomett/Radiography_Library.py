@@ -538,7 +538,7 @@ def Plotly_Heatmap(array, xlim, ylim, title, x_label, y_label, annotation, width
 
 # 8.0 ========================================================================================================================================================
 
-def CT_Heatmap_from_Dask(x_data, y_data, size_x, size_y, log_factor, x_shift, y_shift, save_as):
+def CT_Heatmap_from_Dask(x_data, y_data, size_x, size_y, log_factor, x_shift, y_shift, pixel_size):
 
     import matplotlib.pyplot as plt
     import numpy as np
@@ -548,52 +548,130 @@ def CT_Heatmap_from_Dask(x_data, y_data, size_x, size_y, log_factor, x_shift, y_
     x_data_shifted = x_data - x_shift
     y_data_shifted = y_data - y_shift
 
-    pixel_size = 0.5 # mm
+    # pixel_size = 0.5 # mm
     set_bins_x = np.arange(-size_x, size_x + pixel_size, pixel_size)
     set_bins_y = np.arange(-size_y, size_y + pixel_size, pixel_size)
     heatmap, x_edges, y_edges = da.histogram2d(x_data_shifted, y_data_shifted, bins = [set_bins_x, set_bins_y])
     heatmap = heatmap.T
     heatmap = np.rot90(heatmap, 2)
-    rows = heatmap.shape[0]
 
     heatmap = heatmap.compute()  
     x_edges = x_edges.compute()  
     y_edges = y_edges.compute()
     
     maxi = np.max(heatmap)
-    normal_map = np.log(maxi/(heatmap + log_factor)) / (pixel_size * 0.1)
+    log_map = np.log(maxi/(heatmap + log_factor)) / (pixel_size * 0.1)
 
-    plt.figure(figsize = (14, 4))
-    plt.subplot(1, 3, 1)
-    plt.imshow(normal_map, cmap = 'gray', extent = [x_edges[0], x_edges[-1], y_edges[0], y_edges[-1]])
-    plt.axis('off')
-    if save_as != '': plt.savefig('Results/' + save_as + '.png', bbox_inches = 'tight', dpi = 900)
-    plt.subplot(1, 3, 2)
-    plt.plot(normal_map[2*rows//3,:])
-    plt.subplot(1, 3, 3)
-    plt.plot(normal_map[:,rows//2])
-
-    return normal_map, x_edges, y_edges
+    return log_map, x_edges, y_edges
 
 
-def Calculate_Projections(directory, sims, tree_name, x_branch, y_branch, size_x, size_y, log_factor, x_shift, y_shift):
+def Calculate_Projections(directory, roots, tree_name, x_branch, y_branch, dimensions, log_factor, pixel_size):
     
-    import Radiography_Library as RadLib
-    import numpy as np
-    import matplotlib.pyplot as plt
-    from tqdm import tqdm
+    import numpy as np; from tqdm import tqdm
+
+    start = roots[0]
+    end = roots[1]
+    deg = roots[2]
+
+    size_x = dimensions[0]
+    size_y = dimensions[1]
+    x_shift = dimensions[2]
+    y_shift = dimensions[3]
+
+    sims = np.arange(start, end+1, deg)
+    htmps = np.zeros(len(sims), dtype=object)
 
     for i, sim in tqdm(enumerate(sims), desc = 'Calculating heatmaps', unit = ' heatmaps', leave = True):
+        
         root_name_starts = "Sim" + str(round(sim))
 
-        x_data, y_data = RadLib.Root_to_Dask(directory, root_name_starts, tree_name, x_branch, y_branch)
-        if i == 0:
-            htmp_array, xlim, ylim = RadLib.Heatmap_from_Dask(x_data, y_data, size_x, size_y, log_factor, x_shift, y_shift, save_as)
-        else:
-            htmp_array, xlim, ylim = RadLib.Heatmap_from_Dask(x_data, y_data, size_x, size_y, log_factor, x_shift, y_shift, save_as)
-            plt.close()
+        x_data, y_data = Root_to_Dask(directory, root_name_starts, tree_name, x_branch, y_branch)
+        if i == 0: htmp_array, xlim, ylim = CT_Heatmap_from_Dask(x_data, y_data, size_x, size_y, log_factor, x_shift, y_shift)
+        else: htmp_array, xlim, ylim = CT_Heatmap_from_Dask(x_data, y_data, size_x, size_y, log_factor, x_shift, y_shift)
         htmps[i] = htmp_array
 
     return htmps
+
+def save_htmps_csv(htmps, roots, csv_folder):
+    
+    import numpy as np
+
+    start = roots[0]
+    end = roots[1]
+    deg = roots[2]
+    sims = np.arange(start, end+1, deg)
+
+    for i, htmp in enumerate(htmps):
+
+        name = "csv_folder" + f"Sim{round(sims[i])}.csv"
+        np.savetxt(name, htmp, delimiter=',', fmt='%.5f')
+
+
+def htmps_from_csv(roots, csv_folder):
+
+    import numpy as np
+
+    start = roots[0]
+    end = roots[1]
+    deg = roots[2]
+    sims = np.arange(start, end+1, deg)
+    
+    htmps = np.zeros(len(sims), dtype=object)
+    for i, sim in enumerate(sims):
+        name = csv_folder + f"Sim{round(sim)}.csv"
+        htmps[i] = np.genfromtxt(name, delimiter = ',')
+
+    return htmps
+
+def RadonReconstruction(roots, htmps, slices):
+
+    from skimage.transform import iradon
+    import numpy as np; import matplotlib.pyplot as plt
+    import plotly.graph_objects as go; import plotly.io as pio
+
+    height = len(htmps[0])
+    n = height/(slices+1)
+    hs = np.round(np.arange(n, height, n)).astype(int)
+
+    start = roots[0]
+    end = roots[1]
+    deg = roots[2]
+
+    thetas = np.arange(start, end+1, deg)
+    reconstructed_imgs = np.zeros(slices, dtype="object")
+
+    for i, layer in enumerate(hs):
+
+        p = np.array([heatmap[layer] for heatmap in htmps]).T
+        reconstructed_imgs[i] = iradon(p, theta = thetas)
+
+    # plt.figure(figsize = (6,6)); plt.imshow(reconstructed_imgs[slices//2], cmap = 'gray'); plt.colorbar(); plt.show()
+    
+    fig = go.Figure(go.Heatmap(z = reconstructed_imgs[0], x = hs, y = hs))
+    fig.update_layout(width = 800, height = 800, xaxis = dict(autorange = 'reversed'), yaxis = dict(autorange = 'reversed'))
+    fig.show()
+
+    return reconstructed_imgs
+
+
+def coefficients_to_HU(reconstructed_imgs, slices, mu_water):
+
+    import numpy as np; import plotly.graph_objects as go; import plotly.io as pio
+
+    air_parameter = -450
+
+    HU_images = np.zeros(slices, dtype="object")
+
+    for i in range(len(HU_images)):
+
+        HU_images[i] = np.round(1000 * ((reconstructed_imgs[i] - mu_water) / mu_water)).astype(int)
+        HU_images[i][HU_images[i] < air_parameter] = -1000
+
+    fig = go.Figure(go.Heatmap(z = reconstructed_imgs[0], x = hs, y = hs, colorscale = [[0, 'black'], [1, 'white']],))
+    fig.update_layout(width = 800, height = 800, xaxis = dict(autorange = 'reversed'), yaxis = dict(autorange = 'reversed'))
+    fig.show()
+
+    return HU_images
+
 
 # end ========================================================================================================================================================

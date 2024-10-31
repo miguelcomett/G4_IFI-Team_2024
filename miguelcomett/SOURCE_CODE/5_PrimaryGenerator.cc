@@ -1,24 +1,23 @@
 #include "5_PrimaryGenerator.hh"
 
-
 MyPrimaryGenerator::MyPrimaryGenerator()
 {
-    fParticleGun = new G4ParticleGun(1);
+    ParticleGun = new G4ParticleGun(1);
 
     G4ParticleTable * particleTable = G4ParticleTable::GetParticleTable();
     G4String particleName = "gamma";
     G4ParticleDefinition * particle = particleTable -> FindParticle(particleName);
 
-    fParticleGun -> SetParticleDefinition(particle);
-    fParticleGun -> SetParticleEnergy(40 * keV);
+    ParticleGun -> SetParticleDefinition(particle);
+    ParticleGun -> SetParticleEnergy(40 * keV);
 }
 
-MyPrimaryGenerator::~MyPrimaryGenerator() {delete fParticleGun;}
+MyPrimaryGenerator::~MyPrimaryGenerator() {delete ParticleGun;}
 
 void MyPrimaryGenerator::GeneratePrimaries(G4Event * anEvent)
 { 
     G4double x0, y0, z0;
-    G4double radius = 4.5;
+    G4double radius = 40.0;
 
     x0 = 2 * (G4UniformRand() - 0.5);
     y0 = 2 * (G4UniformRand() - 0.5);
@@ -29,7 +28,7 @@ void MyPrimaryGenerator::GeneratePrimaries(G4Event * anEvent)
     z0 = - 50.0 * cm;
 
     G4ThreeVector photonPosition(x0, y0, z0);
-    fParticleGun -> SetParticlePosition(photonPosition);
+    ParticleGun -> SetParticlePosition(photonPosition);
 
     const G4double pi = 3.14159265358979323846;
     G4double theta, phi, angle, angleInDegrees, angleInRadians, angleInCarts;
@@ -46,7 +45,7 @@ void MyPrimaryGenerator::GeneratePrimaries(G4Event * anEvent)
     theta = angleInCarts * (G4UniformRand() - 0.5) * angle;
     phi   = angleInCarts * (G4UniformRand() - 0.5) * angle;
     G4ThreeVector photonMomentum(theta, phi, 1.0);
-    fParticleGun -> SetParticleMomentumDirection(photonMomentum);
+    ParticleGun -> SetParticleMomentumDirection(photonMomentum);
 
-    fParticleGun -> GeneratePrimaryVertex(anEvent);
+    ParticleGun -> GeneratePrimaryVertex(anEvent);
 }

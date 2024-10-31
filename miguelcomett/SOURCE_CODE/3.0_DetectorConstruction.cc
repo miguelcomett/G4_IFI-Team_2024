@@ -5,10 +5,10 @@ MyDetectorConstruction::MyDetectorConstruction()
     DefineMaterials();
     stlReader = new STLGeometryReader();
 
-    fDetectorMessenger = new G4GenericMessenger(this, "/myDetector/", "Detector Construction");
-    fDetectorMessenger -> DeclareProperty("nColumns", DetColumnNum, "Number of columns");
-    fDetectorMessenger -> DeclareProperty("nRows", DetRowNum, "Number of rows");
-    fDetectorMessenger -> DeclareProperty("ThicknessTarget", target_Thickness, "Thickness of the target");
+    DetectorMessenger = new G4GenericMessenger(this, "/myDetector/", "Detector Construction");
+    DetectorMessenger -> DeclareProperty("nColumns", DetColumnNum, "Number of columns");
+    DetectorMessenger -> DeclareProperty("nRows", DetRowNum, "Number of rows");
+    DetectorMessenger -> DeclareProperty("ThicknessTarget", target_Thickness, "Thickness of the target");
 
     DetColumnNum = 10, DetRowNum = 10;
 
@@ -20,14 +20,18 @@ MyDetectorConstruction::MyDetectorConstruction()
     targetRotation = new G4RotationMatrix(0, 90*deg, 0);
     targetPosition = G4ThreeVector(0.0, 0.0, 0.0);
 
-    isArm = true;
+    isArm = false;
     isBone = false;
     isOsBone = false;
     isArmDivided = false;
     is3DModel = true;
 }
 
-MyDetectorConstruction::~MyDetectorConstruction(){}
+MyDetectorConstruction::~MyDetectorConstruction()
+{
+    delete DetectorMessenger;
+    delete stlReader;
+}
 
 G4VPhysicalVolume * MyDetectorConstruction::Construct()
 {
@@ -46,7 +50,7 @@ G4VPhysicalVolume * MyDetectorConstruction::Construct()
         DetectorPosition = G4ThreeVector(-0.5*m + (i+0.5)*m/DetRowNum, -0.5*m + (j+0.5)*m/DetColumnNum, 0.49*m);
         physicalDetector = new G4PVPlacement(0, DetectorPosition, logicDetector, "physicalDetector", logicWorld, false, j+(i*DetColumnNum), check_Overlaps);
     }
-    if (isArm || isBone) fScoringVolume = logicDetector;
+    if (isArm || isBone) ScoringVolume = logicDetector;
 
     return physicalWorld;
 }
@@ -68,7 +72,7 @@ void MyDetectorConstruction::ConstructTarget()
     solidRadiator = new G4Box("solidRadiator", 0.25*m, 0.25*m, target_Thickness/2);
     logicRadiator = new G4LogicalVolume(solidRadiator, materialTarget, "logicalRadiator");
     physicalRadiator = new G4PVPlacement(0, Radiator_Position, logicRadiator, "PhysicalRadiator", logicWorld, false, 0, true);
-    fScoringVolume = logicRadiator;
+    ScoringVolume = logicRadiator;
 }
 
 void MyDetectorConstruction::ConstructArm() 

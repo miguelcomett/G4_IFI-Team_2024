@@ -7,12 +7,9 @@
 class STLGeometryReader 
 {
     public:
-        // Constructor
+    
         STLGeometryReader() = default;
-        // Destructor
         ~STLGeometryReader() = default;
-
-        // M�todo para crear un s�lido G4 a partir de un archivo STL
         G4VSolid * CreateSolidFromSTL(const std::string & filename);
 };
 #endif

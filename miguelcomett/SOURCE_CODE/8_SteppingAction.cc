@@ -9,11 +9,11 @@ void MySteppingAction::UserSteppingAction(const G4Step * step)
 {
     G4LogicalVolume * Volume = step -> GetPreStepPoint() -> GetTouchableHandle() -> GetVolume() -> GetLogicalVolume();
     const MyDetectorConstruction * detectorConstruction = static_cast < const MyDetectorConstruction *> (G4RunManager::GetRunManager() -> GetUserDetectorConstruction());
-    G4LogicalVolume * fScoringVolume = detectorConstruction -> GetScoringVolume();
+    G4LogicalVolume * ScoringVolume = detectorConstruction -> GetScoringVolume();
 
     if (arguments == 1 || arguments == 2)
     {
-        if(Volume != fScoringVolume) { return; }
+        if(Volume != ScoringVolume) { return; }
 
         G4double EDep = step -> GetTotalEnergyDeposit();
         if (EDep == 0.0) { return; }
@@ -22,7 +22,7 @@ void MySteppingAction::UserSteppingAction(const G4Step * step)
 
     if (arguments == 3) 
     {
-        if(Volume != fScoringVolume) { return; }
+        if(Volume != ScoringVolume) { return; }
 
         G4StepPoint * endPoint = step -> GetPostStepPoint();
         G4String procName = endPoint -> GetProcessDefinedStep() -> GetProcessName();
@@ -44,7 +44,7 @@ void MySteppingAction::UserSteppingAction(const G4Step * step)
             nonPrimaryTrack -> SetTrackStatus(fStopAndKill);
         }
 
-        if(Volume != fScoringVolume) { return; }
+        if(Volume != ScoringVolume) { return; }
 
         G4double EDep = step -> GetTotalEnergyDeposit();
         if (EDep == 0.0) { return; }

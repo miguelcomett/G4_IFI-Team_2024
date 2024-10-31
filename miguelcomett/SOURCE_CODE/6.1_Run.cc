@@ -14,39 +14,35 @@ void Run::SetPrimary(G4ParticleDefinition * particle, G4double energy)
 
 void Run::CountProcesses(G4String procName) 
 {
-    std::map <G4String, G4int> ::iterator it = fProcCounter.find(procName);
-    if ( it == fProcCounter.end()) 
+    if (arguments == 3)
     {
-        fProcCounter[procName] = 1;
+        std::map <G4String, G4int> ::iterator it = fProcCounter.find(procName);
+        if ( it == fProcCounter.end()) {fProcCounter[procName] = 1;} else {fProcCounter[procName]++;}
     }
-    else 
-    {
-        fProcCounter[procName]++; 
-    }
-}
+} 
 
 void Run::EndOfRun()
 {
-    G4int prec = 5; 
-	G4int dfprec = G4cout.precision(prec);
+    if (arguments == 3) 
+    {
+        G4int prec = 5; 
+        G4int dfprec = G4cout.precision(prec);
 
-    const MyDetectorConstruction * detectorConstruction = static_cast < const MyDetectorConstruction *> (G4RunManager::GetRunManager() -> GetUserDetectorConstruction());     
+        const MyDetectorConstruction * detectorConstruction = static_cast < const MyDetectorConstruction *> (G4RunManager::GetRunManager() -> GetUserDetectorConstruction());     
 
-    G4String particleName = link_ParticleDefinition -> GetParticleName();    
-    G4Material * material = detectorConstruction -> GetMaterial();
-    G4double density      = material  -> GetDensity();
-    G4double Thickness    = detectorConstruction -> GetThickness();
-        
-    G4cout << "\n ========================== run summary ======================== \n";
+        G4String particleName = link_ParticleDefinition -> GetParticleName();    
+        G4Material * material = detectorConstruction -> GetMaterial();
+        G4double density      = material  -> GetDensity();
+        G4double Thickness    = detectorConstruction -> GetThickness();
+            
+        G4cout << "\n ========================== run summary ======================== \n";
 
-    G4cout << "\n The run is: " << numberOfEvent << " " << particleName << " of "
+        G4cout << "\n The run is: " << numberOfEvent << " " << particleName << " of "
             << G4BestUnit(link_Energy, "Energy") << " through " 
             << G4BestUnit(Thickness, "Length") << " of "
             << material -> GetName() << " (density: " 
             << G4BestUnit(density, "Volumic Mass") << ")" << G4endl;
 
-    if (arguments == 3) 
-    {
         G4int totalCount = 0;
         G4int survive = 0;  
         G4cout << "\n Process calls frequency --->";
@@ -100,28 +96,25 @@ void Run::EndOfRun()
 
 void Run::Merge(const G4Run * run)
 {
-  const Run * localRun = static_cast <const Run*> (run);
-
-  // pass information about primary particle
-  link_ParticleDefinition = localRun -> link_ParticleDefinition;
-  link_Energy = localRun -> link_Energy;
-      
-  std::map<G4String,G4int>::const_iterator it;
-  for (it  = localRun -> fProcCounter.begin(); 
-       it != localRun -> fProcCounter.end(); ++it) 
+    if (arguments == 3)
     {
-        G4String procName = it -> first;
-        G4int localCount  = it -> second;
+        const Run * localRun = static_cast <const Run*> (run);
 
-        if ( fProcCounter.find(procName) == fProcCounter.end()) 
+        // pass information about primary particle
+        link_ParticleDefinition = localRun -> link_ParticleDefinition;
+        link_Energy = localRun -> link_Energy;
+            
+        std::map<G4String,G4int>::const_iterator it;
+        for (it  = localRun -> fProcCounter.begin(); 
+            it != localRun -> fProcCounter.end(); ++it) 
         {
-            fProcCounter[procName] = localCount;
+            G4String procName = it -> first;
+            G4int localCount  = it -> second;
+
+            if ( fProcCounter.find(procName) == fProcCounter.end()) 
+            {fProcCounter[procName] = localCount;} else {fProcCounter[procName] += localCount;}         
         }
-        else 
-        {
-            fProcCounter[procName] += localCount;
-        }         
+
+        G4Run::Merge(run);
     }
-  
-  G4Run::Merge(run); 
 } 

@@ -138,14 +138,10 @@ def Heatmap_from_Dask(x_data, y_data, size, log_factor, x_shift, y_shift, save_a
     normal_map = np.log(maxi / heatmap)
 
     plt.figure(figsize = (14, 4))
-    plt.subplot(1, 3, 1)
-    plt.imshow(normal_map, cmap = 'gray', extent = [x_edges[0], x_edges[-1], y_edges[0], y_edges[-1]])
-    plt.axis('off')
+    plt.subplot(1, 3, 1); plt.imshow(normal_map, cmap = 'gray', extent = [x_edges[0], x_edges[-1], y_edges[0], y_edges[-1]]); plt.axis('off')
     if save_as != '': plt.savefig('Results/' + save_as + '.png', bbox_inches = 'tight', dpi = 900)
-    plt.subplot(1, 3, 2)
-    plt.plot(normal_map[2*rows//3,:])
-    plt.subplot(1, 3, 3)
-    plt.plot(normal_map[:,rows//2])
+    plt.subplot(1, 3, 2); plt.plot(normal_map[2*rows//3,:])
+    plt.subplot(1, 3, 3); plt.plot(normal_map[:,rows//2])
 
     return normal_map, x_edges, y_edges
 
@@ -565,7 +561,7 @@ def Calculate_Projections(directory, roots, tree_name, x_branch, y_branch, dimen
 
     sims = np.arange(start, end+1, deg)
 
-    for i, sim in tqdm(start, end, deg, desc = 'Calculating heatmaps', unit = ' Heatmaps', leave = True):
+    for i, sim in tqdm(start, end+1, deg, desc = 'Calculating heatmaps', unit = ' Heatmaps', leave = True):
                     #    dynamic_ncols=True, bar_format='{desc}: {percentage:3.0f}%|{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}, {rate_fmt}{postfix}]'):
         
         root_name = "/Sim" + str(round(sim))
@@ -579,7 +575,7 @@ def Calculate_Projections(directory, roots, tree_name, x_branch, y_branch, dimen
     return htmp_array, xlim, ylim
 
 
-def htmps_from_csv(roots, csv_folder):
+def htmps_from_csv(csv_folder, roots):
 
     import numpy as np
 
@@ -590,13 +586,13 @@ def htmps_from_csv(roots, csv_folder):
     
     htmps = np.zeros(len(sims), dtype=object)
     for i, sim in enumerate(sims):
-        name = csv_folder + f"Sim{round(sim)}.csv"
+        name = csv_folder + f"/Sim{round(sim)}.csv"
         htmps[i] = np.genfromtxt(name, delimiter = ',')
 
     return htmps
 
 
-def RadonReconstruction(roots, htmps, slices, xlim):
+def RadonReconstruction(roots, htmps, slices):
 
     from skimage.transform import iradon
     import numpy as np; import matplotlib.pyplot as plt
@@ -617,30 +613,33 @@ def RadonReconstruction(roots, htmps, slices, xlim):
 
         p = np.array([heatmap[layer] for heatmap in htmps]).T
         reconstructed_imgs[i] = iradon(p, theta = thetas)
+        #reconstructed_imgs[i][reconstructed_imgs[i] > 0.2] = 0
+        reconstructed_imgs[i][reconstructed_imgs[i] < 0] = 0
+        reconstructed_imgs[i][reconstructed_imgs[i] > 0.5] = 0
 
     # plt.figure(figsize = (6,6)); plt.imshow(reconstructed_imgs[slices//2], cmap = 'gray'); plt.colorbar(); plt.show()
     
-    fig = go.Figure(go.Heatmap(z = reconstructed_imgs[0], x = xlim, y = xlim))
+    fig = go.Figure(go.Heatmap(z = reconstructed_imgs[0]))
     fig.update_layout(width = 800, height = 800, xaxis = dict(autorange = 'reversed'), yaxis = dict(autorange = 'reversed'))
     fig.show()
 
     return reconstructed_imgs
 
 
-def coefficients_to_HU(reconstructed_imgs, slices, mu_water, xlim):
+def coefficients_to_HU(reconstructed_imgs, slices, mu_water):
 
     import numpy as np; import plotly.graph_objects as go; import plotly.io as pio
 
-    air_parameter = -450
+    # air_parameter = -600
 
     HU_images = np.zeros(slices, dtype="object")
 
     for i in range(len(HU_images)):
 
         HU_images[i] = np.round(1000 * ((reconstructed_imgs[i] - mu_water) / mu_water)).astype(int)
-        HU_images[i][HU_images[i] < air_parameter] = -1000
+        # HU_images[i][HU_images[i] < air_parameter] = -1000
 
-    fig = go.Figure(go.Heatmap(z = reconstructed_imgs[0], x = xlim, y = xlim, colorscale = [[0, 'black'], [1, 'white']],))
+    fig = go.Figure(go.Heatmap(z = HU_images[0], colorscale = [[0, 'black'], [1, 'white']],))
     fig.update_layout(width = 800, height = 800, xaxis = dict(autorange = 'reversed'), yaxis = dict(autorange = 'reversed'))
     fig.show()
 
@@ -704,7 +703,7 @@ def export_to_dicom(HU_images, size_y, slices, directory):
         thickness = (size_y * 2)/slices
         image2d = image.astype(np.uint16)
         ds.PixelData = image2d.tobytes()
-        name = directory + f"I{i}.dcm"
+        name = directory + f"/I{i}.dcm"
         ds.SliceThickness = str(thickness)
         ds.SpacingBetweenSlices = str(thickness)
         ds.ImagePositionPatient = f"0\\0\\{thickness * i}"

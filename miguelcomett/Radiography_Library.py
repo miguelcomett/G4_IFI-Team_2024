@@ -550,7 +550,7 @@ def CT_Heatmap_from_Dask(x_data, y_data, size_x, size_y, log_factor, x_shift, y_
     return log_map, x_edges, y_edges
 
 
-def Calculate_Projections(directory, roots, tree_name, x_branch, y_branch, dimensions, log_factor, pixel_size):
+def Calculate_Projections(directory, roots, tree_name, x_branch, y_branch, dimensions, log_factor, pixel_size, csv_folder):
     
     import numpy as np; from tqdm import tqdm
 
@@ -566,33 +566,37 @@ def Calculate_Projections(directory, roots, tree_name, x_branch, y_branch, dimen
     sims = np.arange(start, end+1, deg)
     htmps = np.zeros(len(sims), dtype=object)
 
-    for i, sim in tqdm(enumerate(sims), desc = 'Calculating heatmaps', unit = ' heatmaps', leave = True, 
-                       dynamic_ncols=True, bar_format='{desc}: {percentage:3.0f}%|{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}, {rate_fmt}{postfix}]'):
+    for i, sim in tqdm(enumerate(sims), desc = 'Calculating heatmaps', unit = ' heatmaps', leave = True):
+                    #    dynamic_ncols=True, bar_format='{desc}: {percentage:3.0f}%|{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}, {rate_fmt}{postfix}]'):
         
-        root_name_starts = "Sim" + str(round(sim))
+        root_name = "/Sim" + str(round(sim))
 
-        x_data, y_data = Root_to_Dask(directory, root_name_starts, tree_name, x_branch, y_branch)
+        x_data, y_data = Root_to_Dask(directory, root_name, tree_name, x_branch, y_branch)
         # if i == 0:
         htmp_array, xlim, ylim = CT_Heatmap_from_Dask(x_data, y_data, size_x, size_y, log_factor, x_shift, y_shift, pixel_size)
         # else: htmp_array, xlim, ylim = CT_Heatmap_from_Dask(x_data, y_data, size_x, size_y, log_factor, x_shift, y_shift, pixel_size)
+
+        name = csv_folder + f"/Sim{round(sims[i])}.csv"
+        np.savetxt(name, htmp_array, delimiter=',', fmt='%.5f')
+
         htmps[i] = htmp_array
 
     return htmps, xlim, ylim
 
 
-def save_htmps_csv(htmps, roots, csv_folder):
+# def save_htmps_csv(htmps, roots, csv_folder):
     
-    import numpy as np
+#     import numpy as np
 
-    start = roots[0]
-    end = roots[1]
-    deg = roots[2]
-    sims = np.arange(start, end+1, deg)
+#     start = roots[0]
+#     end = roots[1]
+#     deg = roots[2]
+#     sims = np.arange(start, end+1, deg)
 
-    for i, htmp in enumerate(htmps):
+#     for i, htmp in enumerate(htmps):
 
-        name = csv_folder + f"Sim{round(sims[i])}.csv"
-        np.savetxt(name, htmp, delimiter=',', fmt='%.5f')
+#         name = csv_folder + f"Sim{round(sims[i])}.csv"
+#         np.savetxt(name, htmp, delimiter=',', fmt='%.5f')
 
 
 def htmps_from_csv(roots, csv_folder):

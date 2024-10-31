@@ -16,7 +16,7 @@ void MyEventAction::EndOfEventAction(const G4Event * )
     if (arguments == 1)
     {
         G4int Event = G4RunManager::GetRunManager() -> GetCurrentEvent() -> GetEventID();
-        G4cout << "Energy deposition (keV): " << fEDep << "  |Event ID: " << Event << G4endl; 
+        // G4cout << "Energy deposition (keV): " << fEDep << "  |Event ID: " << Event << G4endl; 
     }
 
     if (fEDep == 0.0){return;}
@@ -30,7 +30,6 @@ void MyEventAction::EndOfEventAction(const G4Event * )
 
     if (arguments == 4)
     {
-        G4AnalysisManager * analysisManager = G4AnalysisManager::Instance();
         analysisManager -> FillNtupleDColumn(1, 0, fEDep);
         analysisManager -> AddNtupleRow(1);
     }

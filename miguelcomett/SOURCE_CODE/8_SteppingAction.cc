@@ -7,11 +7,12 @@ MySteppingAction::~MySteppingAction() {}
 
 void MySteppingAction::UserSteppingAction(const G4Step * step)
 {
-    if (arguments == 1 || arguments == 2 || arguments == 4)
+    G4LogicalVolume * Volume = step -> GetPreStepPoint() -> GetTouchableHandle() -> GetVolume() -> GetLogicalVolume();
+    const MyDetectorConstruction * detectorConstruction = static_cast < const MyDetectorConstruction *> (G4RunManager::GetRunManager() -> GetUserDetectorConstruction());
+    G4LogicalVolume * fScoringVolume = detectorConstruction -> GetScoringVolume();
+
+    if (arguments == 1 || arguments == 2)
     {
-        G4LogicalVolume * Volume = step -> GetPreStepPoint() -> GetTouchableHandle() -> GetVolume() -> GetLogicalVolume();
-        const MyDetectorConstruction * detectorConstruction = static_cast < const MyDetectorConstruction *> (G4RunManager::GetRunManager() -> GetUserDetectorConstruction());
-        G4LogicalVolume * fScoringVolume = detectorConstruction -> GetScoringVolume();
         if(Volume != fScoringVolume) { return; }
 
         G4double EDep = step -> GetTotalEnergyDeposit();
@@ -21,9 +22,6 @@ void MySteppingAction::UserSteppingAction(const G4Step * step)
 
     if (arguments == 3) 
     {
-        G4LogicalVolume * Volume = step -> GetPreStepPoint() -> GetTouchableHandle() -> GetVolume() -> GetLogicalVolume();
-        const MyDetectorConstruction * detectorConstruction = static_cast < const MyDetectorConstruction *> (G4RunManager::GetRunManager() -> GetUserDetectorConstruction());
-        G4LogicalVolume * fScoringVolume = detectorConstruction -> GetScoringVolume();
         if(Volume != fScoringVolume) { return; }
 
         G4StepPoint * endPoint = step -> GetPostStepPoint();
@@ -33,10 +31,11 @@ void MySteppingAction::UserSteppingAction(const G4Step * step)
 
         G4RunManager::GetRunManager() -> AbortEvent();  // kill event after first interaction
     }
-
-    G4bool noSecondaries = false;
+    
+    G4bool noSecondaries = true;
     if (arguments == 4 && noSecondaries)
     {
+        // G4cout << "No secondaries" << G4endl;
         const std::vector<const G4Track*>* secondaries = step -> GetSecondaryInCurrentStep();
 
         for (const auto & secondary : * secondaries)
@@ -45,5 +44,10 @@ void MySteppingAction::UserSteppingAction(const G4Step * step)
             nonPrimaryTrack -> SetTrackStatus(fStopAndKill);
         }
 
+        if(Volume != fScoringVolume) { return; }
+
+        G4double EDep = step -> GetTotalEnergyDeposit();
+        if (EDep == 0.0) { return; }
+        fEventAction -> AddEDep(EDep);
     }
 }

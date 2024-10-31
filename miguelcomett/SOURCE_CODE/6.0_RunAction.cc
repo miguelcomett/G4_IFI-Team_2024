@@ -62,7 +62,7 @@ void MyRunAction::BeginOfRunAction(const G4Run * run)
     strRunID << runID;
     analysisManager -> OpenFile(std::string(ROOT_OUTPUT_DIR) + "/root" + strRunID.str() + ".root");
     
-    if (primaryGenerator) 
+    if (primaryGenerator && primaryGenerator->GetParticleGun()) 
     {
         G4ParticleDefinition * particle = primaryGenerator -> GetParticleGun() -> GetParticleDefinition();
         G4double energy                 = primaryGenerator -> GetParticleGun() -> GetParticleEnergy();
@@ -78,9 +78,10 @@ G4Run * MyRunAction::GenerateRun()
 
 void MyRunAction::EndOfRunAction(const G4Run *)
 {
-    if (isMaster) { fRun -> EndOfRun(); }
+    if (isMaster && fRun) { fRun -> EndOfRun(); }
 
     G4AnalysisManager * analysisManager = G4AnalysisManager::Instance();
-    analysisManager -> Write();
-    analysisManager -> CloseFile();    
+    if (analysisManager) 
+        analysisManager -> Write();
+        analysisManager -> CloseFile();    
 }

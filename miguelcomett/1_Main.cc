@@ -17,7 +17,6 @@ int arguments = 0;
 int main(int argc, char** argv)
 {
     arguments = (argc);
-
     G4RunManager * runManager;
 
     if (argc == 1) 
@@ -31,11 +30,6 @@ int main(int argc, char** argv)
         G4cout << " ----------- Running in multi-threaded mode ----------" << G4endl;
     }
 
-    // random seed
-    // long seed = 123456;
-    // CLHEP::HepRandom::setTheSeed(seed);
-    // G4Random::setTheSeed(seed);
-
     long seed = std::time(nullptr);
     CLHEP::HepRandom::setTheSeed(seed);
 
@@ -47,17 +41,13 @@ int main(int argc, char** argv)
     visManager -> Initialize();
     G4UImanager * UImanager = G4UImanager::GetUIpointer();
 
-    G4UIExecutive * UI = 0;
-
-    // UI = new G4UIExecutive(argc, argv);
-    // UImanager -> ApplyCommand("/control/execute Visualization.mac");
-    // UI -> SessionStart();
-    
     if(argc == 1)
     {
+        G4UIExecutive * UI = nullptr;
         UI = new G4UIExecutive(argc, argv);
         UImanager -> ApplyCommand("/control/execute Visualization.mac");
         UI -> SessionStart();
+        delete UI;
     }
     else
     {
@@ -66,5 +56,6 @@ int main(int argc, char** argv)
         UImanager -> ApplyCommand(command + fileName);
     }
 
-    return 0;
+    delete visManager;
+    delete runManager;
 }

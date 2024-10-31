@@ -76,13 +76,10 @@ def ModifyRoot(directory, root_name, tree_name, branch_names, output_name, new_t
 
 def Root_to_Dask(directory, root_name_starts, tree_name, x_branch, y_branch):
     
-    import uproot
-    import os
-    import numpy as np
-    import dask.array as da
-    import dask.dataframe as dd
+    import uproot; import numpy as np
+    import dask.array as da; import dask.dataframe as dd
 
-    file_name = os.path.join(directory, root_name_starts + ".root")
+    file_name = directory + root_name_starts + ".root"
 
     with uproot.open(file_name) as root_file:
         tree = root_file[tree_name]
@@ -118,10 +115,8 @@ def Root_to_Dask(directory, root_name_starts, tree_name, x_branch, y_branch):
 
 def Heatmap_from_Dask(x_data, y_data, size, log_factor, x_shift, y_shift, save_as):
 
-    import matplotlib.pyplot as plt
-    import numpy as np
-    import dask.array as da
-    import dask.dataframe as dd
+    import matplotlib.pyplot as plt; import numpy as np
+    import dask.array as da; import dask.dataframe as dd
 
     x_data_shifted = x_data - x_shift
     y_data_shifted = y_data - y_shift
@@ -251,8 +246,7 @@ def BMO(SLS_Bone, SLS_Tissue):
 
 def Interactive_CNR(cropped_image):
 
-    import numpy as np
-    import matplotlib.pyplot as plt
+    import numpy as np; import matplotlib.pyplot as plt
 
     data = np.array(cropped_image)
     fig, ax = plt.subplots()
@@ -334,10 +328,7 @@ def Interactive_CNR(cropped_image):
 
 def Fixed_CNR(image_path, save_as, coords_signal, coords_bckgrnd):
     
-    from PIL import Image
-    import numpy as np
-    import numpy as np
-    import matplotlib.pyplot as plt
+    from PIL import Image; import numpy as np; import matplotlib.pyplot as plt
 
     image = Image.open(image_path)
     image = image.convert('L')
@@ -408,10 +399,8 @@ def Fixed_CNR(image_path, save_as, coords_signal, coords_bckgrnd):
 
 def Denoise_EdgeDetection(path, isArray, sigma_color, sigma_spatial):
 
-    from skimage.restoration import denoise_bilateral
-    import matplotlib.pyplot as plt
-    from PIL import Image
-    import numpy as np
+    import numpy as np; import matplotlib.pyplot as plt
+    from skimage.restoration import denoise_bilateral; from PIL import Image
     
     if isArray == True:
         original_image = np.array(path)
@@ -443,10 +432,8 @@ def Denoise_EdgeDetection(path, isArray, sigma_color, sigma_spatial):
 
 def Denoise(array, isHann, alpha, save_as, isCrossSection):
     
-    import numpy as np
-    from scipy.fft import fft2, fftshift, ifft2
-    import matplotlib.pyplot as plt
-    from scipy import signal
+    import numpy as np; import matplotlib.pyplot as plt
+    from scipy import signal; from scipy.fft import fft2, fftshift, ifft2
 
     image = array
 
@@ -506,8 +493,7 @@ def Denoise(array, isHann, alpha, save_as, isCrossSection):
 
 def Plotly_Heatmap(array, xlim, ylim, title, x_label, y_label, annotation, width, height, save_as):
 
-    import plotly.graph_objects as go
-    import plotly.io as pio
+    import plotly.io as pio; import plotly.graph_objects as go
 
     font_family = 'Merriweather'
     family_2    = 'Optima'
@@ -540,15 +526,12 @@ def Plotly_Heatmap(array, xlim, ylim, title, x_label, y_label, annotation, width
 
 def CT_Heatmap_from_Dask(x_data, y_data, size_x, size_y, log_factor, x_shift, y_shift, pixel_size):
 
-    import matplotlib.pyplot as plt
-    import numpy as np
-    import dask.array as da
-    import dask.dataframe as dd
+    import matplotlib.pyplot as plt; import numpy as np
+    import dask.array as da; import dask.dataframe as dd
 
     x_data_shifted = x_data - x_shift
     y_data_shifted = y_data - y_shift
 
-    # pixel_size = 0.5 # mm
     set_bins_x = np.arange(-size_x, size_x + pixel_size, pixel_size)
     set_bins_y = np.arange(-size_y, size_y + pixel_size, pixel_size)
     heatmap, x_edges, y_edges = da.histogram2d(x_data_shifted, y_data_shifted, bins = [set_bins_x, set_bins_y])
@@ -561,6 +544,8 @@ def CT_Heatmap_from_Dask(x_data, y_data, size_x, size_y, log_factor, x_shift, y_
     
     maxi = np.max(heatmap)
     log_map = np.log(maxi/(heatmap + log_factor)) / (pixel_size * 0.1)
+
+    plt.imshow(log_map, cmap = 'gray', extent=[x_edges[0], x_edges[-1], y_edges[0], y_edges[-1]])
 
     return log_map, x_edges, y_edges
 
@@ -581,16 +566,19 @@ def Calculate_Projections(directory, roots, tree_name, x_branch, y_branch, dimen
     sims = np.arange(start, end+1, deg)
     htmps = np.zeros(len(sims), dtype=object)
 
-    for i, sim in tqdm(enumerate(sims), desc = 'Calculating heatmaps', unit = ' heatmaps', leave = True):
+    for i, sim in tqdm(enumerate(sims), desc = 'Calculating heatmaps', unit = ' heatmaps', leave = True, 
+                       dynamic_ncols=True, bar_format='{desc}: {percentage:3.0f}%|{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}, {rate_fmt}{postfix}]'):
         
         root_name_starts = "Sim" + str(round(sim))
 
         x_data, y_data = Root_to_Dask(directory, root_name_starts, tree_name, x_branch, y_branch)
-        if i == 0: htmp_array, xlim, ylim = CT_Heatmap_from_Dask(x_data, y_data, size_x, size_y, log_factor, x_shift, y_shift)
-        else: htmp_array, xlim, ylim = CT_Heatmap_from_Dask(x_data, y_data, size_x, size_y, log_factor, x_shift, y_shift)
+        # if i == 0:
+        htmp_array, xlim, ylim = CT_Heatmap_from_Dask(x_data, y_data, size_x, size_y, log_factor, x_shift, y_shift, pixel_size)
+        # else: htmp_array, xlim, ylim = CT_Heatmap_from_Dask(x_data, y_data, size_x, size_y, log_factor, x_shift, y_shift, pixel_size)
         htmps[i] = htmp_array
 
     return htmps, xlim, ylim
+
 
 def save_htmps_csv(htmps, roots, csv_folder):
     
@@ -603,7 +591,7 @@ def save_htmps_csv(htmps, roots, csv_folder):
 
     for i, htmp in enumerate(htmps):
 
-        name = "csv_folder" + f"Sim{round(sims[i])}.csv"
+        name = csv_folder + f"Sim{round(sims[i])}.csv"
         np.savetxt(name, htmp, delimiter=',', fmt='%.5f')
 
 
@@ -622,6 +610,7 @@ def htmps_from_csv(roots, csv_folder):
         htmps[i] = np.genfromtxt(name, delimiter = ',')
 
     return htmps
+
 
 def RadonReconstruction(roots, htmps, slices, xlim):
 
@@ -672,6 +661,7 @@ def coefficients_to_HU(reconstructed_imgs, slices, mu_water, xlim):
     fig.show()
 
     return HU_images
+
 
 def export_to_dicom(HU_images, size_y, slices, directory):
 
@@ -738,6 +728,5 @@ def export_to_dicom(HU_images, size_y, slices, directory):
         ds.InstanceNumber = i+1
         ds.save_as(name)
         i += 1
-
 
 # end ========================================================================================================================================================

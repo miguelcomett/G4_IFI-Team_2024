@@ -48,6 +48,10 @@ int main(int argc, char** argv)
     G4UImanager * UImanager = G4UImanager::GetUIpointer();
 
     G4UIExecutive * UI = 0;
+
+    // UI = new G4UIExecutive(argc, argv);
+    // UImanager -> ApplyCommand("/control/execute Visualization.mac");
+    // UI -> SessionStart();
     
     if(argc == 1)
     {

@@ -3,6 +3,7 @@
 MyDetectorConstruction::MyDetectorConstruction()
 {
     DefineMaterials();
+    stlReader = new STLGeometryReader();
 
     fDetectorMessenger = new G4GenericMessenger(this, "/myDetector/", "Detector Construction");
     fDetectorMessenger -> DeclareProperty("nColumns", DetColumnNum, "Number of columns");
@@ -10,21 +11,23 @@ MyDetectorConstruction::MyDetectorConstruction()
     fDetectorMessenger -> DeclareProperty("ThicknessTarget", target_Thickness, "Thickness of the target");
 
     DetColumnNum = 10, DetRowNum = 10;
-    materialTarget = Bone;
-    
+
+    target_Thickness = 1 * mm; 
+
     boneHeight = 60 * mm;
     innerBoneRadius = 0.0;
     outerBoneRadius = 22.5 * mm;
     targetRotation = new G4RotationMatrix(0, 90*deg, 0);
-    
+    targetPosition = G4ThreeVector(0.0, 0.0, 0.0);
+
     isArm = false;
     isBone = false;
     isOsBone = false;
     isArmDivided = false;
+    is3DModel = true;
 }
 
 MyDetectorConstruction::~MyDetectorConstruction(){}
-
 
 G4VPhysicalVolume * MyDetectorConstruction::Construct()
 {
@@ -33,7 +36,7 @@ G4VPhysicalVolume * MyDetectorConstruction::Construct()
     logicWorld = new G4LogicalVolume(solidWorld, worldMaterial, "LogicalWorld");
     physicalWorld = new G4PVPlacement(0, G4ThreeVector(0.0, 0.0, 0.0), logicWorld, "PhysicalWorld", 0, false, 0, true);
 
-    if (isArm) ConstructArm(); else if (isBone) ConstructBone(); else ConstructTarget();
+    if (isArm) ConstructArm(); else if (isBone) ConstructBone(); else if (is3DModel) ConstructThorax(); else ConstructTarget();
 
     solidDetector = new G4Box("solidDetector", xWorld/DetRowNum, yWorld/DetColumnNum, 0.01*m);
     logicDetector = new G4LogicalVolume(solidDetector, Silicon, "logicalDetector");
@@ -54,14 +57,15 @@ void MyDetectorConstruction::ConstructSDandField()
     logicDetector -> SetSensitiveDetector(sensitiveDetector);
 }
 
+// Build Geometries ===============================================================================================================================
 
 void MyDetectorConstruction::ConstructTarget()
-{
-    target_Thickness = 10 * mm; 
+{ 
+    materialTarget = Bone;
 
     Radiator_Position = G4ThreeVector(0.0, 0.0, 0.25*m);
 
-    solidRadiator = new G4Box("solidRadiator", 0.05*m, 0.05*m, target_Thickness/2);
+    solidRadiator = new G4Box("solidRadiator", 0.25*m, 0.25*m, target_Thickness/2);
     logicRadiator = new G4LogicalVolume(solidRadiator, materialTarget, "logicalRadiator");
     physicalRadiator = new G4PVPlacement(0, Radiator_Position, logicRadiator, "PhysicalRadiator", logicWorld, false, 0, true);
     fScoringVolume = logicRadiator;
@@ -83,7 +87,7 @@ void MyDetectorConstruction::ConstructArm()
         if (isOsBone) {ConstructOsteoporoticBone();} else
         {
             logicBone = new G4LogicalVolume(solidBone, Bone, "LogicBone");
-            physBone = new G4PVPlacement(targetRotation, targetPos, logicBone, "physBone", logicWorld, false, 0, true);
+            physBone = new G4PVPlacement(targetRotation, targetPosition, logicBone, "physBone", logicWorld, false, 0, true);
         }
     }
 
@@ -95,9 +99,9 @@ void MyDetectorConstruction::ConstructArm()
     logicGrasa = new G4LogicalVolume(solidGrasa, Fat, "LogicGrasa");
     logicSkin = new G4LogicalVolume(solidSkin, Skin, "LogicSkin");
 
-    physMuscle = new G4PVPlacement(targetRotation, targetPos, logicMuscle, "physMuscle", logicWorld, false, 0, true);
-    physGrasa = new G4PVPlacement(targetRotation, targetPos, logicGrasa, "physGrasa", logicWorld, false, 0, true);
-    physSkin = new G4PVPlacement(targetRotation, targetPos, logicSkin, "physSkin", logicWorld, false, 0, true);
+    physMuscle = new G4PVPlacement(targetRotation, targetPosition, logicMuscle, "physMuscle", logicWorld, false, 0, true);
+    physGrasa = new G4PVPlacement(targetRotation, targetPosition, logicGrasa, "physGrasa", logicWorld, false, 0, true);
+    physSkin = new G4PVPlacement(targetRotation, targetPosition, logicSkin, "physSkin", logicWorld, false, 0, true);
 }
 
 void MyDetectorConstruction::ConstructBone() 
@@ -107,7 +111,7 @@ void MyDetectorConstruction::ConstructBone()
     if (isOsBone) ConstructOsteoporoticBone(); else 
     {
         logicBone = new G4LogicalVolume(solidBone, Bone, "LogicBone");
-        physBone = new G4PVPlacement(targetRotation, targetPos, logicBone, "physBone", logicWorld, false, 0, true);
+        physBone = new G4PVPlacement(targetRotation, targetPosition, logicBone, "physBone", logicWorld, false, 0, true);
     }
 }
 
@@ -138,7 +142,7 @@ void MyDetectorConstruction::ConstructOsteoporoticBone()
     }
 
     logicBone = new G4LogicalVolume(porousBone, Bone, "PorousBoneLogical");
-    physBone = new G4PVPlacement(targetRotation, targetPos, logicBone, "physBone", logicWorld, false, 0);
+    physBone = new G4PVPlacement(targetRotation, targetPosition, logicBone, "physBone", logicWorld, false, 0);
 }
 
 void MyDetectorConstruction::ConstructArmDivided()
@@ -155,6 +159,52 @@ void MyDetectorConstruction::ConstructArmDivided()
     physHealthy  = new G4PVPlacement(targetRotation, healthy_position, logicHealthy, "physHealthy", logicWorld, false, 0, true);
 }
 
+// Load 3D Models ===============================================================================================================================
+
+void MyDetectorConstruction::ConstructThorax()
+{
+    G4STL stl; 
+
+    G4double thoraxAngle = 0;
+    Model3DRotation = new G4RotationMatrix(0*deg, -90*deg, (thoraxAngle+180)*deg);
+
+    Ribcage = stl.Read("/Users/miguelcomett/geant4-v11.2.2_2/Estancia_G4/G4_IFI-Team_2024/miguelcomett/3D_Models/RIBCAGE_Real.stl");
+    if (Ribcage) 
+    {
+        logicRibcage = new G4LogicalVolume(Ribcage, Bone, "Ribcage");
+        new G4PVPlacement(Model3DRotation, targetPosition, logicRibcage, "Ribcage", logicWorld, false, 0, true);
+
+        G4cout << "Modelo bone importado exitosamente" << G4endl;
+    }
+    else {G4cout << "Modelo bone no importado" << G4endl;}
+
+    Lungs = stl.Read("/Users/miguelcomett/geant4-v11.2.2_2/Estancia_G4/G4_IFI-Team_2024/miguelcomett/3D_Models/LUNGS.stl");
+    Heart = stl.Read("/Users/miguelcomett/geant4-v11.2.2_2/Estancia_G4/G4_IFI-Team_2024/miguelcomett/3D_Models/HEART.stl");
+    if (Lungs && Heart) 
+    {
+        logicLungs = new G4LogicalVolume(Lungs, Air, "Lungs");
+        new G4PVPlacement(Model3DRotation, targetPosition, logicLungs, "Lungs", logicWorld, false, 0, true);
+        logicHeart = new G4LogicalVolume(Heart, Muscle, "Heart");
+        new G4PVPlacement(Model3DRotation, targetPosition, logicHeart, "Heart", logicWorld, false, 0, true);
+
+        G4cout << "Modelo LUNGS importado exitosamente" << G4endl; G4cout << "Modelo HEART importado exitosamente" << G4endl;
+    }
+    else {G4cout << "Modelo LUNGS no importado" << G4endl; G4cout << "Modelo HEART no importado" << G4endl;}
+
+    Thorax1 = stl.Read("/Users/miguelcomett/geant4-v11.2.2_2/Estancia_G4/G4_IFI-Team_2024/miguelcomett/3D_Models/TORAX_Real.stl");
+    Thorax2 = stl.Read("/Users/miguelcomett/geant4-v11.2.2_2/Estancia_G4/G4_IFI-Team_2024/miguelcomett/3D_Models/TORAX_Real0.stl");
+    if (Thorax1 && Thorax2) 
+    {
+        originMatrix = new G4RotationMatrix(0,0,0);
+        subtractedSolid = new G4SubtractionSolid("SoftWithBoneHole", Thorax1, Ribcage, originMatrix, targetPosition); // Resta el volumen "bone" del volumen "tissue"
+        subtractedSolid2 = new G4SubtractionSolid("SoftWithBoneAndToraxHole", subtractedSolid, Thorax2, originMatrix, targetPosition); // Resta el volumen "TORAX_Real0" del resultado anterior
+        finalSubtractedSolid = new G4LogicalVolume(subtractedSolid2, Fat, "Thorax"); // Crear el volumen lógico del sólido resultante
+        new G4PVPlacement(Model3DRotation, G4ThreeVector(0,0,0), finalSubtractedSolid, "Thorax", logicWorld, false, 0, true);
+
+        G4cout << "Modelo tissue con huecos de bone y TORAX_Real0 importado exitosamente" << G4endl;
+    }
+    else {G4cout << "Error al importar los modelos STL" << G4endl;}
+}
 
 void MyDetectorConstruction::DefineMaterials()
 {
@@ -162,13 +212,22 @@ void MyDetectorConstruction::DefineMaterials()
 
     // Elements ========================================================================================
 
-    C = nist -> FindOrBuildElement("C");
-    N = new G4Element("Nitrogen", "N", 7, 14.01*g/mole);
-    O = new G4Element("Oxygen"  , "O", 8, 16.00*g/mole);
-    V = new G4Element("Vanadium", "V", 23, 50.94*g/mole);
-    Cd = new G4Element("Cadmium", "Cd", 48, 112.41*g/mole);
-    Te = new G4Element("Tellurium", "Te", 52, 127.60*g/mole);
-    W = new G4Element("Wolframium", "W", 74, 183.84*g/mole);
+    // C  = nist -> FindOrBuildElement("C");
+    C  = new G4Element("Carbon",     "C",  6,   12.01*g/mole);
+    N  = new G4Element("Nitrogen",   "N",  7,   14.01*g/mole);
+    O  = new G4Element("Oxygen",     "O",  8,   16.00*g/mole);
+    Mg = new G4Element("Magnesium",  "Mg", 12,  24.31*g/mole);
+    Ca = new G4Element("Calcium",    "Ca", 20,  40.08*g/mole);
+    V  = new G4Element("Vanadium",   "V",  23,  50.94*g/mole);
+    Cd = new G4Element("Cadmium",    "Cd", 48, 112.41*g/mole);
+    Te = new G4Element("Tellurium",  "Te", 52, 127.60*g/mole);
+    W  = new G4Element("Wolframium", "W",  74, 183.84*g/mole);
+
+    Calcium = new G4Material("Calcium", 1.55*g/cm3, 1);
+    Calcium -> AddElement(nist -> FindOrBuildElement("Ca"), 1);
+
+    Magnesium = new G4Material("Magnesium", 1.74*g/cm3, 1);
+    Magnesium -> AddElement(nist -> FindOrBuildElement("Mg"), 1);
 
     Aluminum = new G4Material("Aluminum", 2.70*g/cm3, 1);
     Aluminum -> AddElement(nist -> FindOrBuildElement("Al"), 1);

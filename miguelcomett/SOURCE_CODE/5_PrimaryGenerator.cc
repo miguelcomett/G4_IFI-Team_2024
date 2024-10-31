@@ -13,14 +13,12 @@ MyPrimaryGenerator::MyPrimaryGenerator()
     fParticleGun -> SetParticleEnergy(40 * keV);
 }
 
-
 MyPrimaryGenerator::~MyPrimaryGenerator() {delete fParticleGun;}
-
 
 void MyPrimaryGenerator::GeneratePrimaries(G4Event * anEvent)
 { 
     G4double x0, y0, z0;
-    G4double radius = 6.5;
+    G4double radius = 4.5;
 
     x0 = 2 * (G4UniformRand() - 0.5);
     y0 = 2 * (G4UniformRand() - 0.5);

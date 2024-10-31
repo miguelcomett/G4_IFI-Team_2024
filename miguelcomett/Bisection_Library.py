@@ -105,7 +105,7 @@ def BisectionEnergiesNIST(directory, mac_filename, root_filename, outputcsv_name
     from tqdm import tqdm
 
     executable_file = "Sim"
-    run_sim = f"./{executable_file} {mac_filename} . ."
+    run_sim = f"./{executable_file} {mac_filename} ."
     
     output_file = os.path.join(directory + 'ROOT/' + outputcsv_name)
     input_file  = os.path.join(directory + 'ROOT/' + input_csv)
@@ -274,8 +274,8 @@ def BisectionFixedEnergyStep(directory, mac_filename, root_filename, outputcsv_n
     from tqdm import tqdm
     
     executable_file = "Sim"
-    run_sim = f"./{executable_file} {mac_filename}"
-    output_file = os.path.join(directory + 'ROOT/' + outputcsv_name)
+    run_sim = f"./{executable_file} {mac_filename} . "
+    output_file = outputcsv_name
 
     results = []
     counter_3 = 0
@@ -305,14 +305,13 @@ def BisectionFixedEnergyStep(directory, mac_filename, root_filename, outputcsv_n
             if kev > 1 and kev <= 10:
                 thickness = 0.001 * kev
             if kev > 10 and kev <= 100:
-                thickness = 0.05 * kev
+                thickness = .01 * kev
             if kev > 100:
                 thickness = 0.01 * kev
 
             thickness_0 = thickness / 100
             thickness_1 = thickness * 100
 
-        # print('Thickness inicial:', thickness)
         # print('t0', thickness_0)
         # print('t1', thickness_1)
 
@@ -326,12 +325,14 @@ def BisectionFixedEnergyStep(directory, mac_filename, root_filename, outputcsv_n
                 thickness = (thickness_0 + thickness_1) / 2
                 counter_4 = 1 
 
+            # print('Thickness:', thickness)
+
             mac_template = """\
             /run/numberOfThreads 1
             /run/initialize
             /gun/energy {energy} eV
-            # /myDetector/ThicknessTarget {thickness:.12f}
-            # /run/reinitializeGeometry
+            /myDetector/ThicknessTarget {thickness:.12f}
+            /run/reinitializeGeometry
             /run/beamOn {beam_count}
             """
 
@@ -365,6 +366,8 @@ def BisectionFixedEnergyStep(directory, mac_filename, root_filename, outputcsv_n
             
             ratio = hits_count / beam_count * 100
 
+            # print('ratio:', ratio, '%')
+
             if counter_3 == 1:
                 if ratio == 0:
                     thickness_0 = thickness_0 / 10
@@ -379,17 +382,20 @@ def BisectionFixedEnergyStep(directory, mac_filename, root_filename, outputcsv_n
                 
                 counter_3 = 0
 
-            if   ratio > 50 + (tolerance / 2):
+            if   ratio > (50 + tolerance / 2):
                 thickness_0 = thickness
-            elif ratio < 50 - (tolerance / 2):
+            elif ratio < (50 - tolerance / 2):
                 thickness_1 = thickness 
             else:
+                # print('in tolerance')
                 if counter_2 > 0:
                     try:
                         branch2_array = tree[branch_2].array(library="np")
                         if len(branch2_array) > 0:
                             coeficient = branch2_array[0]
                             results.append({'Energy': energy / 1000, 'Optimal_Thickness': thickness, 'AtCoefficient': coeficient})
+
+                            # print(results)
                             
                             # print('Energía calculada:', energy/1000, 'keV')
                             # print('Ratio final:', ratio, '%')
@@ -409,9 +415,10 @@ def BisectionFixedEnergyStep(directory, mac_filename, root_filename, outputcsv_n
                 if counter_2 == 0:
                     beam_count = 100000
                     counter_2 = 1
+                    # print('diez mil')
 
             counter_1 += 1
-            if counter_1 == 100:
+            if counter_1 == 30:
                 print("No se encontró una solución en el rango especificado.")
                 print('Thickness:', thickness, 'mm')
                 print('Ratio:', ratio, '%')

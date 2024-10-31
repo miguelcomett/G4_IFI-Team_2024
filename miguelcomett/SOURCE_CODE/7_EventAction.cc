@@ -5,11 +5,11 @@ extern int arguments;
 MyEventAction::MyEventAction(MyRunAction *) {fEDep = 0.0;}
 MyEventAction::~MyEventAction(){}
 
-void MyEventAction::BeginOfEventAction(const G4Event * anEvent) {fEDep = 0.0;}
+void MyEventAction::BeginOfEventAction(const G4Event * ) {fEDep = 0.0;}
 
 void MyEventAction::AddEDep(G4double EDep) { fEDep = fEDep + EDep; }
 
-void MyEventAction::EndOfEventAction(const G4Event * anEvent) 
+void MyEventAction::EndOfEventAction(const G4Event * ) 
 { 
     fEDep = fEDep / keV;
 

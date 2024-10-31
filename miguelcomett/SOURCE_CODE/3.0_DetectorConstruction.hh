@@ -20,8 +20,11 @@
 #include "G4VSolid.hh"
 #include "G4Sphere.hh"
 #include "G4PhysicalVolumeStore.hh"
+#include "G4SubtractionSolid.hh"
 
 #include "3.1_DetectorAction.hh"
+#include "3.2_Geometry3D.hh"
+#include "3.3_GeometryReader.hh"
 
 class MyDetectorConstruction : public G4VUserDetectorConstruction
 {   
@@ -31,6 +34,13 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
         void ConstructArm();
         void ConstructTissue();
         void ConstructArmDivided();
+
+        void ConstructThorax();
+
+        // void ConstructBONE3D();
+        // void ConstructSOFT3D();
+        // void ConstructSOFT3Dbool();
+        // void ConstructORGANS();
 
     public:
 
@@ -55,8 +65,8 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
         G4double target_Thickness, innerBoneRadius, outerBoneRadius, boneHeight, poreRadius, xWorld, yWorld, zWorld, 
                  regionMinZ, regionMaxZ, regionMinRadius, regionMaxRadius, r, theta, z, x, y,
                  innerMuscleRadius, outerMuscleRadius, innerGrasaRadius, outerGrasaRadius, innerSkinRadius, outerSkinRadius,
-                 fractionMass_VO2, fractionMass_SiO2;
-        G4bool isArm, isBone, isOsBone, isPlacas, isArmDivided, check_Overlaps;
+                 fractionMass_VO2, fractionMass_SiO2, fTargetAngle;
+        G4bool isArm, isBone, isOsBone, isPlacas, isArmDivided, is3DModel, check_Overlaps;
 
         G4Box    * solidWorld, * solidDetector, * solidRadiator;
         G4Tubs   * solidBone, * solidMuscle, * solidGrasa, * solidSkin, * solidBone2, * osteoBone, * healthyBone; 
@@ -64,17 +74,23 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
         G4VSolid * porousBone; 
 
         G4LogicalVolume   * logicWorld, * logicRadiator, * logicDetector, * logicBone, * logicMuscle, 
-                          * logicGrasa, * logicSkin, * logicOs, * logicHealthy, * fScoringVolume;
+                          * logicGrasa, * logicSkin, * logicOs, * logicHealthy, * fScoringVolume,
+                          * logicLungs, * logicHeart, * finalSubtractedSolid, * logicRibcage;
         G4VPhysicalVolume * physicalWorld, * physicalRadiator, * physicalDetector, * physBone, * physArm, 
                           * physMuscle, * physGrasa, * physSkin, * physOs, * physHealthy;
                         
-        G4ThreeVector targetPos, DetectorPosition, porePosition, osteo_position, healthy_position, Radiator_Position;
-        G4RotationMatrix * targetRotation; 
+        G4ThreeVector targetPosition, DetectorPosition, porePosition, osteo_position, healthy_position, Radiator_Position;
+        G4RotationMatrix * targetRotation, * Model3DRotation, * originMatrix; 
 
-        G4Element  * C, * Al, * N, * O, * V, * Cd, * Te, * W;
-        G4Material * SiO2, * H2O, * Aerogel, * worldMaterial, * Aluminum, * Air, * Silicon, * materialTarget, 
+        G4Element  * C, * Al, * N, * O, * Ca, * Mg, * V, * Cd, * Te, * W;
+        G4Material * SiO2, * H2O, * Aerogel, * worldMaterial, * Calcium, * Magnesium, * Aluminum, * Air, * Silicon, * materialTarget, 
                    * CadTel, * vanadiumGlassMix, * amorphousGlass, * Wolframium, * V2O5, 
-                   * Fat, * Skin, * Muscle, * Bone, * OsBone, * compactBone, TissueMix;
+                   * Fat, * Skin, * Muscle, * Bone, * OsBone, * compactBone, * TissueMix;
+        
+        STLGeometryReader * stlReader;
+        G4TessellatedSolid * Ribcage, * Lungs, * Heart;
+        G4VSolid * Thorax1, * Thorax2;
+        G4SubtractionSolid * subtractedSolid, * subtractedSolid2;
 };
 
 #endif 

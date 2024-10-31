@@ -1,4 +1,4 @@
-# 1.0. ========================================================================================================================================================
+# 1.1. ========================================================================================================================================================
 
 def Merge_Roots(directory, starts_with, output_name):
 
@@ -47,6 +47,30 @@ def Merge_Roots(directory, starts_with, output_name):
         for key, data in tqdm(data_dict.items(), desc = 'Writing file', unit='data', leave = True):
             f_out[key] = data
 
+# 1.2. ========================================================================================================================================================
+
+def ModifyRoot(directory, root_name, tree_name, branch_names, output_name, new_tree_name, new_branch_names):
+
+    import uproot
+    import uproot.writing
+    import os
+
+    input_file = directory + root_name + '.root'
+    with uproot.open(input_file) as file:       
+        tree = file[tree_name]
+        branches = tree.arrays(branch_names, library="np")
+        
+    output_file = directory + output_name
+    counter = 1
+    while True:
+        if not os.path.exists(f"{output_file}{counter}.root"):
+            output_file = f"{output_file}{counter}.root"
+            break
+        counter = counter + 1
+
+    with uproot.recreate(output_file) as new_file:
+        new_file[new_tree_name] = {new_branch_names[0]: branches[branch_names[0]],
+                                   new_branch_names[1]: branches[branch_names[1]]}
 
 # 2.0. ========================================================================================================================================================
 
@@ -511,5 +535,66 @@ def Plotly_Heatmap(array, xlim, ylim, title, x_label, y_label, annotation, width
    
     if save_as != '': pio.write_image(fig, 'Results/' + save_as + '.png', width = width, height = height, scale = 5)
     fig.show()
+
+# 8.0 ========================================================================================================================================================
+
+def CT_Heatmap_from_Dask(x_data, y_data, size_x, size_y, log_factor, x_shift, y_shift, save_as):
+
+    import matplotlib.pyplot as plt
+    import numpy as np
+    import dask.array as da
+    import dask.dataframe as dd
+
+    x_data_shifted = x_data - x_shift
+    y_data_shifted = y_data - y_shift
+
+    pixel_size = 0.5 # mm
+    set_bins_x = np.arange(-size_x, size_x + pixel_size, pixel_size)
+    set_bins_y = np.arange(-size_y, size_y + pixel_size, pixel_size)
+    heatmap, x_edges, y_edges = da.histogram2d(x_data_shifted, y_data_shifted, bins = [set_bins_x, set_bins_y])
+    heatmap = heatmap.T
+    heatmap = np.rot90(heatmap, 2)
+    rows = heatmap.shape[0]
+
+    heatmap = heatmap.compute()  
+    x_edges = x_edges.compute()  
+    y_edges = y_edges.compute()
+    
+    maxi = np.max(heatmap)
+    normal_map = np.log(maxi/(heatmap + log_factor)) / (pixel_size * 0.1)
+
+    plt.figure(figsize = (14, 4))
+    plt.subplot(1, 3, 1)
+    plt.imshow(normal_map, cmap = 'gray', extent = [x_edges[0], x_edges[-1], y_edges[0], y_edges[-1]])
+    plt.axis('off')
+    if save_as != '': plt.savefig('Results/' + save_as + '.png', bbox_inches = 'tight', dpi = 900)
+    plt.subplot(1, 3, 2)
+    plt.plot(normal_map[2*rows//3,:])
+    plt.subplot(1, 3, 3)
+    plt.plot(normal_map[:,rows//2])
+
+    return normal_map, x_edges, y_edges
+
+
+def Calculate_Projections(directory, sims, tree_name, x_branch, y_branch, size_x, size_y, log_factor, x_shift, y_shift):
+    
+    import Radiography_Library as RadLib
+    import numpy as np
+    import matplotlib.pyplot as plt
+    from tqdm import tqdm
+
+    for i, sim in tqdm(enumerate(sims), desc = 'Calculating heatmaps', unit = ' heatmaps', leave = True):
+        root_name_starts = "Sim" + str(round(sim))
+
+        x_data, y_data = RadLib.Root_to_Dask(directory, root_name_starts, tree_name, x_branch, y_branch)
+        if i == 0:
+            htmp_array, xlim, ylim = RadLib.Heatmap_from_Dask(x_data, y_data, size_x, size_y, log_factor, x_shift, y_shift, save_as)
+        else:
+            htmp_array, xlim, ylim = RadLib.Heatmap_from_Dask(x_data, y_data, size_x, size_y, log_factor, x_shift, y_shift, save_as)
+            plt.close()
+        htmps[i] = htmp_array
+
+    return htmps
+
 
 # end ========================================================================================================================================================

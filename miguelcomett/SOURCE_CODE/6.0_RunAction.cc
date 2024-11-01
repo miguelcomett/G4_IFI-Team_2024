@@ -76,9 +76,10 @@ G4Run * MyRunAction::GenerateRun()
     return fRun;
 }
 
-void MyRunAction::EndOfRunAction(const G4Run *)
+void MyRunAction::EndOfRunAction(const G4Run * run)
 {
-    if (isMaster && fRun) { fRun -> EndOfRun(); }
+    if (isMaster && fRun) { 
+        fRun -> EndOfRun(); }
 
     G4AnalysisManager * analysisManager = G4AnalysisManager::Instance();
     if (analysisManager) 

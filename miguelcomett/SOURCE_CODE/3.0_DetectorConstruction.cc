@@ -12,7 +12,7 @@ MyDetectorConstruction::MyDetectorConstruction()
 
     DetColumnNum = 10, DetRowNum = 10;
 
-    target_Thickness = 1 * mm; 
+    target_Thickness = 0.0001 * mm; 
 
     boneHeight = 60 * mm;
     innerBoneRadius = 0.0;
@@ -24,7 +24,7 @@ MyDetectorConstruction::MyDetectorConstruction()
     isBone = false;
     isOsBone = false;
     isArmDivided = false;
-    is3DModel = true;
+    is3DModel = false;
 }
 
 MyDetectorConstruction::~MyDetectorConstruction()

@@ -20,8 +20,8 @@ class MyRunAction : public G4UserRunAction
         MyRunAction();
         ~MyRunAction(); 
 
-        void BeginOfRunAction(const G4Run *) override;
-        void EndOfRunAction  (const G4Run *) override;
+        void BeginOfRunAction(const G4Run * run) override;
+        void EndOfRunAction  (const G4Run * run) override;
 
         G4Run * GenerateRun() override;
         

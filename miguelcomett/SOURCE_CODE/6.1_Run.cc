@@ -12,109 +12,98 @@ void Run::SetPrimary(G4ParticleDefinition * particle, G4double energy)
     link_Energy = energy;
 }
 
-void Run::CountProcesses(G4String procName) 
+void Run::CountProcesses(G4String processName) 
 {
-    if (arguments == 3)
-    {
-        std::map <G4String, G4int> ::iterator it = fProcCounter.find(procName);
-        if ( it == fProcCounter.end()) {fProcCounter[procName] = 1;} else {fProcCounter[procName]++;}
-    }
+    std::map <G4String, G4int> ::iterator it = processCounter.find(processName);
+    if ( it == processCounter.end()) {processCounter[processName] = 1;} else {processCounter[processName]++;}
 } 
 
 void Run::EndOfRun()
 {
-    if (arguments == 3) 
+    const MyDetectorConstruction * detectorConstruction = static_cast < const MyDetectorConstruction *> (G4RunManager::GetRunManager() -> GetUserDetectorConstruction());     
+
+    material = detectorConstruction -> GetMaterial();
+    density = material  -> GetDensity();
+    thickness = detectorConstruction -> GetThickness();
+    particleName = link_ParticleDefinition -> GetParticleName(); 
+
+    G4cout << G4endl; G4cout << G4endl;
+    G4cout << "============== Run Summary ===============" << G4endl;
+    G4cout << "     The run is: " << numberOfEvent << " " << particleName << " of "<< G4BestUnit(link_Energy, "Energy") << G4endl;
+    G4cout << "      Through " << G4BestUnit(thickness, "Length") << "of " << material -> GetName() << G4endl;
+    G4cout << "        (Density: " << G4BestUnit(density, "Volumic Mass") << ")" << G4endl;
+    G4cout << "==========================================" << G4endl;
+    G4cout << G4endl; G4cout << G4endl;
+
+    if (arguments == 3)
     {
-        G4int prec = 5; 
-        G4int dfprec = G4cout.precision(prec);
+        G4cout << "======== Process calls frequency ========" << G4endl;
 
-        const MyDetectorConstruction * detectorConstruction = static_cast < const MyDetectorConstruction *> (G4RunManager::GetRunManager() -> GetUserDetectorConstruction());     
+        totalCount = 0;
+        survive = 0; 
 
-        G4String particleName = link_ParticleDefinition -> GetParticleName();    
-        G4Material * material = detectorConstruction -> GetMaterial();
-        G4double density      = material  -> GetDensity();
-        G4double Thickness    = detectorConstruction -> GetThickness();
-            
-        G4cout << "\n ========================== run summary ======================== \n";
-
-        G4cout << "\n The run is: " << numberOfEvent << " " << particleName << " of "
-            << G4BestUnit(link_Energy, "Energy") << " through " 
-            << G4BestUnit(Thickness, "Length") << " of "
-            << material -> GetName() << " (density: " 
-            << G4BestUnit(density, "Volumic Mass") << ")" << G4endl;
-
-        G4int totalCount = 0;
-        G4int survive = 0;  
-        G4cout << "\n Process calls frequency --->";
         std::map < G4String, G4int >::iterator it;  
-        
-        for (it = fProcCounter.begin(); it != fProcCounter.end(); it++) 
+        for (it = processCounter.begin(); it != processCounter.end(); it++) 
         {
-            G4String procName = it -> first;
-            G4int    count    = it -> second;
-            totalCount += count; 
-            G4cout << "\t" << procName << " = " << count;
-            if (procName == "Transportation") survive = count;
+            processName = it -> first;
+            count    = it -> second;
+            totalCount = totalCount + count; 
+            G4cout << processName << " = " << count << G4endl;
+            if (processName == "Transportation") survive = count;
         }
+        processCounter.clear();
+
+        G4cout << "==========================================" << G4endl;
         G4cout << G4endl;
 
-        if (totalCount == 0) { G4cout.precision(dfprec);   return;};  
+        decimals = 4; defaultDecimals = G4cout.precision(decimals);
+        if (totalCount == 0) { G4cout.precision(defaultDecimals); return;};  
 
-        G4double ratio = double(survive)/totalCount;
-
-        G4cout << "\n Nb of incident particles unaltered after "
-                << G4BestUnit(Thickness,"Length") << " of "
-                << material -> GetName() << " : " << survive 
-                << " over " << totalCount << " incident particles."
-                << "  Ratio = " << 100 * ratio << " %" << G4endl;
-        
-        // if (ratio == 0.0) return;
-        
-        G4double crossSection = - std::log(ratio)/Thickness;     
-        G4double Coefficient = crossSection/density;
-        
-        G4cout << " ---> CrossSection per volume:\t" << crossSection*cm << " cm^-1 "
-               << "\tCrossSection per mass: " << G4BestUnit(Coefficient, "Surface/Mass")
-               << G4endl;
+        ratio = double(survive) / totalCount;
+        crossSection = - std::log(ratio) / thickness;     
+        Coefficient = crossSection / density;
+        link_Energy = link_Energy / keV;
+    
+        G4cout << G4endl;
+        G4cout << "======== Transportation Summary ==========" << G4endl;
+        G4cout << "Number of particles unaltered after " << G4BestUnit(thickness,"Length") << G4endl;
+        G4cout << "--> Of " << material -> GetName() << ", p = " << G4BestUnit(density, "Volumic Mass") << G4endl;
+        G4cout << "--> " << survive << " over " << totalCount << " incident particles." << G4endl;
+        G4cout << "--> Ratio = " << 100 * ratio << "%" << G4endl;
+        G4cout << "--> CrossSection per volume: " << crossSection*cm << " cm^-1" << G4endl;
+        G4cout << "--> CrossSection per mass: " << G4BestUnit(Coefficient, "Surface/Mass") << G4endl;
+        G4cout << "==========================================" << G4endl;
+        G4cout << G4endl; G4cout << G4endl;
         
         Coefficient = Coefficient * g / cm2;
-        link_Energy = link_Energy / keV;
-        G4AnalysisManager * analysisManager = G4AnalysisManager::Instance();
 
+        G4AnalysisManager * analysisManager = G4AnalysisManager::Instance();
         analysisManager -> FillNtupleDColumn(0, 0, Coefficient);
         analysisManager -> FillNtupleDColumn(0, 1, link_Energy);
         analysisManager -> FillNtupleDColumn(0, 2, survive);
         analysisManager -> AddNtupleRow(0);
-       
-        fProcCounter.clear(); // remove all contents in fProcCounter 
-        G4cout.precision(dfprec); //restore default format
-    }
-
-    G4cout << "\n ===============================================================\n";
-    G4cout << "\n ";
+        
+        G4cout.precision(defaultDecimals);
+    }   
 }
 
 void Run::Merge(const G4Run * run)
 {
-    if (arguments == 3)
+    const Run * localRun = static_cast <const Run*> (run);
+
+    link_ParticleDefinition = localRun -> link_ParticleDefinition;
+    link_Energy = localRun -> link_Energy;
+        
+    std::map<G4String,G4int>::const_iterator it;
+    for (it  = localRun -> processCounter.begin(); 
+        it != localRun -> processCounter.end(); ++it) 
     {
-        const Run * localRun = static_cast <const Run*> (run);
+        processName = it -> first;
+        localCount  = it -> second;
 
-        // pass information about primary particle
-        link_ParticleDefinition = localRun -> link_ParticleDefinition;
-        link_Energy = localRun -> link_Energy;
-            
-        std::map<G4String,G4int>::const_iterator it;
-        for (it  = localRun -> fProcCounter.begin(); 
-            it != localRun -> fProcCounter.end(); ++it) 
-        {
-            G4String procName = it -> first;
-            G4int localCount  = it -> second;
-
-            if ( fProcCounter.find(procName) == fProcCounter.end()) 
-            {fProcCounter[procName] = localCount;} else {fProcCounter[procName] += localCount;}         
-        }
-
-        G4Run::Merge(run);
+        if ( processCounter.find(processName) == processCounter.end()) 
+        {processCounter[processName] = localCount;} else {processCounter[processName] += localCount;}         
     }
+    
+    G4Run::Merge(run);  
 } 

@@ -5,6 +5,7 @@
         "map": "cpp",
         "colorf": "cpp",
         "new": "cpp",
-        "vector": "cpp"
+        "vector": "cpp",
+        "ios": "cpp"
     }
 }

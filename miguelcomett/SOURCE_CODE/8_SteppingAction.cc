@@ -25,9 +25,9 @@ void MySteppingAction::UserSteppingAction(const G4Step * step)
         if(Volume != ScoringVolume) { return; }
 
         G4StepPoint * endPoint = step -> GetPostStepPoint();
-        G4String procName = endPoint -> GetProcessDefinedStep() -> GetProcessName();
+        G4String processName = endPoint -> GetProcessDefinedStep() -> GetProcessName();
         Run * run = static_cast <Run *> (G4RunManager::GetRunManager() -> GetNonConstCurrentRun()); 
-        run -> CountProcesses(procName);
+        run -> CountProcesses(processName);
 
         G4RunManager::GetRunManager() -> AbortEvent();  // kill event after first interaction
     }

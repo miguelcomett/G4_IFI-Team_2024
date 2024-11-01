@@ -22,12 +22,14 @@ int main(int argc, char** argv)
     if (argc == 1) 
     {
         runManager = new G4RunManager();
-        G4cout << " ----------- Running in single-threaded mode ---------" << G4endl;
+        G4cout << "===== Running in Single-threaded mode =====" << G4endl;
+        G4cout << G4endl;
     } 
     else 
     {
         runManager = new G4MTRunManager();
-        G4cout << " ----------- Running in multi-threaded mode ----------" << G4endl;
+        G4cout << "====== Running in Multi-threaded mode ======" << G4endl;
+        G4cout << G4endl;
     }
 
     long seed = std::time(nullptr);

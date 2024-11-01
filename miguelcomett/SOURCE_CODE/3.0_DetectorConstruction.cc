@@ -21,12 +21,17 @@ MyDetectorConstruction::MyDetectorConstruction()
     targetRotation = new G4RotationMatrix(0, 90*deg, 0);
     targetPosition = G4ThreeVector(0.0, 0.0, 0.0);
 
-    isTarget = false; 
+    isTarget = true; 
     isArm = false;
         isBoneDivided = false;
         isHealthyBone = true;
         isOsteoBone = false;
-    is3DModel = true;
+    is3DModel = false;
+        isHeart = true;
+        isLungs = false;
+        isRibcage = false;
+        isThorax = false;
+        isFiller = false;
 }
 
 MyDetectorConstruction::~MyDetectorConstruction()
@@ -46,11 +51,11 @@ G4VPhysicalVolume * MyDetectorConstruction::Construct()
 
     solidDetector = new G4Box("solidDetector", xWorld/DetRowNum, yWorld/DetColumnNum, 0.01*m);
     logicDetector = new G4LogicalVolume(solidDetector, Silicon, "logicalDetector");
-    check_Overlaps = false;
+    checkOverlaps = false;
     for(G4int i = 0; i < DetRowNum; i++) for (G4int j = 0; j < DetColumnNum; j++)
     {
         DetectorPosition = G4ThreeVector(-0.5*m + (i+0.5)*m/DetRowNum, -0.5*m + (j+0.5)*m/DetColumnNum, 0.49*m);
-        physicalDetector = new G4PVPlacement(0, DetectorPosition, logicDetector, "physicalDetector", logicWorld, false, j+(i*DetColumnNum), check_Overlaps);
+        physicalDetector = new G4PVPlacement(0, DetectorPosition, logicDetector, "physicalDetector", logicWorld, false, j+(i*DetColumnNum), checkOverlaps);
     }
     // if (isArm || isHealthyBone) ScoringVolume = logicDetector;
 
@@ -168,56 +173,69 @@ void MyDetectorConstruction::ConstructBoneDivided()
 void MyDetectorConstruction::ConstructThorax()
 {
     G4STL stl; 
-    // Define el directorio de los modelos 3D
-    std::string modelPath = "C:\\Users\\conej\\Documents\\Universidad\\Geant4\\Projects\\Models2\\";
-
+    
+    std::string modelPath = "/Users/miguelcomett/geant4-v11.2.2_2/Estancia_G4/G4_IFI-Team_2024/miguelcomett/3D_Models/"; // Define el directorio de los modelos 3D
 
     G4double thoraxAngle = 0;
     Model3DRotation = new G4RotationMatrix(0*deg, -90*deg, (thoraxAngle+180)*deg);
     originMatrix = new G4RotationMatrix(0, 0, 0);
+        
+    G4cout << G4endl; 
+    G4cout << "================ MODELOS =================" << G4endl; 
 
-    Ribcage = stl.Read(modelPath + "RIBCAGE_Real.stl");
-    if (Ribcage) 
+    Heart = stl.Read(modelPath + "HEART.stl");
+    if (Heart && isHeart) 
     {
-        logicRibcage = new G4LogicalVolume(Ribcage, Bone, "Ribcage");
-        new G4PVPlacement(Model3DRotation, targetPosition, logicRibcage, "Ribcage", logicWorld, false, 0, true);
-
-        G4cout << "Modelo bone importado exitosamente" << G4endl;
+        logicHeart = new G4LogicalVolume(Heart, Muscle, "Heart");
+        new G4PVPlacement(Model3DRotation, targetPosition, logicHeart, "Heart", logicWorld, false, 0, true);
+        G4cout << "> Modelo HEART importado exitosamente" << G4endl;
     }
-    else {G4cout << "Modelo bone no importado" << G4endl;}
+    if (!Heart)  {G4cout << G4endl; G4cout << "--> Modelo HEART no importado" << G4endl;}
+
 
     Lungs = stl.Read(modelPath + "LUNGS.stl");
-    Heart = stl.Read(modelPath + "HEART.stl");
-    if (Lungs && Heart) 
+    if (Lungs && isLungs)
     {
         logicLungs = new G4LogicalVolume(Lungs, Air, "Lungs");
         new G4PVPlacement(Model3DRotation, targetPosition, logicLungs, "Lungs", logicWorld, false, 0, true);
-        logicHeart = new G4LogicalVolume(Heart, Muscle, "Heart");
-        new G4PVPlacement(Model3DRotation, targetPosition, logicHeart, "Heart", logicWorld, false, 0, true);
-
-        G4cout << "Modelo LUNGS importado exitosamente" << G4endl; G4cout << "Modelo HEART importado exitosamente" << G4endl;
+        G4cout << "> Modelo LUNGS importado exitosamente" << G4endl;
     }
-    else {G4cout << "Modelo LUNGS no importado" << G4endl; G4cout << "Modelo HEART no importado" << G4endl;}
+    if (!Lungs) {G4cout << "--> Modelo LUNGS no importado" << G4endl;}
+
+
+    Ribcage = stl.Read(modelPath + "RIBCAGE_Real.stl");
+    if (Ribcage && isRibcage) 
+    {
+        logicRibcage = new G4LogicalVolume(Ribcage, Bone, "Ribcage");
+        new G4PVPlacement(Model3DRotation, targetPosition, logicRibcage, "Ribcage", logicWorld, false, 0, true);
+        G4cout << "> Modelo bone importado exitosamente" << G4endl;
+    }
+    if (!Ribcage) {G4cout << "--> Modelo RIBCAGE no importado" << G4endl;}
+
 
     Thorax1 = stl.Read(modelPath + "TORAX_Real.stl");
     Thorax2 = stl.Read(modelPath + "TORAX_Real0.stl");
-    if (Thorax1 && Thorax2) 
+    if (Thorax1 && Thorax2 && isThorax) 
     {
         subtractedSolid0 = new G4SubtractionSolid("SoftWithBoneHole", Thorax1, Ribcage, originMatrix, targetPosition); // Resta el volumen "bone" del volumen "tissue"
         subtractedSolid1 = new G4SubtractionSolid("SoftWithBoneAndToraxHole", subtractedSolid0, Thorax2, originMatrix, targetPosition); // Resta el volumen "TORAX_Real0" del resultado anterior
         finalSubtractedSolid0 = new G4LogicalVolume(subtractedSolid1, TissueMix, "Thorax"); // Crear el volumen lógico del sólido resultante
         new G4PVPlacement(Model3DRotation, G4ThreeVector(0,0,0), finalSubtractedSolid0, "Thorax", logicWorld, false, 0, true);
-
-        G4cout << "Modelo tissue con huecos de bone y TORAX_Real0 importado exitosamente" << G4endl;
+        G4cout << "> Modelo de tórax creado exitosamente" << G4endl;
     }
-    else {G4cout << "Error al importar los modelos STL" << G4endl;}
+    if (!Thorax1 || !Thorax2) {G4cout << "--> Error al crear el modelo de TÓRAX" << G4endl;}
 
-    // Aqui creo el volumen de grasa que llena interno <Inner>
-    subtractedSolid2 = new G4SubtractionSolid("Inner0", Thorax2, Lungs, originMatrix, targetPosition);
-    subtractedSolid3 = new G4SubtractionSolid("Inner1", subtractedSolid2, Heart, originMatrix, targetPosition);
-    subtractedSolid4 = new G4SubtractionSolid("Inner2", subtractedSolid3, Ribcage, originMatrix, targetPosition);
-    finalSubtractedSolid1 = new G4LogicalVolume(subtractedSolid4, Fat, "Filler");
-    new G4PVPlacement(Model3DRotation, G4ThreeVector(0, 0, 0), finalSubtractedSolid1, "Filler", logicWorld, false, 0, true);
+    if (isFiller)
+    {
+        subtractedSolid2 = new G4SubtractionSolid("Inner0", Thorax2, Lungs, originMatrix, targetPosition);
+        subtractedSolid3 = new G4SubtractionSolid("Inner1", subtractedSolid2, Heart, originMatrix, targetPosition);
+        subtractedSolid4 = new G4SubtractionSolid("Inner2", subtractedSolid3, Ribcage, originMatrix, targetPosition);
+        innerVolume = new G4LogicalVolume(subtractedSolid4, Fat, "Filler");
+        new G4PVPlacement(Model3DRotation, G4ThreeVector(0, 0, 0), innerVolume, "Filler", logicWorld, false, 0, true);
+        G4cout << "> Modelo FILLER creado exitosamente" << G4endl; G4cout << G4endl; 
+    }
+    if (!Thorax1 || !Thorax2) {G4cout << "--> Error al crear el modelo de FILLER" << G4endl;}
+    G4cout << "==========================================" << G4endl; G4cout << G4endl;
 
     ScoringVolume = logicHeart;
 }

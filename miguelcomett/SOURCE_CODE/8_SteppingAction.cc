@@ -32,17 +32,29 @@ void MySteppingAction::UserSteppingAction(const G4Step * step)
         G4RunManager::GetRunManager() -> AbortEvent();  // kill event after first interaction
     }
     
-    G4bool noSecondaries = true;
-    if (arguments == 4 && noSecondaries)
+    noSecondaryGamma = false;
+    noSecondaryElectrons = true;
+
+    if (arguments == 4)
     {
-        // G4cout << "No secondaries" << G4endl;
         const std::vector<const G4Track*>* secondaries = step -> GetSecondaryInCurrentStep();
 
-        for (const auto & secondary : * secondaries)
-        {
-            G4Track * nonPrimaryTrack = const_cast<G4Track*>(secondary);
-            nonPrimaryTrack -> SetTrackStatus(fStopAndKill);
-        }
+        if (noSecondayGamma)
+            for (const auto & secondary : * secondaries)
+            {
+                G4Track * nonPrimaryTrack = const_cast<G4Track *>(secondary);
+                nonPrimaryTrack -> SetTrackStatus(fStopAndKill);
+            }
+        
+        if (noSecondaryElectrons)
+            for (const auto & secondary : * secondaries)
+            {
+                if (secondary->GetDefinition()->GetParticleName() != "gamma")
+                {
+                    G4Track* nonPrimaryTrack = const_cast<G4Track*>(secondary);
+                    nonPrimaryTrack->SetTrackStatus(fStopAndKill);
+                }
+            }
 
         if(Volume != ScoringVolume) { return; }
 

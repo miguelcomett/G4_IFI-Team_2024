@@ -19,6 +19,7 @@ class MySteppingAction : public G4UserSteppingAction
     
     private:
         MyEventAction * fEventAction;
+        G4bool noSecondaryGamma, noSecondaryElectrons;
 };
 
 #endif

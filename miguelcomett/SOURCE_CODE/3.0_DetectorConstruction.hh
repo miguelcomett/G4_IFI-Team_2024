@@ -41,7 +41,9 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
         G4Material * GetMaterial() const {return materialTarget;}
 	    G4double GetThickness() const {return target_Thickness;}
 
-        G4bool isArm, isHealthyBone, isOsteoBone, isPlacas, isBoneDivided, is3DModel, isTarget, check_Overlaps;
+        G4bool  isArm, isHealthyBone, isOsteoBone, isPlacas, isBoneDivided, is3DModel, isTarget, 
+                isHeart, isLungs, isRibcage, isFiller, isThorax,
+                checkOverlaps;
     
     private:
 
@@ -68,7 +70,7 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
 
         G4LogicalVolume   * logicWorld, * logicRadiator, * logicDetector, * logicHealthyBone, * logicOsteoBone, * logicMuscle, 
                           * logicGrasa, * logicSkin, * logicOs, * logicHealthy, * ScoringVolume,
-                          * logicLungs, * logicHeart, * finalSubtractedSolid0, * logicRibcage, * finalSubtractedSolid1;
+                          * logicLungs, * logicHeart, * finalSubtractedSolid0, * logicRibcage, * innerVolume;
         G4VPhysicalVolume * physicalWorld, * physicalRadiator, * physicalDetector, * physBone, * physArm, 
                           * physMuscle, * physGrasa, * physSkin, * physOs, * physHealthy;
                         

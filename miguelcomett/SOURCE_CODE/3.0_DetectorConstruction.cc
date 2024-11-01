@@ -170,6 +170,7 @@ void MyDetectorConstruction::ConstructThorax()
 
     G4double thoraxAngle = 0;
     Model3DRotation = new G4RotationMatrix(0*deg, -90*deg, (thoraxAngle+180)*deg);
+    originMatrix = new G4RotationMatrix(0, 0, 0);
 
     Ribcage = stl.Read("/Users/miguelcomett/geant4-v11.2.2_2/Estancia_G4/G4_IFI-Team_2024/miguelcomett/3D_Models/RIBCAGE_Real.stl");
     if (Ribcage) 
@@ -198,15 +199,21 @@ void MyDetectorConstruction::ConstructThorax()
     Thorax2 = stl.Read("/Users/miguelcomett/geant4-v11.2.2_2/Estancia_G4/G4_IFI-Team_2024/miguelcomett/3D_Models/TORAX_Real0.stl");
     if (Thorax1 && Thorax2) 
     {
-        originMatrix = new G4RotationMatrix(0,0,0);
-        subtractedSolid = new G4SubtractionSolid("SoftWithBoneHole", Thorax1, Ribcage, originMatrix, targetPosition); // Resta el volumen "bone" del volumen "tissue"
-        subtractedSolid2 = new G4SubtractionSolid("SoftWithBoneAndToraxHole", subtractedSolid, Thorax2, originMatrix, targetPosition); // Resta el volumen "TORAX_Real0" del resultado anterior
-        finalSubtractedSolid = new G4LogicalVolume(subtractedSolid2, Fat, "Thorax"); // Crear el volumen lógico del sólido resultante
-        new G4PVPlacement(Model3DRotation, G4ThreeVector(0,0,0), finalSubtractedSolid, "Thorax", logicWorld, false, 0, true);
+        subtractedSolid0 = new G4SubtractionSolid("SoftWithBoneHole", Thorax1, Ribcage, originMatrix, targetPosition); // Resta el volumen "bone" del volumen "tissue"
+        subtractedSolid1 = new G4SubtractionSolid("SoftWithBoneAndToraxHole", subtractedSolid0, Thorax2, originMatrix, targetPosition); // Resta el volumen "TORAX_Real0" del resultado anterior
+        finalSubtractedSolid0 = new G4LogicalVolume(subtractedSolid1, TissueMix, "Thorax"); // Crear el volumen lógico del sólido resultante
+        new G4PVPlacement(Model3DRotation, G4ThreeVector(0,0,0), finalSubtractedSolid0, "Thorax", logicWorld, false, 0, true);
 
         G4cout << "Modelo tissue con huecos de bone y TORAX_Real0 importado exitosamente" << G4endl;
     }
     else {G4cout << "Error al importar los modelos STL" << G4endl;}
+
+    // Aqui creo el volumen de grasa que llena interno <Inner>
+    subtractedSolid2 = new G4SubtractionSolid("Inner0", Thorax2, Lungs, originMatrix, targetPosition);
+    subtractedSolid3 = new G4SubtractionSolid("Inner1", subtractedSolid2, Heart, originMatrix, targetPosition);
+    subtractedSolid4 = new G4SubtractionSolid("Inner2", subtractedSolid3, Ribcage, originMatrix, targetPosition);
+    finalSubtractedSolid1 = new G4LogicalVolume(subtractedSolid4, Fat, "Filler");
+    new G4PVPlacement(Model3DRotation, G4ThreeVector(0, 0, 0), finalSubtractedSolid1, "Filler", logicWorld, false, 0, true);
 
     ScoringVolume = logicHeart;
 }

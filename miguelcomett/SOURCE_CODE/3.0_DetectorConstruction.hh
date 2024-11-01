@@ -68,7 +68,7 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
 
         G4LogicalVolume   * logicWorld, * logicRadiator, * logicDetector, * logicHealthyBone, * logicOsteoBone, * logicMuscle, 
                           * logicGrasa, * logicSkin, * logicOs, * logicHealthy, * ScoringVolume,
-                          * logicLungs, * logicHeart, * finalSubtractedSolid, * logicRibcage;
+                          * logicLungs, * logicHeart, * finalSubtractedSolid0, * logicRibcage, * finalSubtractedSolid1;
         G4VPhysicalVolume * physicalWorld, * physicalRadiator, * physicalDetector, * physBone, * physArm, 
                           * physMuscle, * physGrasa, * physSkin, * physOs, * physHealthy;
                         
@@ -83,7 +83,7 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
         STLGeometryReader * stlReader;
         G4TessellatedSolid * Ribcage, * Lungs, * Heart;
         G4VSolid * Thorax1, * Thorax2;
-        G4SubtractionSolid * subtractedSolid, * subtractedSolid2;
+        G4SubtractionSolid * subtractedSolid0, * subtractedSolid1, * subtractedSolid2, * subtractedSolid3, * subtractedSolid4;
 };
 
 #endif 

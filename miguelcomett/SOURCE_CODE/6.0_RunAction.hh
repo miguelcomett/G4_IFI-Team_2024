@@ -9,6 +9,7 @@
 #include "G4AnalysisManager.hh"
 #include "G4Run.hh"
 #include "G4Run.hh"
+#include <G4AccumulableManager.hh>
 
 #include "3.0_DetectorConstruction.hh"
 #include "5_PrimaryGenerator.hh"

@@ -77,9 +77,11 @@ G4Run * MyRunAction::GenerateRun()
 }
 
 void MyRunAction::EndOfRunAction(const G4Run * run)
-{
-    if (isMaster && fRun) { 
-        fRun -> EndOfRun(); }
+{   
+    G4AccumulableManager* accumulableManager = G4AccumulableManager::Instance();
+    accumulableManager->Merge();
+    
+    if (isMaster && fRun) { fRun -> EndOfRun(); }
 
     G4AnalysisManager * analysisManager = G4AnalysisManager::Instance();
     if (analysisManager) 

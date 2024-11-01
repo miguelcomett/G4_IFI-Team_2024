@@ -1,8 +1,20 @@
-cmake_minimum_required(VERSION 3.16 FATAL_ERROR)
+cmake_minimum_required (VERSION 3.16...3.21)
 
-project(MyG4imulation)
+# Enable Hot Reload for MSVC compilers if supported.
+if (POLICY CMP0141)
+  cmake_policy(SET CMP0141 NEW)
+  set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
+endif()
 
-find_package(Geant4 REQUIRED ui_all vis_all)
+project(MyG4simulation)
+
+# find_package(Geant4 REQUIRED ui_all vis_all)
+option(WITH_GEANT4_UIVIS "Build example with Geant4 UI and Vis drivers" ON)
+if(WITH_GEANT4_UIVIS)
+  find_package(Geant4 REQUIRED ui_all vis_all)
+else()
+  find_package(Geant4 REQUIRED)
+endif()
 
 include(${Geant4_USE_FILE})
 include_directories(${PROJECT_SOURCE_DIR}/SOURCE_CODE)
@@ -17,8 +29,8 @@ add_executable(Sim 1_Main.cc ${sources} ${headers})
 target_link_libraries(Sim ${Geant4_LIBRARIES} ${ROOT_LIBRARIES})
 # target_link_libraries(Sim ${Geant4_LIBRARIES} ${ROOT_LIBRARIES} Qt5::Core Qt5::Widgets Qt5::Gui)
 
-file(GLOB MACRO_FILES "*.mac")
-file(COPY ${MACRO_FILES} DESTINATION ${PROJECT_BINARY_DIR})
+file(GLOB MACROFILES "*.mac")
+file(COPY ${MACROFILES} DESTINATION ${PROJECT_BINARY_DIR})
 
 file(GLOB DATA_FILES "*.dat")
 file(COPY ${DATA_FILES} DESTINATION ${PROJECT_BINARY_DIR})
@@ -27,10 +39,37 @@ set(ROOT "${PROJECT_BINARY_DIR}/ROOT")
 add_definitions(-DROOT_OUTPUT_DIR="${ROOT}")
 file(MAKE_DIRECTORY ${ROOT})
 
-add_custom_target(MyG4imulation DEPENDS SimMain)
+add_custom_target(MyG4simulation DEPENDS SimMain)
+
+# Copy all the mac files from "mac_files" directory into the
+# same directory as the executable.
+file(GLOB MyG4simulation-SCRIPTS ${PROJECT_SOURCE_DIR}/MACROFILES/*)
+file(GLOB MyG4simulation-SCRIPTS ${PROJECT_SOURCE_DIR}/*.mac)
+
+# Set standard to C++20
+if (CMAKE_VERSION VERSION_GREATER 3.12)
+  set_property(TARGET MyG4simulation PROPERTY CXX_STANDARD 20)
+endif()
+
+# remove Debug and other unnecessary configurations
+set(CMAKE_CONFIGURATION_TYPES "Release" CACHE INTERNAL "")
+
+# Set startup project for visual studio
+set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT MyG4simulation)
+
+
+foreach(_script ${MyG4simulation})
+  get_filename_component(_script_name ${_script} NAME)
+  configure_file(
+    ${_script}
+    ${PROJECT_BINARY_DIR}/${_script_name}
+    COPYONLY
+  )
+endforeach()
+
 
 if(WIN32)
-  foreach(_script ${PCM-SCRIPTS})
+  foreach(_script ${MyG4simulation-SCRIPTS})
     get_filename_component(_script_name ${_script} NAME)
     configure_file(
       ${_script}

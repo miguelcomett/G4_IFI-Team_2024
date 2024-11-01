@@ -1,4 +1,5 @@
 #include "3.0_DetectorConstruction.hh"
+#include <string>
 
 MyDetectorConstruction::MyDetectorConstruction()
 {
@@ -167,12 +168,15 @@ void MyDetectorConstruction::ConstructBoneDivided()
 void MyDetectorConstruction::ConstructThorax()
 {
     G4STL stl; 
+    // Define el directorio de los modelos 3D
+    std::string modelPath = "C:\\Users\\conej\\Documents\\Universidad\\Geant4\\Projects\\Models2\\";
+
 
     G4double thoraxAngle = 0;
     Model3DRotation = new G4RotationMatrix(0*deg, -90*deg, (thoraxAngle+180)*deg);
     originMatrix = new G4RotationMatrix(0, 0, 0);
 
-    Ribcage = stl.Read("/Users/miguelcomett/geant4-v11.2.2_2/Estancia_G4/G4_IFI-Team_2024/miguelcomett/3D_Models/RIBCAGE_Real.stl");
+    Ribcage = stl.Read(modelPath + "RIBCAGE_Real.stl");
     if (Ribcage) 
     {
         logicRibcage = new G4LogicalVolume(Ribcage, Bone, "Ribcage");
@@ -182,8 +186,8 @@ void MyDetectorConstruction::ConstructThorax()
     }
     else {G4cout << "Modelo bone no importado" << G4endl;}
 
-    Lungs = stl.Read("/Users/miguelcomett/geant4-v11.2.2_2/Estancia_G4/G4_IFI-Team_2024/miguelcomett/3D_Models/LUNGS.stl");
-    Heart = stl.Read("/Users/miguelcomett/geant4-v11.2.2_2/Estancia_G4/G4_IFI-Team_2024/miguelcomett/3D_Models/HEART.stl");
+    Lungs = stl.Read(modelPath + "LUNGS.stl");
+    Heart = stl.Read(modelPath + "HEART.stl");
     if (Lungs && Heart) 
     {
         logicLungs = new G4LogicalVolume(Lungs, Air, "Lungs");
@@ -195,8 +199,8 @@ void MyDetectorConstruction::ConstructThorax()
     }
     else {G4cout << "Modelo LUNGS no importado" << G4endl; G4cout << "Modelo HEART no importado" << G4endl;}
 
-    Thorax1 = stl.Read("/Users/miguelcomett/geant4-v11.2.2_2/Estancia_G4/G4_IFI-Team_2024/miguelcomett/3D_Models/TORAX_Real.stl");
-    Thorax2 = stl.Read("/Users/miguelcomett/geant4-v11.2.2_2/Estancia_G4/G4_IFI-Team_2024/miguelcomett/3D_Models/TORAX_Real0.stl");
+    Thorax1 = stl.Read(modelPath + "TORAX_Real.stl");
+    Thorax2 = stl.Read(modelPath + "TORAX_Real0.stl");
     if (Thorax1 && Thorax2) 
     {
         subtractedSolid0 = new G4SubtractionSolid("SoftWithBoneHole", Thorax1, Ribcage, originMatrix, targetPosition); // Resta el volumen "bone" del volumen "tissue"

@@ -46,7 +46,6 @@ G4bool MySensitiveDetector::ProcessHits(G4Step * aStep, G4TouchableHistory * ROh
         analysisManager -> FillNtupleDColumn(2, 3, posDetector[2]);
         analysisManager -> AddNtupleRow(2);
     }
-        G4cout << "Photon position: " << posPhoton << G4endl;
 
     if (arguments == 4)
     {

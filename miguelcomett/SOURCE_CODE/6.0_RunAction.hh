@@ -18,6 +18,7 @@
 class MyRunAction : public G4UserRunAction
 {
     public:
+
         MyRunAction();
         ~MyRunAction(); 
 
@@ -27,8 +28,10 @@ class MyRunAction : public G4UserRunAction
         G4Run * GenerateRun() override;
         
     private:
+
         Run * fRun = nullptr;
         G4String dataTitle;
+        G4double sampleMass;
 };
 
 #endif

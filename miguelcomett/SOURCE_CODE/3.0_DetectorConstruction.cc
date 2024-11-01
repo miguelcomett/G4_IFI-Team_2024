@@ -21,10 +21,11 @@ MyDetectorConstruction::MyDetectorConstruction()
     targetPosition = G4ThreeVector(0.0, 0.0, 0.0);
 
     isArm = false;
-    isBone = false;
-    isOsBone = false;
     isArmDivided = false;
-    is3DModel = false;
+        isBone = false;
+        isOsBone = false;
+    is3DModel = true;
+    isSample = false; 
 }
 
 MyDetectorConstruction::~MyDetectorConstruction()

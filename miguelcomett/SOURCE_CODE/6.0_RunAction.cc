@@ -78,11 +78,30 @@ G4Run * MyRunAction::GenerateRun()
 
 void MyRunAction::EndOfRunAction(const G4Run * run)
 {   
-    G4AccumulableManager* accumulableManager = G4AccumulableManager::Instance();
-    accumulableManager->Merge();
-    
-    if (isMaster && fRun) { fRun -> EndOfRun(); }
+    const MyDetectorConstruction * detectorConstruction = static_cast < const MyDetectorConstruction *> (G4RunManager::GetRunManager() -> GetUserDetectorConstruction());     
+    if (detectorConstruction -> is3DModel == false)
+    {
+        sampleMass = detectorConstruction -> GetScoringVolume() -> GetMass();
+        G4cout << G4endl;
+        // G4cout << G4BestUnit(sampleMass, "Mass") << G4endl;
+        G4cout << G4endl; 
+    }
 
+    // G4AccumulableManager* accumulableManager = G4AccumulableManager::Instance();
+    // accumulableManager->Merge();
+
+    if (isMaster && fRun) 
+    { 
+        G4cout << G4endl; G4cout << G4endl;
+        G4cout << "============== Run Summary ===============" << G4endl;
+        G4cout << "==========================================" << G4endl;
+
+        fRun -> EndOfRun();
+
+        G4cout << G4endl;
+        G4cout << "End of Simulation ------------------------" << G4endl;
+    }
+    
     G4AnalysisManager * analysisManager = G4AnalysisManager::Instance();
     if (analysisManager) 
         analysisManager -> Write();

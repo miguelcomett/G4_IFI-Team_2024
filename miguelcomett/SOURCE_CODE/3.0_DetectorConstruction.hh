@@ -37,6 +37,14 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
         void ConstructSDandField() override;
         G4VPhysicalVolume * Construct() override;
 
+        G4LogicalVolume * GetScoringVolume() const {return ScoringVolume;}
+        G4Material * GetMaterial() const {return materialTarget;}
+	    G4double GetThickness() const {return target_Thickness;}
+
+        G4bool isArm, isBone, isOsBone, isPlacas, isArmDivided, is3DModel, isSample, check_Overlaps;
+    
+    private:
+
         void ConstructTarget();
         void ConstructBone();
         void ConstructOsteoporoticBone();
@@ -45,12 +53,6 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
         void ConstructArmDivided();
         void ConstructThorax();
 
-        G4LogicalVolume * GetScoringVolume() const {return ScoringVolume;}
-        G4Material * GetMaterial() const {return materialTarget;}
-	    G4double GetThickness() const {return target_Thickness;}
-    
-    private:
-
         G4GenericMessenger * DetectorMessenger;
 
         G4int DetColumnNum, DetRowNum, numPores; 
@@ -58,7 +60,6 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
                  regionMinZ, regionMaxZ, regionMinRadius, regionMaxRadius, r, theta, z, x, y,
                  innerMuscleRadius, outerMuscleRadius, innerGrasaRadius, outerGrasaRadius, innerSkinRadius, outerSkinRadius,
                  fractionMass_VO2, fractionMass_SiO2, fTargetAngle;
-        G4bool isArm, isBone, isOsBone, isPlacas, isArmDivided, is3DModel, check_Overlaps;
 
         G4Box    * solidWorld, * solidDetector, * solidRadiator;
         G4Tubs   * solidBone, * solidMuscle, * solidGrasa, * solidSkin, * solidBone2, * osteoBone, * healthyBone; 

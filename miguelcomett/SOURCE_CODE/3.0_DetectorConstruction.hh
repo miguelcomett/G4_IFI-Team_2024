@@ -41,12 +41,12 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
         G4Material * GetMaterial() const {return materialTarget;}
 	    G4double GetThickness() const {return target_Thickness;}
 
-        G4bool isArm, isBone, isOsBone, isPlacas, isArmDivided, is3DModel, isSample, check_Overlaps;
+        G4bool isArm, isHealthyBone, isOsteoBone, isPlacas, isArmDivided, is3DModel, isTarget, check_Overlaps;
     
     private:
 
         void ConstructTarget();
-        void ConstructBone();
+        void ConstructHealthyBone();
         void ConstructOsteoporoticBone();
         void ConstructArm();
         void ConstructTissue();

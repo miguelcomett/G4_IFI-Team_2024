@@ -20,12 +20,12 @@ MyDetectorConstruction::MyDetectorConstruction()
     targetRotation = new G4RotationMatrix(0, 90*deg, 0);
     targetPosition = G4ThreeVector(0.0, 0.0, 0.0);
 
+    isTarget = false; 
     isArm = false;
-    isArmDivided = false;
-        isBone = false;
-        isOsBone = false;
+        isArmDivided = false;
+        isHealthyBone = false;
+        isOsteoBone = false;
     is3DModel = true;
-    isSample = false; 
 }
 
 MyDetectorConstruction::~MyDetectorConstruction()
@@ -41,7 +41,7 @@ G4VPhysicalVolume * MyDetectorConstruction::Construct()
     logicWorld = new G4LogicalVolume(solidWorld, worldMaterial, "LogicalWorld");
     physicalWorld = new G4PVPlacement(0, G4ThreeVector(0.0, 0.0, 0.0), logicWorld, "PhysicalWorld", 0, false, 0, true);
 
-    if (isArm) ConstructArm(); else if (isBone) ConstructBone(); else if (is3DModel) ConstructThorax(); else ConstructTarget();
+    if (isArm) ConstructArm(); else if (isHealthyBone) ConstructHealthyBone(); else if (is3DModel) ConstructThorax(); else ConstructTarget();
 
     solidDetector = new G4Box("solidDetector", xWorld/DetRowNum, yWorld/DetColumnNum, 0.01*m);
     logicDetector = new G4LogicalVolume(solidDetector, Silicon, "logicalDetector");
@@ -51,7 +51,7 @@ G4VPhysicalVolume * MyDetectorConstruction::Construct()
         DetectorPosition = G4ThreeVector(-0.5*m + (i+0.5)*m/DetRowNum, -0.5*m + (j+0.5)*m/DetColumnNum, 0.49*m);
         physicalDetector = new G4PVPlacement(0, DetectorPosition, logicDetector, "physicalDetector", logicWorld, false, j+(i*DetColumnNum), check_Overlaps);
     }
-    if (isArm || isBone) ScoringVolume = logicDetector;
+    if (isArm || isHealthyBone) ScoringVolume = logicDetector;
 
     return physicalWorld;
 }
@@ -85,16 +85,7 @@ void MyDetectorConstruction::ConstructArm()
     innerSkinRadius   = outerGrasaRadius;
     outerSkinRadius   = innerSkinRadius + 1.5 * mm;
 
-    if (isArmDivided) {ConstructArmDivided();} else 
-    {    
-        solidBone = new G4Tubs("Bone", innerBoneRadius, outerBoneRadius, boneHeight/2, 0.0, 360.0*deg);
-    
-        if (isOsBone) {ConstructOsteoporoticBone();} else
-        {
-            logicBone = new G4LogicalVolume(solidBone, Bone, "LogicBone");
-            physBone = new G4PVPlacement(targetRotation, targetPosition, logicBone, "physBone", logicWorld, false, 0, true);
-        }
-    }
+    if (isArmDivided) {ConstructArmDivided();} else if (isHealthyBone) (ConstructHealthyBone()); else if (isOsteoBone) {ConstructOsteoporoticBone();}
 
     solidMuscle = new G4Tubs("Muscle",  innerMuscleRadius, outerMuscleRadius, boneHeight/2, 0.0, 360.0*deg);
     solidGrasa  = new G4Tubs("Grasa",   innerGrasaRadius, outerGrasaRadius,   boneHeight/2, 0.0, 360.0*deg);
@@ -109,24 +100,22 @@ void MyDetectorConstruction::ConstructArm()
     physSkin = new G4PVPlacement(targetRotation, targetPosition, logicSkin, "physSkin", logicWorld, false, 0, true);
 }
 
-void MyDetectorConstruction::ConstructBone() 
+void MyDetectorConstruction::ConstructHealthyBone() 
 {
     solidBone = new G4Tubs("Bone", innerBoneRadius, outerBoneRadius, boneHeight/2, 0.0, 360.0*deg);
-    
-    if (isOsBone) ConstructOsteoporoticBone(); else 
-    {
-        logicBone = new G4LogicalVolume(solidBone, Bone, "LogicBone");
-        physBone = new G4PVPlacement(targetRotation, targetPosition, logicBone, "physBone", logicWorld, false, 0, true);
-    }
+    logicBone = new G4LogicalVolume(solidBone, Bone, "LogicBone");
+    physBone = new G4PVPlacement(targetRotation, targetPosition, logicBone, "physBone", logicWorld, false, 0, true);
 }
 
 void MyDetectorConstruction::ConstructOsteoporoticBone() 
 {   
+    solidBone = new G4Tubs("Bone", innerBoneRadius, outerBoneRadius, boneHeight/2, 0.0, 360.0*deg);
+    porousBone = solidBone;
+
     numPores = 20;
     poreRadius = 0.30 * cm;
 
     pore = new G4Sphere("Pore", 0, poreRadius, 0 * deg, 360 * deg, 0 * deg, 180 * deg);
-    porousBone = solidBone;
 
     regionMinZ = 0; 
     regionMaxZ = boneHeight / 2; 

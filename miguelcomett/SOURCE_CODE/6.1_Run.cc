@@ -22,21 +22,21 @@ void Run::EndOfRun()
 {
     const MyDetectorConstruction * detectorConstruction = static_cast < const MyDetectorConstruction *> (G4RunManager::GetRunManager() -> GetUserDetectorConstruction());     
 
-    material = detectorConstruction -> GetMaterial();
-    density = material  -> GetDensity();
-    thickness = detectorConstruction -> GetThickness();
-    particleName = link_ParticleDefinition -> GetParticleName(); 
-
-    G4cout << G4endl; G4cout << G4endl;
-    G4cout << "============== Run Summary ===============" << G4endl;
-    G4cout << "     The run is: " << numberOfEvent << " " << particleName << " of "<< G4BestUnit(link_Energy, "Energy") << G4endl;
-    if (detectorConstruction -> isSample == true) G4cout << "      Through " << G4BestUnit(thickness, "Length") << "of " << material -> GetName() << G4endl;
-    if (detectorConstruction -> isSample == true) G4cout << "        (Density: " << G4BestUnit(density, "Volumic Mass") << ")" << G4endl;
-    G4cout << "==========================================" << G4endl;
-    G4cout << G4endl; G4cout << G4endl;
-
     if (arguments == 3)
     {
+        material = detectorConstruction -> GetMaterial();
+        density = material  -> GetDensity();
+        thickness = detectorConstruction -> GetThickness();
+        particleName = link_ParticleDefinition -> GetParticleName(); 
+
+        G4cout << G4endl; G4cout << G4endl;
+        G4cout << "============== Run Summary ===============" << G4endl;
+        G4cout << "     The run is: " << numberOfEvent << " " << particleName << " of "<< G4BestUnit(link_Energy, "Energy") << G4endl;
+        if (detectorConstruction -> isTarget == true) G4cout << "      Through " << G4BestUnit(thickness, "Length") << "of " << material -> GetName() << G4endl;
+        if (detectorConstruction -> isTarget == true) G4cout << "        (Density: " << G4BestUnit(density, "Volumic Mass") << ")" << G4endl;
+        G4cout << "==========================================" << G4endl;
+        G4cout << G4endl; G4cout << G4endl;
+
         G4cout << "======== Process calls frequency ========" << G4endl;
 
         totalCount = 0;

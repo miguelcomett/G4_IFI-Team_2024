@@ -9,11 +9,14 @@
 class MySensitiveDetector : public G4VSensitiveDetector
 {
     public:
+
         MySensitiveDetector(G4String);
         ~MySensitiveDetector();
     
     private: 
+
         virtual G4bool ProcessHits(G4Step *, G4TouchableHistory *);
+        G4int digits, defaultDecimals;
 };
 
 #endif

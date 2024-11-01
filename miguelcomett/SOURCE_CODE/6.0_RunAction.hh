@@ -35,7 +35,9 @@ class MyRunAction : public G4UserRunAction
         G4String dataTitle;
         G4double sampleMass;
 
-        // G4ParticleDefinition * link_ParticleDefinition = nullptr;
+        G4String particleName;
+        G4double primaryEnergy;
+        G4int numberOfEvents;
 };
 
 #endif

@@ -28,3 +28,14 @@ add_definitions(-DROOT_OUTPUT_DIR="${ROOT}")
 file(MAKE_DIRECTORY ${ROOT})
 
 add_custom_target(MyG4imulation DEPENDS SimMain)
+
+if(WIN32)
+  foreach(_script ${PCM-SCRIPTS})
+    get_filename_component(_script_name ${_script} NAME)
+    configure_file(
+      ${_script}
+      ${PROJECT_BINARY_DIR}/Release/${_script_name}
+      COPYONLY
+    )
+  endforeach()
+endif()

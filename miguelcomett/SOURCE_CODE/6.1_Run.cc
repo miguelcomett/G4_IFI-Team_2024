@@ -12,8 +12,8 @@ void Run::SetPrimary(G4ParticleDefinition * particle, G4double energy)
     link_Energy = energy;
 }
 
+G4double Run::GetPrimaryEnergy() const {return link_Energy;}
 G4String Run::GetPrimaryParticleName() const {return link_ParticleDefinition ? link_ParticleDefinition -> GetParticleName() : "Unknown";}
-
 
 void Run::CountProcesses(G4String processName) 
 {
@@ -59,7 +59,7 @@ void Run::EndOfRun()
         G4cout << "==========================================" << G4endl;
         G4cout << G4endl;
 
-        decimals = 4; defaultDecimals = G4cout.precision(decimals);
+        digits = 4; defaultDecimals = G4cout.precision(digits);
         if (totalCount == 0) { G4cout.precision(defaultDecimals); return;};  
 
         ratio = double(survive) / totalCount;

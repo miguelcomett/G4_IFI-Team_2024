@@ -29,6 +29,7 @@ class Run : public G4Run
         void EndOfRun();
 
         G4String GetPrimaryParticleName() const;
+        G4double GetPrimaryEnergy() const;
 
 
     private:
@@ -36,7 +37,7 @@ class Run : public G4Run
         std::map <G4String, G4int> processCounter;
 
         G4double link_Energy, thickness, density, ratio, crossSection, Coefficient;
-        G4int decimals, defaultDecimals, totalCount, survive, count, localCount;
+        G4int digits, defaultDecimals, totalCount, survive, count, localCount;
         G4Material * material;
         G4String particleName, processName;
 };

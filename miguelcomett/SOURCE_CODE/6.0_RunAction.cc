@@ -83,15 +83,17 @@ void MyRunAction::EndOfRunAction(const G4Run * run)
         const MyDetectorConstruction * detectorConstruction = static_cast < const MyDetectorConstruction *> (G4RunManager::GetRunManager() -> GetUserDetectorConstruction());     
         sampleMass = detectorConstruction -> GetScoringVolume() -> GetMass();
         
-        const Run* currentRun = static_cast<const Run*>(run);
-        G4String particleName = currentRun->GetPrimaryParticleName();
+        const Run * currentRun = static_cast<const Run *>(run);
+        particleName = currentRun -> GetPrimaryParticleName();
+        primaryEnergy = currentRun -> GetPrimaryEnergy();
+        numberOfEvents = run -> GetNumberOfEvent();
 
         G4cout << G4endl;
         G4cout << "============== Run Summary ===============" << G4endl;
-        G4cout << "The run is: " << particleName << G4endl; 
+        G4cout << "The run is: " << numberOfEvents << " " << particleName << " of "<< G4BestUnit(primaryEnergy, "Energy") << G4endl;
         G4cout << "--> Mass of sample: " << G4BestUnit(sampleMass, "Mass") << G4endl;
         G4cout << "==========================================" << G4endl;
-        G4cout << G4endl; 
+        // G4cout << G4endl; 
 
         fRun -> EndOfRun();
 

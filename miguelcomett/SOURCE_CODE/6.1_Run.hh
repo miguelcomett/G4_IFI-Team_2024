@@ -16,28 +16,29 @@
 
 class Run : public G4Run
 {
-  public:
-  
-    Run();
-    ~Run();
+    public:
 
-  public:
+        Run();
+        ~Run();
 
-    void SetPrimary(G4ParticleDefinition * particle, G4double energy);
-    void CountProcesses(G4String processName);
-    void Merge(const G4Run *) override;
-    void EndOfRun();
+        void SetPrimary(G4ParticleDefinition * particle, G4double energy);
+        G4ParticleDefinition * link_ParticleDefinition = nullptr;
 
-  private:
+        void CountProcesses(G4String processName);
+        void Merge(const G4Run *) override;
+        void EndOfRun();
 
-    G4ParticleDefinition * link_ParticleDefinition = nullptr;
-    std::map <G4String,G4int>  processCounter;
+        G4String GetPrimaryParticleName() const;
 
-    G4double link_Energy, thickness, density, ratio, crossSection, Coefficient;
-    G4int decimals, defaultDecimals, totalCount, survive, count, localCount;
-    G4Material * material;
-    G4String particleName, processName;
 
+    private:
+
+        std::map <G4String, G4int> processCounter;
+
+        G4double link_Energy, thickness, density, ratio, crossSection, Coefficient;
+        G4int decimals, defaultDecimals, totalCount, survive, count, localCount;
+        G4Material * material;
+        G4String particleName, processName;
 };
 
 #endif

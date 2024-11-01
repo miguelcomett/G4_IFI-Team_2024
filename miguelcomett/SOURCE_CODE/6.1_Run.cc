@@ -12,6 +12,9 @@ void Run::SetPrimary(G4ParticleDefinition * particle, G4double energy)
     link_Energy = energy;
 }
 
+G4String Run::GetPrimaryParticleName() const {return link_ParticleDefinition ? link_ParticleDefinition -> GetParticleName() : "Unknown";}
+
+
 void Run::CountProcesses(G4String processName) 
 {
     std::map <G4String, G4int> ::iterator it = processCounter.find(processName);

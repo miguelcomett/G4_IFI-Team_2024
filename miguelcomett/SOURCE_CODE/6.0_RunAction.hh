@@ -25,6 +25,8 @@ class MyRunAction : public G4UserRunAction
         void BeginOfRunAction(const G4Run * run) override;
         void EndOfRunAction  (const G4Run * run) override;
 
+        // void SetPrimary(G4ParticleDefinition * particle, G4double energy);
+
         G4Run * GenerateRun() override;
         
     private:
@@ -32,6 +34,8 @@ class MyRunAction : public G4UserRunAction
         Run * fRun = nullptr;
         G4String dataTitle;
         G4double sampleMass;
+
+        // G4ParticleDefinition * link_ParticleDefinition = nullptr;
 };
 
 #endif

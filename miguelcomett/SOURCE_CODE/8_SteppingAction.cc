@@ -39,7 +39,7 @@ void MySteppingAction::UserSteppingAction(const G4Step * step)
     {
         const std::vector<const G4Track*>* secondaries = step -> GetSecondaryInCurrentStep();
 
-        if (noSecondayGamma)
+        if (noSecondaryGamma)
             for (const auto & secondary : * secondaries)
             {
                 G4Track * nonPrimaryTrack = const_cast<G4Track *>(secondary);

@@ -268,7 +268,7 @@ namespace G4_PCM
     {
         //// Crear el sólido a partir del archivo STL
         G4STL stl; 
-        stlSolid = stl.Read("C:\\Users\\conej\\Documents\\Universidad\\Geant4\\Projects\\Models2\\RIBCAGE_Real.stl");
+        stlSolid = stl.Read("C:\\Users\\A01067387\\Documents\\Models2\\RIBCAGE_Real.stl");
 
         if (stlSolid) {
 
@@ -293,8 +293,8 @@ namespace G4_PCM
     {
         //// Crear el sólido a partir del archivo STL
         G4STL stl;
-        stlSolidOR = stl.Read("C:\\Users\\conej\\Documents\\Universidad\\Geant4\\Projects\\Models2\\LUNGS.stl");
-        stlSolidOR2 = stl.Read("C:\\Users\\conej\\Documents\\Universidad\\Geant4\\Projects\\Models2\\HEART.stl");
+        stlSolidOR = stl.Read("C:\\Users\\A01067387\\Documents\\Models2\\LUNGS.stl");
+        stlSolidOR2 = stl.Read("C:\\Users\\A01067387\\Documents\\Models2\\HEART.stl");
 
         if (stlSolidOR && stlSolidOR2) {
 
@@ -323,7 +323,7 @@ namespace G4_PCM
     {
         //// Crear el sólido a partir del archivo STL
         G4STL stl;
-        stlSolid2 = stl.Read("C:\\Users\\conej\\Documents\\Universidad\\Geant4\\Projects\\Models2\\TORAX_Real.stl");
+        stlSolid2 = stl.Read("C:\\Users\\A01067387\\Documents\\Models2\\TORAX_Real.stl");
 
         G4ThreeVector posXD(0 * cm, 0 * cm, 0 * cm);
 
@@ -349,13 +349,13 @@ namespace G4_PCM
     {
         // Crear el sólido a partir del archivo STL del modelo "tissue"
         G4STL stl;
-        G4VSolid* stlSolid2 = stl.Read("C:\\Users\\conej\\Documents\\Universidad\\Geant4\\Projects\\Models2\\TORAX_Real.stl");
+        G4VSolid* stlSolid2 = stl.Read("C:\\Users\\A01067387\\Documents\\Models2\\TORAX_Real.stl");
 
         // Crear el sólido a partir del archivo STL del modelo "bone"
-        G4VSolid* stlSolid = stl.Read("C:\\Users\\conej\\Documents\\Universidad\\Geant4\\Projects\\Models2\\RIBCAGE_Real.stl");
+        G4VSolid* stlSolid = stl.Read("C:\\Users\\A01067387\\Documents\\Models2\\RIBCAGE_Real.stl");
 
         // Crear el sólido a partir del archivo STL del modelo "TORAX_Real0"
-        G4VSolid* stlSolid3 = stl.Read("C:\\Users\\conej\\Documents\\Universidad\\Geant4\\Projects\\Models2\\TORAX_Real0.stl");
+        G4VSolid* stlSolid3 = stl.Read("C:\\Users\\A01067387\\Documents\\Models2\\TORAX_Real0.stl");
 
         if (stlSolid && stlSolid2 && stlSolid3) {
 
@@ -390,10 +390,10 @@ namespace G4_PCM
     void DetectorConstruction::ConstructInner()
     {
         G4STL stl;
-        G4VSolid* stlSolid00 = stl.Read("C:\\Users\\conej\\Documents\\Universidad\\Geant4\\Projects\\Models2\\TORAX_Real0.stl");
-        G4VSolid* stlSolid33 = stl.Read("C:\\Users\\conej\\Documents\\Universidad\\Geant4\\Projects\\Models2\\RIBCAGE_Real.stl");
-        G4VSolid* stlSolid11 = stl.Read("C:\\Users\\conej\\Documents\\Universidad\\Geant4\\Projects\\Models2\\LUNGS.stl");
-        G4VSolid* stlSolid22 = stl.Read("C:\\Users\\conej\\Documents\\Universidad\\Geant4\\Projects\\Models2\\HEART.stl");
+        G4VSolid* stlSolid00 = stl.Read("C:\\Users\\A01067387\\Documents\\Models2\\TORAX_Real0.stl");
+        G4VSolid* stlSolid33 = stl.Read("C:\\Users\\A01067387\\Documents\\Models2\\RIBCAGE_Real.stl");
+        G4VSolid* stlSolid11 = stl.Read("C:\\Users\\A01067387\\Documents\\Models2\\LUNGS.stl");
+        G4VSolid* stlSolid22 = stl.Read("C:\\Users\\A01067387\\Documents\\Models2\\HEART.stl");
         /*G4VSolid* stlSolid4 = stl.Read("C:\\Users\\conej\\Documents\\Universidad\\Geant4\\Projects\\Models2\\TORAX_Real.stl");*/
 
         if (stlSolid00 && stlSolid11 && stlSolid22 && stlSolid33) {

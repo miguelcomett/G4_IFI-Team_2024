@@ -83,7 +83,7 @@ void MyRunAction::EndOfRunAction(const G4Run * run)
     {
         sampleMass = detectorConstruction -> GetScoringVolume() -> GetMass();
         G4cout << G4endl;
-        // G4cout << G4BestUnit(sampleMass, "Mass") << G4endl;
+        G4cout << G4BestUnit(sampleMass, "Mass") << G4endl;
         G4cout << G4endl; 
     }
 

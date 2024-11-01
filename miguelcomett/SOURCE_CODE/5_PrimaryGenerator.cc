@@ -2,6 +2,8 @@
 
 MyPrimaryGenerator::MyPrimaryGenerator()
 {
+    // DetectorMessenger = new G4GenericMessenger(this, "/myParticleGun/", "Particle Gun");
+
     ParticleGun = new G4ParticleGun(1);
 
     G4ParticleTable * particleTable = G4ParticleTable::GetParticleTable();
@@ -17,15 +19,16 @@ MyPrimaryGenerator::~MyPrimaryGenerator() {delete ParticleGun;}
 void MyPrimaryGenerator::GeneratePrimaries(G4Event * anEvent)
 { 
     G4double x0, y0, z0;
-    G4double radius = 40.0;
+    G4double radius = 15.0;
 
     x0 = 2 * (G4UniformRand() - 0.5);
     y0 = 2 * (G4UniformRand() - 0.5);
+    y0 = y0 + 10;
     // y0 = y0 * std::sqrt(1 - std::pow(x0, 2));
 
     x0 = x0 * radius * cm;
     y0 = y0 * radius * cm;
-    z0 = - 50.0 * cm;
+    z0 = - 40.0 * cm;
 
     G4ThreeVector photonPosition(x0, y0, z0);
     ParticleGun -> SetParticlePosition(photonPosition);

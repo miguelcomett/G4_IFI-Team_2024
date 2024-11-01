@@ -28,7 +28,7 @@ G4bool MySensitiveDetector::ProcessHits(G4Step * aStep, G4TouchableHistory * ROh
     G4int Event = G4RunManager::GetRunManager() -> GetCurrentEvent() -> GetEventID();
     G4AnalysisManager * analysisManager = G4AnalysisManager::Instance();
 
-    digits = 5; defaultDecimals = G4cout.precision(digits);
+    // digits = 5; defaultDecimals = G4cout.precision(digits);
     
     if (arguments == 1 || arguments == 2)
     {
@@ -55,6 +55,6 @@ G4bool MySensitiveDetector::ProcessHits(G4Step * aStep, G4TouchableHistory * ROh
         analysisManager -> AddNtupleRow(0);
     }
 
-    G4cout.precision(defaultDecimals);
+    // G4cout.precision(defaultDecimals);
     return true;
 }

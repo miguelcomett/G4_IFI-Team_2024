@@ -1,5 +1,6 @@
-/run/numberOfThreads 14
+# /run/numberOfThreads 30
 /run/initialize
 
 /gun/energy 80 keV
-/run/beamOn 1000000000
+/run/printProgress 1000000
+/run/beamOn 10000000

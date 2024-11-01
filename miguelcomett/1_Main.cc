@@ -1,33 +1,38 @@
 #include <iostream>
 #include <ctime> 
 
-#include "G4RunManager.hh"
+//#include "G4RunManager.hh"
 #include "G4MTRunManager.hh"
 #include "G4UIManager.hh"
 #include "G4VisManager.hh"
 #include "G4VisExecutive.hh"
 #include "G4UIExecutive.hh"
+#include "G4RunManagerFactory.hh"
 
 #include "2_PhysicsList.hh"
 #include "3.0_DetectorConstruction.hh"
 #include "4_ActionInitialization.hh"
 
 int arguments = 0;
+using namespace std;
+auto* runManager =
+G4RunManagerFactory::CreateRunManager(G4RunManagerType::Default);
 
 int main(int argc, char** argv)
 {
     arguments = (argc);
-    G4RunManager * runManager;
+
 
     if (argc == 1) 
     {
-        runManager = new G4RunManager();
+        //runManager = new G4MTRunManager();
+
         G4cout << "===== Running in Single-threaded mode =====" << G4endl;
         G4cout << G4endl;
     } 
     else 
     {
-        runManager = new G4MTRunManager();
+        //runManager = new G4MTRunManager();
         G4cout << "====== Running in Multi-threaded mode ======" << G4endl;
         G4cout << G4endl;
     }

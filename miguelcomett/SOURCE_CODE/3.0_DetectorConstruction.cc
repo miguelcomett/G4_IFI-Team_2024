@@ -21,17 +21,17 @@ MyDetectorConstruction::MyDetectorConstruction()
     targetRotation = new G4RotationMatrix(0, 90*deg, 0);
     targetPosition = G4ThreeVector(0.0, 0.0, 0.0);
 
-    isTarget = true; 
+    isTarget = false; 
     isArm = false;
         isBoneDivided = false;
         isHealthyBone = true;
         isOsteoBone = false;
-    is3DModel = false;
+    is3DModel = true;
         isHeart = true;
-        isLungs = false;
-        isRibcage = false;
-        isThorax = false;
-        isFiller = false;
+        isLungs = true;
+        isRibcage = true;
+        isThorax = true;
+        isFiller = true;
 }
 
 MyDetectorConstruction::~MyDetectorConstruction()
@@ -174,7 +174,7 @@ void MyDetectorConstruction::ConstructThorax()
 {
     G4STL stl; 
     
-    std::string modelPath = "/Users/miguelcomett/geant4-v11.2.2_2/Estancia_G4/G4_IFI-Team_2024/miguelcomett/3D_Models/"; // Define el directorio de los modelos 3D
+    std::string modelPath = "C:\\Users\\conej\\Documents\\Universidad\\Geant4\\Projects\\Models2\\"; // Define el directorio de los modelos 3D
 
     G4double thoraxAngle = 0;
     Model3DRotation = new G4RotationMatrix(0*deg, -90*deg, (thoraxAngle+180)*deg);

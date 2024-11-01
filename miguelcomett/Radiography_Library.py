@@ -538,8 +538,10 @@ def CT_Heatmap_from_Dask(x_data, y_data, size_x, size_y, log_factor, x_shift, y_
     x_edges = x_edges.compute()  
     y_edges = y_edges.compute()
     
-    maxi = np.max(heatmap)
-    log_map = np.log(maxi/(heatmap + log_factor)) / (pixel_size * 0.1)
+    # maxi = np.max(heatmap)
+    # log_map = np.log(maxi/(heatmap + log_factor)) / (pixel_size * 0.1)
+
+    log_map = heatmap
 
     # plt.imshow(log_map, cmap = 'gray', extent=[x_edges[0], x_edges[-1], y_edges[0], y_edges[-1]])
 
@@ -561,7 +563,7 @@ def Calculate_Projections(directory, roots, tree_name, x_branch, y_branch, dimen
 
     sims = np.arange(start, end+1, deg)
 
-    for i, sim in tqdm(start, end+1, deg, desc = 'Calculating heatmaps', unit = ' Heatmaps', leave = True):
+    for i, sim in tqdm(enumerate(sims), desc = 'Calculating heatmaps', unit = ' Heatmaps', leave = True):
                     #    dynamic_ncols=True, bar_format='{desc}: {percentage:3.0f}%|{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}, {rate_fmt}{postfix}]'):
         
         root_name = "/Sim" + str(round(sim))
@@ -588,6 +590,22 @@ def htmps_from_csv(csv_folder, roots):
     for i, sim in enumerate(sims):
         name = csv_folder + f"/Sim{round(sim)}.csv"
         htmps[i] = np.genfromtxt(name, delimiter = ',')
+
+    return htmps
+
+def LogaritmicTransformation(radiographs, log_factor, pixel_size):
+    
+    import matplotlib.pyplot as plt; import numpy as np
+
+    # maxi =  np.max(radiographs[0])
+    htmps = np.zeros(len(radiographs), dtype = 'object')
+
+    for i, radiograph in enumerate(radiographs):
+
+        maxi = np.max(radiograph)
+        htmps[i] = np.log(maxi/(radiograph + log_factor)) / (pixel_size * 0.1)
+
+    plt.imshow(htmps[-1]); plt.colorbar(); plt.show()
 
     return htmps
 

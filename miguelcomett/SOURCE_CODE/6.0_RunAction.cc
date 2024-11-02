@@ -110,7 +110,7 @@ void MyRunAction::EndOfRunAction(const G4Run * run)
         std::tm * now_tm = std::localtime(&now_c);
 
         G4cout << G4endl;
-        G4cout << "End of Simulation ------------------------" << G4endl;
+        G4cout << "End of Simulation" << G4endl;
         std::cout << ".........................................." << std::endl;
         std::cout << "Ending time: " << std::put_time(now_tm, "%H:%M:%S") << "    Date: " << std::put_time(now_tm, "%d-%m-%Y") << std::endl;
         std::cout << ".........................................." << std::endl;

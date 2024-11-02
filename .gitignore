@@ -7,3 +7,5 @@ danielpereira_V1.0/CmakeLists.txt
 *build*
 .vs/
 {yourgitprojectname}/.vs
+.vscode/
+__pycache__/

@@ -30,7 +30,6 @@ int main(int argc, char** argv)
     std::tm * now_tm = std::localtime(&now_c);
 
     // Print formatted time of day
-    // std::cout << std::endl;
     std::cout << ".........................................." << std::endl;
     std::cout << "Start time: " << std::put_time(now_tm, "%H:%M:%S") << "    Date: " << std::put_time(now_tm, "%d-%m-%Y") << std::endl;
     std::cout << ".........................................." << std::endl;

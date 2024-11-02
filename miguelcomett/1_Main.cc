@@ -41,10 +41,13 @@ int main(int argc, char** argv)
             G4cout << "====== Running in Multi-threaded mode ======" << G4endl;
             G4cout << G4endl;
         }
-        
+
     #endif
 
     #ifdef _WIN32
+        std::cout << std::endl;
+        std::cout << "~~~~~~ Running on Windows ~~~~~~~" << std::endl;
+
         auto * runManager =G4RunManagerFactory::CreateRunManager(G4RunManagerType::Default);
     #endif
 

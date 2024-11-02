@@ -174,7 +174,11 @@ void MyDetectorConstruction::ConstructThorax()
 {
     G4STL stl; 
     
-    std::string modelPath = "/Users/miguelcomett/geant4-v11.2.2_2/Estancia_G4/G4_IFI-Team_2024/miguelcomett/3D_Models/"; // Define el directorio de los modelos 3D
+    #ifdef __APPLE__
+        std::string modelPath = "/Users/miguelcomett/geant4-v11.2.2_2/Estancia_G4/G4_IFI-Team_2024/miguelcomett/3D_Models/";
+    #else
+        std::string modelPath = ""; // Define el directorio de los modelos 3D
+    #endif
 
     G4double thoraxAngle = 0;
     Model3DRotation = new G4RotationMatrix(0*deg, -90*deg, (thoraxAngle+180)*deg);

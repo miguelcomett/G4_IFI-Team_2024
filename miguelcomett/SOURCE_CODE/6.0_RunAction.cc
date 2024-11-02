@@ -48,6 +48,14 @@ MyRunAction::MyRunAction()
         analysisManager -> CreateNtupleDColumn("Photons'_Energy_keV");
         analysisManager -> FinishNtuple(1);
     }
+
+    if (arguments == 5)
+    {
+        analysisManager -> CreateNtuple("Photons", "Photons");
+        analysisManager -> CreateNtupleDColumn("X_axis");
+        analysisManager -> CreateNtupleDColumn("Y_axis");
+        analysisManager -> FinishNtuple(0);
+    }
 }
 
 MyRunAction::~MyRunAction(){}

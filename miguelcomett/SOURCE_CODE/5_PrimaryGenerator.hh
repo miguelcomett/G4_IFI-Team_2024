@@ -27,9 +27,8 @@ class MyPrimaryGenerator : public G4VUserPrimaryGeneratorAction
     private:
 
         G4ParticleGun * ParticleGun;        
-        // G4GenericMessenger * GeneratorMessenger;
-        // const G4double pi = 3.14159265358979323846;
-        // const G4double pi;
+        G4GenericMessenger * GeneratorMessenger;
+        const G4double pi = 3.14159265358979323846;
         G4double theta, phi, radius, angle, angleInDegrees, angleInRadians, angleInCarts, x0, y0, z0;
 };
 

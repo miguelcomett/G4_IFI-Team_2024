@@ -2,9 +2,9 @@
 
 MyPrimaryGenerator::MyPrimaryGenerator()
 {
-    // GeneratorMessenger = new G4GenericMessenger(this, "/myParticleGun/", "Particle Gun");
-    // GeneratorMessenger -> DeclareProperty("Radius", radius, "Change the Radius of the beam cone");
-    // GeneratorMessenger -> DeclareProperty("Angle", angleInDegrees, "Change the angle of the beam cone");
+    GeneratorMessenger = new G4GenericMessenger(this, "/myParticleGun/", "Particle Gun");
+    GeneratorMessenger -> DeclareProperty("Radius", radius, "Change the Radius of the beam cone");
+    GeneratorMessenger -> DeclareProperty("Angle", angleInDegrees, "Change the angle of the beam cone");
 
     ParticleGun = new G4ParticleGun(1);
 
@@ -15,21 +15,18 @@ MyPrimaryGenerator::MyPrimaryGenerator()
     ParticleGun -> SetParticleDefinition(particle);
     ParticleGun -> SetParticleEnergy(40 * keV);
 
-    // radius = 15.0;
-    // angleInDegrees = 0.0;
+    radius = 15.0;
+    angleInDegrees = 0.0;
 }
 
 MyPrimaryGenerator::~MyPrimaryGenerator() {delete ParticleGun;}
 
 void MyPrimaryGenerator::GeneratePrimaries(G4Event * anEvent)
 { 
-
-    radius = 15.0;
-    angleInDegrees = 0.0;
     x0 = 2 * (G4UniformRand() - 0.5);
     y0 = 2 * (G4UniformRand() - 0.5);
-    y0 = y0 + 10;
-    // y0 = y0 * std::sqrt(1 - std::pow(x0, 2));
+    y0 = y0 + .1;
+    // y0 = y0 * std::sqrt(1 - std::pow(x0, 2)); // make radial cone
 
     x0 = x0 * radius * cm;
     y0 = y0 * radius * cm;

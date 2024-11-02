@@ -15,7 +15,6 @@ G4bool MySensitiveDetector::ProcessHits(G4Step * aStep, G4TouchableHistory * ROh
     
     G4ThreeVector posPhoton = preStepPoint -> GetPosition();
     G4ThreeVector momPhoton = preStepPoint -> GetMomentum();
-    // G4double energyPhoton = momPhoton.mag() / keV;
     G4double Wavelength = (1.239841939 * eV / momPhoton.mag()) *  1E+03;
     
     const G4VTouchable * touchable = aStep -> GetPreStepPoint() -> GetTouchable();

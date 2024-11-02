@@ -16,6 +16,7 @@
 class MyPrimaryGenerator : public G4VUserPrimaryGeneratorAction
 {
     public:
+
         MyPrimaryGenerator();
         ~ MyPrimaryGenerator();
 
@@ -24,7 +25,12 @@ class MyPrimaryGenerator : public G4VUserPrimaryGeneratorAction
         G4ParticleGun * GetParticleGun() const {return ParticleGun;}
     
     private:
+
         G4ParticleGun * ParticleGun;        
+        // G4GenericMessenger * GeneratorMessenger;
+        // const G4double pi = 3.14159265358979323846;
+        // const G4double pi;
+        G4double theta, phi, radius, angle, angleInDegrees, angleInRadians, angleInCarts, x0, y0, z0;
 };
 
 #endif

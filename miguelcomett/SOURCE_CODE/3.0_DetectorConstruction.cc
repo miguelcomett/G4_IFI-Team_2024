@@ -21,12 +21,12 @@ MyDetectorConstruction::MyDetectorConstruction()
     targetRotation = new G4RotationMatrix(0, 90*deg, 0);
     targetPosition = G4ThreeVector(0.0, 0.0, 0.0);
 
-    isTarget = false; 
+    isTarget = true; 
     isArm = false;
         isBoneDivided = false;
         isHealthyBone = true;
         isOsteoBone = false;
-    is3DModel = true;
+    is3DModel = false;
         isHeart = true;
         isLungs = true;
         isRibcage = true;

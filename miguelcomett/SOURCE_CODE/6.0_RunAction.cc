@@ -101,7 +101,6 @@ void MyRunAction::EndOfRunAction(const G4Run * run)
         G4cout << "The run is: " << numberOfEvents << " " << particleName << " of "<< G4BestUnit(primaryEnergy, "Energy") << G4endl;
         G4cout << "--> Mass of sample: " << G4BestUnit(sampleMass, "Mass") << G4endl;
         G4cout << "==========================================" << G4endl;
-        // G4cout << G4endl; 
 
         fRun -> EndOfRun();
 
@@ -114,6 +113,3 @@ void MyRunAction::EndOfRunAction(const G4Run * run)
         analysisManager -> Write();
         analysisManager -> CloseFile();    
 }
-    // << particleName << " of "<< G4BestUnit(link_Energy, "Energy") << G4endl;
-    // accumulableManager->Merge();
-    // G4AccumulableManager* accumulableManager = G4AccumulableManager::Instance();

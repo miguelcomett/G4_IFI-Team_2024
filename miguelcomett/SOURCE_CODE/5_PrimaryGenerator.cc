@@ -15,7 +15,7 @@ MyPrimaryGenerator::MyPrimaryGenerator()
     ParticleGun -> SetParticleDefinition(particle);
     ParticleGun -> SetParticleEnergy(40 * keV);
 
-    radius = 15.0;
+    radius = 20.0;
     angleInDegrees = 0.0;
 }
 
@@ -25,7 +25,7 @@ void MyPrimaryGenerator::GeneratePrimaries(G4Event * anEvent)
 { 
     x0 = 2 * (G4UniformRand() - 0.5);
     y0 = 2 * (G4UniformRand() - 0.5);
-    y0 = y0 + .1;
+    // y0 = y0 + .1;
     // y0 = y0 * std::sqrt(1 - std::pow(x0, 2)); // make radial cone
 
     x0 = x0 * radius * cm;

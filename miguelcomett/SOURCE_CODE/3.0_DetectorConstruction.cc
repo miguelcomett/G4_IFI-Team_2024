@@ -26,7 +26,7 @@ MyDetectorConstruction::MyDetectorConstruction()
         isBoneDivided = false;
         isHealthyBone = true;
         isOsteoBone = false;
-    is3DModel = false;
+    is3DModel = true;
         isHeart = true;
         isLungs = true;
         isRibcage = true;
@@ -175,7 +175,7 @@ void MyDetectorConstruction::ConstructThorax()
     G4STL stl; 
     
     #ifdef __APPLE__
-        std::string modelPath = "/Users/miguelcomett/geant4-v11.2.2_2/Estancia_G4/G4_IFI-Team_2024/miguelcomett/3D_Models/";
+        std::string modelPath = "/Users/miguelcomett/geant4-v11.2.2_2/ESTANCIA/IFI.03.Radiography/miguelcomett/3D_Models/";
     #else
         std::string modelPath = ""; // Define el directorio de los modelos 3D
     #endif

@@ -1,10 +1,6 @@
 /run/numberOfThreads 10
 /run/initialize
 
-/control/shell date
-
 /gun/momentumAmp 40 keV
 /run/printProgress 20
 /run/beamOn 100
-
-/control/shell date

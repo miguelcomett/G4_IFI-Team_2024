@@ -1,7 +1,7 @@
 #include <iostream>
 #include <ctime> 
 
-//#include "G4RunManager.hh"
+#include "G4RunManager.hh"
 #include "G4MTRunManager.hh"
 #include "G4UIManager.hh"
 #include "G4VisManager.hh"
@@ -14,28 +14,39 @@
 #include "4_ActionInitialization.hh"
 
 int arguments = 0;
-using namespace std;
-auto* runManager =
-G4RunManagerFactory::CreateRunManager(G4RunManagerType::Default);
+
+// using namespace std;
+// auto* runManager =G4RunManagerFactory::CreateRunManager(G4RunManagerType::Default);
 
 int main(int argc, char** argv)
 {
     arguments = (argc);
 
+    #ifdef __APPLE__
 
-    if (argc == 1) 
-    {
-        //runManager = new G4MTRunManager();
+        std::cout << std::endl;
+        std::cout << "~~~~~~ Running on macOS ~~~~~~~" << std::endl;
+        
+        G4RunManager * runManager;
 
-        G4cout << "===== Running in Single-threaded mode =====" << G4endl;
-        G4cout << G4endl;
-    } 
-    else 
-    {
-        //runManager = new G4MTRunManager();
-        G4cout << "====== Running in Multi-threaded mode ======" << G4endl;
-        G4cout << G4endl;
-    }
+        if (argc == 1) 
+        {
+            runManager = new G4RunManager();
+            G4cout << "===== Running in Single-threaded mode =====" << G4endl;
+            G4cout << G4endl;
+        } 
+        else 
+        {
+            runManager = new G4MTRunManager();
+            G4cout << "====== Running in Multi-threaded mode ======" << G4endl;
+            G4cout << G4endl;
+        }
+        
+    #endif
+
+    #ifdef _WIN32
+        auto * runManager =G4RunManagerFactory::CreateRunManager(G4RunManagerType::Default);
+    #endif
 
     long seed = std::time(nullptr);
     CLHEP::HepRandom::setTheSeed(seed);

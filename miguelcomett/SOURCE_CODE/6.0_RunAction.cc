@@ -51,10 +51,11 @@ MyRunAction::MyRunAction()
         analysisManager -> CreateNtuple("Photons", "Photons");
         analysisManager -> CreateNtupleDColumn("X_axis");
         analysisManager -> CreateNtupleDColumn("Y_axis");
+        analysisManager -> CreateNtupleDColumn("Detected_Energy_keV");
         analysisManager -> FinishNtuple(0);
 
-        analysisManager -> CreateNtuple("Energy", "Energy");
-        analysisManager -> CreateNtupleDColumn("Photons'_Energy_keV");
+        analysisManager -> CreateNtuple("Sample EDep", "Sample EDep");
+        analysisManager -> CreateNtupleDColumn("Energy_Deposition_keV");
         analysisManager -> FinishNtuple(1);
     }
 

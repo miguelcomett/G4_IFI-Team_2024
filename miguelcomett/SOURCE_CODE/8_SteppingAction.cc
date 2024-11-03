@@ -13,13 +13,11 @@ void MySteppingAction::UserSteppingAction(const G4Step * step)
 
     if (arguments == 1 || arguments == 2)
     {
-        std::vector<G4LogicalVolume*> scoringVolumes = detectorConstruction->GetAllScoringVolumes();
-        if (std::find(scoringVolumes.begin(), scoringVolumes.end(), Volume) == scoringVolumes.end()) {return;} // or handle the case as needed
-        // if(Volume != scoringVolumes) { return; }
-
-        EDep = step -> GetTotalEnergyDeposit();
-        if (EDep == 0.0) { return; }
-        fEventAction -> AddEDep(EDep);
+        std::vector<G4LogicalVolume*> scoringVolumes = detectorConstruction -> GetAllScoringVolumes();
+        if (std::find(scoringVolumes.begin(), scoringVolumes.end(), Volume) == scoringVolumes.end()) {return;}
+            EDep = step -> GetTotalEnergyDeposit();
+            if (EDep == 0.0) { return; }
+            fEventAction -> AddEDep(EDep);
     }
 
     if (arguments == 3) 
@@ -58,10 +56,10 @@ void MySteppingAction::UserSteppingAction(const G4Step * step)
                 }
             }
 
-        if(Volume != ScoringVolume) { return; }
-
-        EDep = step -> GetTotalEnergyDeposit();
-        if (EDep == 0.0) { return; }
-        fEventAction -> AddEDep(EDep);
+        std::vector<G4LogicalVolume*> scoringVolumes = detectorConstruction -> GetAllScoringVolumes();
+        if (std::find(scoringVolumes.begin(), scoringVolumes.end(), Volume) == scoringVolumes.end()) {return;}
+            EDep = step -> GetTotalEnergyDeposit();
+            if (EDep == 0.0) { return; }
+            fEventAction -> AddEDep(EDep);
     }
 }

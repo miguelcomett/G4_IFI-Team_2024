@@ -6,6 +6,10 @@ MyRunAction::MyRunAction()
 {
     G4AnalysisManager * analysisManager = G4AnalysisManager::Instance();
 
+    analysisManager->SetDefaultFileType("root");
+    analysisManager->SetNtupleMerging(true);
+    analysisManager->SetVerboseLevel(0);
+
     if (arguments == 1 || arguments == 2)
     {
         analysisManager -> CreateNtuple("Photons", "Photons");
@@ -60,41 +64,51 @@ MyRunAction::MyRunAction()
 
 MyRunAction::~MyRunAction(){}
 
-void MyRunAction::BeginOfRunAction(const G4Run * run)
-{
-    const MyPrimaryGenerator * primaryGenerator = static_cast < const MyPrimaryGenerator *> (G4RunManager::GetRunManager() -> GetUserPrimaryGeneratorAction()); 
-
-    G4AnalysisManager * analysisManager = G4AnalysisManager::Instance();
-    G4int runID = run -> GetRunID();
-    std::stringstream strRunID;
-    strRunID << runID;
-    analysisManager -> OpenFile(std::string(ROOT_OUTPUT_DIR) + "/root" + strRunID.str() + ".root");
-    
-    if (primaryGenerator && primaryGenerator->GetParticleGun()) 
-    {
-        G4ParticleDefinition * particle = primaryGenerator -> GetParticleGun() -> GetParticleDefinition();
-        G4double energy                 = primaryGenerator -> GetParticleGun() -> GetParticleEnergy();
-        fRun -> SetPrimary(particle, energy);
-    }
-}
 
 G4Run * MyRunAction::GenerateRun()
 { 
-    fRun = new Run(); 
-    return fRun;
+    customRun = new Run(); 
+    return customRun;
 }
 
-void MyRunAction::EndOfRunAction(const G4Run * run)
+
+void MyRunAction::BeginOfRunAction(const G4Run * thisRun)
+{
+    const MyPrimaryGenerator * primaryGenerator = static_cast < const MyPrimaryGenerator *> (G4RunManager::GetRunManager() -> GetUserPrimaryGeneratorAction()); 
+    if (primaryGenerator && primaryGenerator -> GetParticleGun()) 
+    {
+        G4ParticleDefinition * particle = primaryGenerator -> GetParticleGun() -> GetParticleDefinition();
+        G4double energy                 = primaryGenerator -> GetParticleGun() -> GetParticleEnergy();
+        customRun -> SetPrimary(particle, energy);
+    }
+
+    runID = thisRun -> GetRunID();
+    directory = std::string(ROOT_OUTPUT_DIR);
+
+    if (arguments == 1 || arguments == 2 || arguments == 4)
+        fileName = "/Rad_" + std::to_string(runID);
+    if (arguments == 3)
+        fileName = "/AttCoeff_" + std::to_string(runID);
+    if (arguments == 5)
+        fileName = "/CT_" + std::to_string(runID);
+
+    G4AnalysisManager * analysisManager = G4AnalysisManager::Instance();
+    analysisManager -> SetFileName(directory + fileName);
+    analysisManager -> OpenFile();
+}
+
+
+void MyRunAction::EndOfRunAction(const G4Run * thisRun)
 {  
-    if (isMaster && fRun && arguments !=3) 
+    if (isMaster && customRun && arguments !=3) 
     { 
         const MyDetectorConstruction * detectorConstruction = static_cast < const MyDetectorConstruction *> (G4RunManager::GetRunManager() -> GetUserDetectorConstruction());     
         sampleMass = detectorConstruction -> GetScoringVolume() -> GetMass();
         
-        const Run * currentRun = static_cast<const Run *>(run);
+        const Run * currentRun = static_cast<const Run *>(thisRun);
         particleName = currentRun -> GetPrimaryParticleName();
         primaryEnergy = currentRun -> GetPrimaryEnergy();
-        numberOfEvents = run -> GetNumberOfEvent();
+        numberOfEvents = thisRun -> GetNumberOfEvent();
 
         G4cout << G4endl;
         G4cout << "============== Run Summary ===============" << G4endl;
@@ -102,7 +116,7 @@ void MyRunAction::EndOfRunAction(const G4Run * run)
         G4cout << "--> Mass of sample: " << G4BestUnit(sampleMass, "Mass") << G4endl;
         G4cout << "==========================================" << G4endl;
 
-        fRun -> EndOfRun();
+        customRun -> EndOfRun();
 
         // Get current time
         auto now = std::chrono::system_clock::now();

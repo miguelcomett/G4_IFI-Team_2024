@@ -35,7 +35,7 @@ void MySteppingAction::UserSteppingAction(const G4Step * step)
     noSecondaryGamma = false;
     noSecondaryElectrons = true;
 
-    if (arguments == 4)
+    if (arguments == 4 || arguments == 5)
     {
         const std::vector<const G4Track*>* secondaries = step -> GetSecondaryInCurrentStep();
 

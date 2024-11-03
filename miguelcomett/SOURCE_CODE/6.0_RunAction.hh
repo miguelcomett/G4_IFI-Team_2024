@@ -17,6 +17,7 @@
 #include "3.0_DetectorConstruction.hh"
 #include "5_PrimaryGenerator.hh"
 #include "6.1_Run.hh"
+// #include "7_EventAction.hh" 
 
 class MyRunAction : public G4UserRunAction
 {
@@ -25,8 +26,8 @@ class MyRunAction : public G4UserRunAction
         MyRunAction();
         ~MyRunAction(); 
 
-        void BeginOfRunAction(const G4Run * run) override;
-        void EndOfRunAction  (const G4Run * run) override;
+        void BeginOfRunAction(const G4Run * thisRun) override;
+        void EndOfRunAction  (const G4Run * thisRun) override;
 
         // void SetPrimary(G4ParticleDefinition * particle, G4double energy);
 
@@ -34,13 +35,13 @@ class MyRunAction : public G4UserRunAction
         
     private:
 
-        Run * fRun = nullptr;
+        Run * customRun = nullptr;
         G4String dataTitle;
         G4double sampleMass;
 
-        G4String particleName;
+        G4String particleName, directory, fileName;
         G4double primaryEnergy;
-        G4int numberOfEvents;
+        G4int numberOfEvents, runID;
 };
 
 #endif

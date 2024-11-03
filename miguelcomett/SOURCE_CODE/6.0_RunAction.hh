@@ -29,17 +29,19 @@ class MyRunAction : public G4UserRunAction
         void BeginOfRunAction(const G4Run * thisRun) override;
         void EndOfRunAction  (const G4Run * thisRun) override;
 
+        void SetStartTime(const std::chrono::time_point<std::chrono::system_clock> & startTime);
+
         G4Run * GenerateRun() override;
         
     private:
 
         Run * customRun = nullptr;
-        G4String dataTitle;
-        G4double sampleMass;
 
         G4String particleName, directory, fileName;
-        G4double primaryEnergy, totalMass, sampleMass;
-        G4int numberOfEvents, runID;
+        G4int numberOfEvents, runID, index;
+        G4double sampleMass, primaryEnergy, totalMass, durationInSeconds;
+
+        std::chrono::system_clock::time_point simulationStartTime, simulationEndTime;
 };
 
 #endif

@@ -17,27 +17,27 @@
 
 int arguments = 0;
 
-// using namespace std;
-// auto* runManager =G4RunManagerFactory::CreateRunManager(G4RunManagerType::Default);
-
 int main(int argc, char** argv)
 {
     arguments = (argc);
 
+    std::chrono::system_clock::time_point simulationStartTime;
+    simulationStartTime = std::chrono::system_clock::now();
+
     // Get current time
     auto now = std::chrono::system_clock::now();
-    std::time_t now_c = std::chrono::system_clock::to_time_t(now);
+    std::time_t now_c = std::chrono::system_clock::to_time_t(simulationStartTime);
     std::tm * now_tm = std::localtime(&now_c);
-
+    
     // Print formatted time of day
-    std::cout << ".........................................." << std::endl;
-    std::cout << "Start time: " << std::put_time(now_tm, "%H:%M:%S") << "    Date: " << std::put_time(now_tm, "%d-%m-%Y") << std::endl;
-    std::cout << ".........................................." << std::endl;
+    G4cout << ".........................................." << G4endl;
+    G4cout << "Start time: " << std::put_time(now_tm, "%H:%M:%S") << "    Date: " << std::put_time(now_tm, "%d-%m-%Y") << G4endl;
+    G4cout << ".........................................." << G4endl;
 
     #ifdef __APPLE__
 
-        std::cout << std::endl;
-        std::cout << "~~~~~~~~~~~ Running on macOS ~~~~~~~~~~~~" << std::endl;
+        G4cout << G4endl;
+        G4cout << "~~~~~~~~~~~~ Running on macOS ~~~~~~~~~~~~" << G4endl;
         
         G4RunManager * runManager;
 
@@ -58,7 +58,7 @@ int main(int argc, char** argv)
 
     #ifdef _WIN32
         std::cout << std::endl;
-        std::cout << "~~~~~~~~~~~ Running on Windows ~~~~~~~~~~~" << std::endl;
+        std::cout << "~~~~~~~~~~~~ Running on Windows ~~~~~~~~~~~" << std::endl;
 
         auto * runManager =G4RunManagerFactory::CreateRunManager(G4RunManagerType::Default);
     #endif

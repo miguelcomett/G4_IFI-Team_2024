@@ -25,7 +25,7 @@ MyDetectorConstruction::MyDetectorConstruction()
     // thoraxAngle = 0;
 
     isTarget = false; 
-    isArm = true;
+    isArm = false;
         isBoneDivided = false;
         isHealthyBone = true;
         isOsteoBone = false;

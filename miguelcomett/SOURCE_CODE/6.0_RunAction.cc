@@ -2,6 +2,11 @@
 
 extern int arguments;
 
+// void MyRunAction::SetStartTime(const std::chrono::time_point<std::chrono::system_clock> & startTime)
+// {
+//     simulationStartTime = startTime;
+// }
+
 MyRunAction::MyRunAction()
 {
     G4AnalysisManager * analysisManager = G4AnalysisManager::Instance();
@@ -95,6 +100,11 @@ void MyRunAction::BeginOfRunAction(const G4Run * thisRun)
     G4AnalysisManager * analysisManager = G4AnalysisManager::Instance();
     analysisManager -> SetFileName(directory + fileName);
     analysisManager -> OpenFile();
+
+    if (isMaster && G4RunManager::GetRunManager() -> GetCurrentRun() -> GetRunID() == 0)
+    {
+        simulationStartTime = std::chrono::system_clock::now();
+    }
 }
 
 
@@ -106,42 +116,54 @@ void MyRunAction::EndOfRunAction(const G4Run * thisRun)
         std::vector <G4LogicalVolume*> scoringVolumes = detectorConstruction -> GetAllScoringVolumes();
         
         totalMass = 0.0;
+        index = 1;
 
+        G4cout << G4endl;
+        G4cout << "-----------------" << G4endl;
         for (G4LogicalVolume * volume : scoringVolumes) 
         {
             if (volume) 
             {
                 G4double sampleMass = volume -> GetMass();
-                G4cout << G4endl;
-                G4cout << "Mass:" << G4BestUnit(sampleMass, "Mass") << G4endl;
+                G4cout << "Mass " << index << ": " << G4BestUnit(sampleMass, "Mass") << G4endl;
                 totalMass = totalMass + sampleMass;
             }
+            index = index + 1;
         }
+        G4cout << "-----------------" << G4endl;
         
         const Run * currentRun = static_cast<const Run *>(thisRun);
         particleName = currentRun -> GetPrimaryParticleName();
         primaryEnergy = currentRun -> GetPrimaryEnergy();
         numberOfEvents = thisRun -> GetNumberOfEvent();
 
+        customRun -> EndOfRun();
+
+        std::time_t now_start = std::chrono::system_clock::to_time_t(simulationStartTime);
+
+        simulationEndTime = std::chrono::system_clock::now();
+        std::time_t now_end = std::chrono::system_clock::to_time_t(simulationEndTime);
+        
+        auto duration = std::chrono::duration_cast<std::chrono::seconds>(simulationEndTime - simulationStartTime);
+        durationInSeconds = duration.count() * second;
+
         G4cout << G4endl;
         G4cout << "============== Run Summary ===============" << G4endl;
         G4cout << "The run is: " << numberOfEvents << " " << particleName << " of "<< G4BestUnit(primaryEnergy, "Energy") << G4endl;
         G4cout << "--> Total mass of sample: " << G4BestUnit(totalMass, "Mass") << G4endl;
-        G4cout << "==========================================" << G4endl;
-
-        customRun -> EndOfRun();
-
-        // Get current time
-        auto now = std::chrono::system_clock::now();
-        std::time_t now_c = std::chrono::system_clock::to_time_t(now);
-        std::tm * now_tm = std::localtime(&now_c);
-
+        G4cout << "--> Total energy deposition: " << G4endl;
+        G4cout << "--> Total Radiation dosis : " << G4endl;
         G4cout << G4endl;
-        G4cout << "End of Simulation" << G4endl;
-        std::cout << ".........................................." << std::endl;
-        std::cout << "Ending time: " << std::put_time(now_tm, "%H:%M:%S") << "    Date: " << std::put_time(now_tm, "%d-%m-%Y") << std::endl;
-        std::cout << ".........................................." << std::endl;
-        std::cout << std::endl;
+
+        std::tm * now_tm_0 = std::localtime(&now_start);
+        G4cout << "Start time: " << std::put_time(now_tm_0, "%H:%M:%S") << "    Date: " << std::put_time(now_tm_0, "%d-%m-%Y") << G4endl;
+        
+        std::tm * now_tm_1 = std::localtime(&now_end);
+        G4cout << "Ending time: " << std::put_time(now_tm_1, "%H:%M:%S") << "   Date: " << std::put_time(now_tm_1, "%d-%m-%Y") << G4endl;
+        
+        G4cout << "Total simulation time: " << G4BestUnit(durationInSeconds, "Time") << G4endl;
+        G4cout << "==========================================" << G4endl;
+        G4cout << G4endl;
     }
     
     G4AnalysisManager * analysisManager = G4AnalysisManager::Instance();

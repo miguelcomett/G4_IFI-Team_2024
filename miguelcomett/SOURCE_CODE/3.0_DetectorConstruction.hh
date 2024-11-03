@@ -1,6 +1,8 @@
 #ifndef DetectorConstruction_hh
 #define DetectorConstruction_hh
 
+// #include <vector> 
+
 #include "G4SystemOfUnits.hh"
 #include "G4VPhysicalVolume.hh"
 #include "G4Box.hh"
@@ -37,7 +39,11 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
         void ConstructSDandField() override;
         G4VPhysicalVolume * Construct() override;
 
-        G4LogicalVolume * GetScoringVolume() const {return ScoringVolume;}
+        G4LogicalVolume * GetScoringVolume() const {return ScoringVolume_0;}
+
+        std::vector<G4LogicalVolume*> scoringVolumes;
+        std::vector<G4LogicalVolume*> GetAllScoringVolumes() const { return scoringVolumes; }
+
         G4Material * GetMaterial() const {return materialTarget;}
 	    G4double GetThickness() const {return target_Thickness;}
 

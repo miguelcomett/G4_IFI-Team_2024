@@ -24,8 +24,14 @@ MyDetectorConstruction::MyDetectorConstruction()
 
     // thoraxAngle = 0;
 
+    // scoringVolumes.push_back(ScoringVolume_1);
+    // scoringVolumes.push_back(ScoringVolume_2);
+    // scoringVolumes.push_back(ScoringVolume_3);
+    // scoringVolumes.push_back(ScoringVolume_4);
+    // scoringVolumes.push_back(ScoringVolume_5);
+
     isTarget = false; 
-    isArm = false;
+    isArm = true;
         isBoneDivided = false;
         isHealthyBone = true;
         isOsteoBone = false;
@@ -60,7 +66,6 @@ G4VPhysicalVolume * MyDetectorConstruction::Construct()
         DetectorPosition = G4ThreeVector(-0.5*m + (i+0.5)*m/DetRowNum, -0.5*m + (j+0.5)*m/DetColumnNum, 0.49*m);
         physicalDetector = new G4PVPlacement(0, DetectorPosition, logicDetector, "physicalDetector", logicWorld, false, j+(i*DetColumnNum), checkOverlaps);
     }
-    // if (isArm || isHealthyBone) ScoringVolume = logicDetector;
 
     return physicalWorld;
 }
@@ -112,6 +117,10 @@ void MyDetectorConstruction::ConstructArm()
     ScoringVolume_3 = logicMuscle;
     ScoringVolume_4 = logicSkin;
     ScoringVolume_5 = logicGrasa;
+
+    scoringVolumes.push_back(ScoringVolume_3);
+    scoringVolumes.push_back(ScoringVolume_4);
+    scoringVolumes.push_back(ScoringVolume_5);
 }
 
 void MyDetectorConstruction::ConstructHealthyBone() 
@@ -121,6 +130,7 @@ void MyDetectorConstruction::ConstructHealthyBone()
     physBone = new G4PVPlacement(targetRotation, targetPosition, logicHealthyBone, "physBone", logicWorld, false, 0, true);
 
     ScoringVolume_1 = logicHealthyBone;
+    scoringVolumes.push_back(ScoringVolume_1);
 }
 
 void MyDetectorConstruction::ConstructOsteoporoticBone() 
@@ -155,6 +165,7 @@ void MyDetectorConstruction::ConstructOsteoporoticBone()
     physBone = new G4PVPlacement(targetRotation, targetPosition, logicOsteoBone, "physBone", logicWorld, false, 0);
 
     ScoringVolume_1 = logicOsteoBone;
+    scoringVolumes.push_back(ScoringVolume_1);
 }
 
 void MyDetectorConstruction::ConstructBoneDivided()
@@ -172,6 +183,8 @@ void MyDetectorConstruction::ConstructBoneDivided()
 
     ScoringVolume_1 = logicOs;
     ScoringVolume_2 = logicHealthy;
+    scoringVolumes.push_back(ScoringVolume_1);
+    scoringVolumes.push_back(ScoringVolume_2);
 }
 
 // Load 3D Models ===============================================================================================================================
@@ -252,6 +265,12 @@ void MyDetectorConstruction::ConstructThorax()
     ScoringVolume_3 = logicRibcage;
     ScoringVolume_4 = logicThorax;
     ScoringVolume_5 = logicFiller;
+    
+    scoringVolumes.push_back(ScoringVolume_1);
+    scoringVolumes.push_back(ScoringVolume_2);
+    scoringVolumes.push_back(ScoringVolume_3);
+    scoringVolumes.push_back(ScoringVolume_4);
+    scoringVolumes.push_back(ScoringVolume_5);
 }
 
 void MyDetectorConstruction::DefineMaterials()

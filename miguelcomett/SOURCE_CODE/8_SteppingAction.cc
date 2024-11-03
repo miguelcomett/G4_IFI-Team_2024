@@ -13,9 +13,11 @@ void MySteppingAction::UserSteppingAction(const G4Step * step)
 
     if (arguments == 1 || arguments == 2)
     {
-        if(Volume != ScoringVolume) { return; }
+        std::vector<G4LogicalVolume*> scoringVolumes = detectorConstruction->GetAllScoringVolumes();
+        if (std::find(scoringVolumes.begin(), scoringVolumes.end(), Volume) == scoringVolumes.end()) {return;} // or handle the case as needed
+        // if(Volume != scoringVolumes) { return; }
 
-        G4double EDep = step -> GetTotalEnergyDeposit();
+        EDep = step -> GetTotalEnergyDeposit();
         if (EDep == 0.0) { return; }
         fEventAction -> AddEDep(EDep);
     }
@@ -58,7 +60,7 @@ void MySteppingAction::UserSteppingAction(const G4Step * step)
 
         if(Volume != ScoringVolume) { return; }
 
-        G4double EDep = step -> GetTotalEnergyDeposit();
+        EDep = step -> GetTotalEnergyDeposit();
         if (EDep == 0.0) { return; }
         fEventAction -> AddEDep(EDep);
     }

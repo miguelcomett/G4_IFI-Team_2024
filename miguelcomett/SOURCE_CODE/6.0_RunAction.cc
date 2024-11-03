@@ -102,8 +102,19 @@ void MyRunAction::EndOfRunAction(const G4Run * thisRun)
 {  
     if (isMaster && customRun && arguments !=3) 
     { 
-        const MyDetectorConstruction * detectorConstruction = static_cast < const MyDetectorConstruction *> (G4RunManager::GetRunManager() -> GetUserDetectorConstruction());     
-        sampleMass = detectorConstruction -> GetScoringVolume() -> GetMass();
+        const MyDetectorConstruction * detectorConstruction = static_cast < const MyDetectorConstruction *> (G4RunManager::GetRunManager() -> GetUserDetectorConstruction());   
+
+        std::vector<G4LogicalVolume*> scoringVolumes = detectorConstruction->GetAllScoringVolumes(); // Implement this method
+        G4double totalMass = 0.0;
+        for (G4LogicalVolume* volume : scoringVolumes) {
+            if (volume) {
+                G4double sampleMass2 = volume->GetMass();
+                G4cout << "Mass:" << G4BestUnit(sampleMass2, "Mass") << G4endl;
+                totalMass = totalMass + sampleMass2; // Ensure GetMass() is a valid method for your logical volume
+            }
+        }
+
+        // sampleMass = detectorConstruction -> GetScoringVolume() -> GetMass();
         
         const Run * currentRun = static_cast<const Run *>(thisRun);
         particleName = currentRun -> GetPrimaryParticleName();
@@ -113,7 +124,7 @@ void MyRunAction::EndOfRunAction(const G4Run * thisRun)
         G4cout << G4endl;
         G4cout << "============== Run Summary ===============" << G4endl;
         G4cout << "The run is: " << numberOfEvents << " " << particleName << " of "<< G4BestUnit(primaryEnergy, "Energy") << G4endl;
-        G4cout << "--> Mass of sample: " << G4BestUnit(sampleMass, "Mass") << G4endl;
+        G4cout << "--> Mass of sample: " << G4BestUnit(totalMass, "Mass") << G4endl;
         G4cout << "==========================================" << G4endl;
 
         customRun -> EndOfRun();
@@ -133,6 +144,8 @@ void MyRunAction::EndOfRunAction(const G4Run * thisRun)
     
     G4AnalysisManager * analysisManager = G4AnalysisManager::Instance();
     if (analysisManager) 
+    {
         analysisManager -> Write();
         analysisManager -> CloseFile();    
+    }
 }

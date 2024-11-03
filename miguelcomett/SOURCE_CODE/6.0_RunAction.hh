@@ -6,6 +6,7 @@
 #include <ctime> 
 #include <chrono>
 #include <iostream>
+#include <vector> 
 
 #include "G4UIManager.hh"
 #include "G4UserRunAction.hh"
@@ -17,7 +18,6 @@
 #include "3.0_DetectorConstruction.hh"
 #include "5_PrimaryGenerator.hh"
 #include "6.1_Run.hh"
-// #include "7_EventAction.hh" 
 
 class MyRunAction : public G4UserRunAction
 {
@@ -28,8 +28,6 @@ class MyRunAction : public G4UserRunAction
 
         void BeginOfRunAction(const G4Run * thisRun) override;
         void EndOfRunAction  (const G4Run * thisRun) override;
-
-        // void SetPrimary(G4ParticleDefinition * particle, G4double energy);
 
         G4Run * GenerateRun() override;
         

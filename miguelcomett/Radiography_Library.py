@@ -2,10 +2,7 @@
 
 def Merge_Roots(directory, starts_with, output_name):
 
-    import uproot
-    import os
-    import numpy as np
-    from tqdm import tqdm
+    import uproot; import os; import numpy as np; from tqdm import tqdm
 
     file_list = []
 
@@ -47,13 +44,13 @@ def Merge_Roots(directory, starts_with, output_name):
         for key, data in tqdm(data_dict.items(), desc = 'Writing file', unit='data', leave = True):
             f_out[key] = data
 
+    print("Writting file as: ", merged_file)
+
 # 1.2. ========================================================================================================================================================
 
 def ModifyRoot(directory, root_name, tree_name, branch_names, output_name, new_tree_name, new_branch_names):
 
-    import uproot
-    import uproot.writing
-    import os
+    import uproot; import uproot.writing; import os
 
     input_file = directory + root_name + '.root'
     with uproot.open(input_file) as file:       

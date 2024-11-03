@@ -1,6 +1,8 @@
 #ifndef SteppingAction_hh
 #define SteppingAction_hh
 
+#include <algorithm>
+
 #include "G4UserSteppingAction.hh"
 #include "G4Step.hh"
 #include "G4RunManager.hh"
@@ -20,6 +22,7 @@ class MySteppingAction : public G4UserSteppingAction
     private:
         MyEventAction * fEventAction;
         G4bool noSecondaryGamma, noSecondaryElectrons;
+        G4double EDep;
 };
 
 #endif

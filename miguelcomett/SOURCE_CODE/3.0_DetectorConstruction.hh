@@ -69,8 +69,9 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
         G4VSolid * porousBone; 
 
         G4LogicalVolume   * logicWorld, * logicRadiator, * logicDetector, * logicHealthyBone, * logicOsteoBone, * logicMuscle, 
-                          * logicGrasa, * logicSkin, * logicOs, * logicHealthy, * ScoringVolume,
-                          * logicLungs, * logicHeart, * finalSubtractedSolid0, * logicRibcage, * innerVolume;
+                          * logicGrasa, * logicSkin, * logicOs, * logicHealthy, 
+                          * logicLungs, * logicHeart, * logicThorax, * logicRibcage, * logicFiller,
+                          * ScoringVolume_0, * ScoringVolume_1, * ScoringVolume_2, * ScoringVolume_3, * ScoringVolume_4, * ScoringVolume_5; 
         G4VPhysicalVolume * physicalWorld, * physicalRadiator, * physicalDetector, * physBone, * physArm, 
                           * physMuscle, * physGrasa, * physSkin, * physOs, * physHealthy;
                         

@@ -18,8 +18,8 @@ def Merge_Roots(directory, starts_with, output_name):
     
     counter = 0
     while True:
-        if not os.path.exists(f"{merged_file}{counter}.root"):
-            merged_file = f"{merged_file}{counter}.root"
+        if not os.path.exists(f"{merged_file}_{counter}.root"):
+            merged_file = f"{merged_file}_{counter}.root"
             break
         counter = counter + 1
 

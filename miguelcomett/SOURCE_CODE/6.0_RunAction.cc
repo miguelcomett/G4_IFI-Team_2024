@@ -6,9 +6,9 @@ MyRunAction::MyRunAction()
 {
     G4AnalysisManager * analysisManager = G4AnalysisManager::Instance();
 
-    analysisManager->SetDefaultFileType("root");
-    analysisManager->SetNtupleMerging(true);
-    analysisManager->SetVerboseLevel(0);
+    analysisManager -> SetDefaultFileType("root");
+    analysisManager -> SetNtupleMerging(true);
+    analysisManager -> SetVerboseLevel(0);
 
     if (arguments == 1 || arguments == 2)
     {

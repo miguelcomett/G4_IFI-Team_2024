@@ -22,6 +22,8 @@ MyDetectorConstruction::MyDetectorConstruction()
     targetRotation = new G4RotationMatrix(0, 90*deg, 0);
     targetPosition = G4ThreeVector(0.0, 0.0, 0.0);
 
+    // thoraxAngle = 0;
+
     isTarget = false; 
     isArm = false;
         isBoneDivided = false;
@@ -184,7 +186,7 @@ void MyDetectorConstruction::ConstructThorax()
         std::string modelPath = ""; // Define el directorio de los modelos 3D
     #endif
 
-    G4double thoraxAngle = 0;
+    thoraxAngle = 0;
     Model3DRotation = new G4RotationMatrix(0*deg, -90*deg, (thoraxAngle+180)*deg);
     originMatrix = new G4RotationMatrix(0, 0, 0);
         

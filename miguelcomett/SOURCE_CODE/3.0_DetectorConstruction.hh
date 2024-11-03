@@ -39,7 +39,7 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
         void ConstructSDandField() override;
         G4VPhysicalVolume * Construct() override;
 
-        G4LogicalVolume * GetScoringVolume() const {return ScoringVolume_0;}
+        G4LogicalVolume * GetScoringVolume() const {return scoringVolume_0;}
 
         std::vector<G4LogicalVolume*> scoringVolumes;
         std::vector<G4LogicalVolume*> GetAllScoringVolumes() const { return scoringVolumes; }
@@ -77,7 +77,7 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
         G4LogicalVolume   * logicWorld, * logicRadiator, * logicDetector, * logicHealthyBone, * logicOsteoBone, * logicMuscle, 
                           * logicGrasa, * logicSkin, * logicOs, * logicHealthy, 
                           * logicLungs, * logicHeart, * logicThorax, * logicRibcage, * logicFiller,
-                          * ScoringVolume_0, * ScoringVolume_1, * ScoringVolume_2, * ScoringVolume_3, * ScoringVolume_4, * ScoringVolume_5; 
+                          * scoringVolume_0, * scoringVolume_1, * scoringVolume_2, * scoringVolume_3, * scoringVolume_4, * scoringVolume_5; 
         G4VPhysicalVolume * physicalWorld, * physicalRadiator, * physicalDetector, * physBone, * physArm, 
                           * physMuscle, * physGrasa, * physSkin, * physOs, * physHealthy;
                         

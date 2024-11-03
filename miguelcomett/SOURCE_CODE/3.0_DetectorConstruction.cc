@@ -24,12 +24,6 @@ MyDetectorConstruction::MyDetectorConstruction()
 
     // thoraxAngle = 0;
 
-    // scoringVolumes.push_back(ScoringVolume_1);
-    // scoringVolumes.push_back(ScoringVolume_2);
-    // scoringVolumes.push_back(ScoringVolume_3);
-    // scoringVolumes.push_back(ScoringVolume_4);
-    // scoringVolumes.push_back(ScoringVolume_5);
-
     isTarget = false; 
     isArm = true;
         isBoneDivided = false;
@@ -88,7 +82,7 @@ void MyDetectorConstruction::ConstructTarget()
     logicRadiator = new G4LogicalVolume(solidRadiator, materialTarget, "logicalRadiator");
     physicalRadiator = new G4PVPlacement(0, Radiator_Position, logicRadiator, "PhysicalRadiator", logicWorld, false, 0, true);
 
-    ScoringVolume_0 = logicRadiator;
+    scoringVolume_0 = logicRadiator;
 }
 
 void MyDetectorConstruction::ConstructArm() 
@@ -114,13 +108,13 @@ void MyDetectorConstruction::ConstructArm()
     physGrasa = new G4PVPlacement(targetRotation, targetPosition, logicGrasa, "physGrasa", logicWorld, false, 0, true);
     physSkin = new G4PVPlacement(targetRotation, targetPosition, logicSkin, "physSkin", logicWorld, false, 0, true);
 
-    ScoringVolume_3 = logicMuscle;
-    ScoringVolume_4 = logicSkin;
-    ScoringVolume_5 = logicGrasa;
+    scoringVolume_3 = logicMuscle;
+    scoringVolume_4 = logicSkin;
+    scoringVolume_5 = logicGrasa;
 
-    scoringVolumes.push_back(ScoringVolume_3);
-    scoringVolumes.push_back(ScoringVolume_4);
-    scoringVolumes.push_back(ScoringVolume_5);
+    scoringVolumes.push_back(scoringVolume_3);
+    scoringVolumes.push_back(scoringVolume_4);
+    scoringVolumes.push_back(scoringVolume_5);
 }
 
 void MyDetectorConstruction::ConstructHealthyBone() 
@@ -129,8 +123,8 @@ void MyDetectorConstruction::ConstructHealthyBone()
     logicHealthyBone = new G4LogicalVolume(solidBone, Bone, "LogicBone");
     physBone = new G4PVPlacement(targetRotation, targetPosition, logicHealthyBone, "physBone", logicWorld, false, 0, true);
 
-    ScoringVolume_1 = logicHealthyBone;
-    scoringVolumes.push_back(ScoringVolume_1);
+    scoringVolume_1 = logicHealthyBone;
+    scoringVolumes.push_back(scoringVolume_1);
 }
 
 void MyDetectorConstruction::ConstructOsteoporoticBone() 
@@ -164,8 +158,8 @@ void MyDetectorConstruction::ConstructOsteoporoticBone()
     logicOsteoBone = new G4LogicalVolume(porousBone, Bone, "PorousBoneLogical");
     physBone = new G4PVPlacement(targetRotation, targetPosition, logicOsteoBone, "physBone", logicWorld, false, 0);
 
-    ScoringVolume_1 = logicOsteoBone;
-    scoringVolumes.push_back(ScoringVolume_1);
+    scoringVolume_1 = logicOsteoBone;
+    scoringVolumes.push_back(scoringVolume_1);
 }
 
 void MyDetectorConstruction::ConstructBoneDivided()
@@ -181,10 +175,10 @@ void MyDetectorConstruction::ConstructBoneDivided()
     logicHealthy = new G4LogicalVolume(healthyBone, Bone, "LogiHealthy");
     physHealthy  = new G4PVPlacement(targetRotation, healthy_position, logicHealthy, "physHealthy", logicWorld, false, 0, true);
 
-    ScoringVolume_1 = logicOs;
-    ScoringVolume_2 = logicHealthy;
-    scoringVolumes.push_back(ScoringVolume_1);
-    scoringVolumes.push_back(ScoringVolume_2);
+    scoringVolume_1 = logicOs;
+    scoringVolume_2 = logicHealthy;
+    scoringVolumes.push_back(scoringVolume_1);
+    scoringVolumes.push_back(scoringVolume_2);
 }
 
 // Load 3D Models ===============================================================================================================================
@@ -260,17 +254,17 @@ void MyDetectorConstruction::ConstructThorax()
     if (!Thorax1 || !Thorax2) {G4cout << "--> Error al crear el modelo de FILLER" << G4endl;}
     G4cout << "==========================================" << G4endl; G4cout << G4endl;
 
-    ScoringVolume_1 = logicHeart;
-    ScoringVolume_2 = logicLungs;
-    ScoringVolume_3 = logicRibcage;
-    ScoringVolume_4 = logicThorax;
-    ScoringVolume_5 = logicFiller;
+    scoringVolume_1 = logicHeart;
+    scoringVolume_2 = logicLungs;
+    scoringVolume_3 = logicRibcage;
+    scoringVolume_4 = logicThorax;
+    scoringVolume_5 = logicFiller;
     
-    scoringVolumes.push_back(ScoringVolume_1);
-    scoringVolumes.push_back(ScoringVolume_2);
-    scoringVolumes.push_back(ScoringVolume_3);
-    scoringVolumes.push_back(ScoringVolume_4);
-    scoringVolumes.push_back(ScoringVolume_5);
+    scoringVolumes.push_back(scoringVolume_1);
+    scoringVolumes.push_back(scoringVolume_2);
+    scoringVolumes.push_back(scoringVolume_3);
+    scoringVolumes.push_back(scoringVolume_4);
+    scoringVolumes.push_back(scoringVolume_5);
 }
 
 void MyDetectorConstruction::DefineMaterials()

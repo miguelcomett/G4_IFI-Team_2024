@@ -38,7 +38,7 @@ class MyRunAction : public G4UserRunAction
         G4double sampleMass;
 
         G4String particleName, directory, fileName;
-        G4double primaryEnergy;
+        G4double primaryEnergy, totalMass, sampleMass;
         G4int numberOfEvents, runID;
 };
 

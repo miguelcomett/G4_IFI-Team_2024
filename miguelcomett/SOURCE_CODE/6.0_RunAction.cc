@@ -119,19 +119,19 @@ void MyRunAction::EndOfRunAction(const G4Run * thisRun)
         totalMass = 0.0;
         index = 1;
 
-        G4cout << G4endl;
-        G4cout << "-----------------" << G4endl;
+        // G4cout << G4endl;
+        // G4cout << "-----------------" << G4endl;
         for (G4LogicalVolume * volume : scoringVolumes) 
         {
             if (volume) 
             {
-                G4double sampleMass = volume -> GetMass();
-                G4cout << "Mass " << index << ": " << G4BestUnit(sampleMass, "Mass") << G4endl;
+                sampleMass = volume -> GetMass();
+                // G4cout << "Mass " << index << ": " << G4BestUnit(sampleMass, "Mass") << G4endl;
                 totalMass = totalMass + sampleMass;
             }
             index = index + 1;
         }
-        G4cout << "-----------------" << G4endl;
+        // G4cout << "-----------------" << G4endl;
         
         const Run * currentRun = static_cast<const Run *>(thisRun);
         particleName = currentRun -> GetPrimaryParticleName();

@@ -22,7 +22,7 @@ MyDetectorConstruction::MyDetectorConstruction()
     targetPosition = G4ThreeVector(0.0, 0.0, 0.0);
 
     isTarget = false; 
-    isArm = true;
+    isArm = false;
         isBoneDivided = false;
         isHealthyBone = true;
         isOsteoBone = false;

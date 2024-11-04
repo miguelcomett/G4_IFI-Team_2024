@@ -1,15 +1,6 @@
-# /run/numberOfThreads 30
+
 /run/initialize
 
-#/control/shell date
-
 /gun/energy 80 keV
-#/run/printProgress 1000000
-
-/run/beamOn 1000000
-/run/beamOn 1000000
-/run/beamOn 1000000
-/run/beamOn 1000000
-/run/beamOn 1000000
-
-#/control/shell date
+/run/printProgress 15000000
+/run/beamOn 150000000

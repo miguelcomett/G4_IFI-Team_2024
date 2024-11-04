@@ -2,7 +2,7 @@
 
 extern int arguments;
 
-MyEventAction::MyEventAction(MyRunAction *) {fEDep = 0.0;}
+MyEventAction::MyEventAction(MyRunAction * runAction) : fRunAction(runAction) {fEDep = 0.0;}
 MyEventAction::~MyEventAction(){}
 
 void MyEventAction::AddEDep(G4double EDep) { fEDep = fEDep + EDep; }
@@ -30,4 +30,6 @@ void MyEventAction::EndOfEventAction(const G4Event * )
         analysisManager -> FillNtupleDColumn(1, 0, fEDep);
         analysisManager -> AddNtupleRow(1);
     }
+
+    fRunAction->AddEdep(fEDep);
 }

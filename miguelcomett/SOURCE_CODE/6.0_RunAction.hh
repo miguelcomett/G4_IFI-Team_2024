@@ -12,7 +12,6 @@
 #include "G4UserRunAction.hh"
 #include "G4AnalysisManager.hh"
 #include "G4Run.hh"
-#include "G4Run.hh"
 #include <G4AccumulableManager.hh>
 
 #include "3.0_DetectorConstruction.hh"
@@ -31,8 +30,6 @@ class MyRunAction : public G4UserRunAction
         void BeginOfRunAction(const G4Run * thisRun) override;
         void EndOfRunAction  (const G4Run * thisRun) override;
 
-        void SetStartTime(const std::chrono::time_point<std::chrono::system_clock> & startTime);
-
         G4Run * GenerateRun() override;
 
         void AddEdep (G4double edep);
@@ -43,7 +40,7 @@ class MyRunAction : public G4UserRunAction
 
         G4String particleName, directory, fileName;
         G4int numberOfEvents, runID, index;
-        G4double sampleMass, primaryEnergy, totalMass, durationInSeconds;
+        G4double sampleMass, primaryEnergy, totalMass, durationInSeconds, TotalEnergyDeposit, radiationDose;
 
         G4Accumulable <G4double> fEdep = 0.0;
 

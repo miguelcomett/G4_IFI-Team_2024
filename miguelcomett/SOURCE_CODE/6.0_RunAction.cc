@@ -87,9 +87,8 @@ void MyRunAction::AddEdep(G4double edep) { fEdep += edep; }
 
 void MyRunAction::BeginOfRunAction(const G4Run * thisRun)
 {
-
-    G4AccumulableManager* accumulableManager = G4AccumulableManager::Instance();
-    accumulableManager->Reset();
+    G4AccumulableManager * accumulableManager = G4AccumulableManager::Instance();
+    accumulableManager -> Reset();
 
     const MyPrimaryGenerator * primaryGenerator = static_cast < const MyPrimaryGenerator *> (G4RunManager::GetRunManager() -> GetUserPrimaryGeneratorAction()); 
     if (primaryGenerator && primaryGenerator -> GetParticleGun()) 
@@ -115,16 +114,16 @@ void MyRunAction::BeginOfRunAction(const G4Run * thisRun)
     analysisManager -> SetFileName(directory + fileName);
     analysisManager -> OpenFile();
 
-    if (isMaster)
-    {
-        simulationStartTime = std::chrono::system_clock::now();
-    }
+    if (isMaster){ simulationStartTime = std::chrono::system_clock::now(); }
 }
 
 
 void MyRunAction::EndOfRunAction(const G4Run * thisRun)
 {  
-    if (isMaster && customRun && arguments != 3) 
+    G4AccumulableManager * accumulableManager = G4AccumulableManager::Instance();
+    accumulableManager -> Merge();
+            
+    if (isMaster && arguments != 3) 
     { 
         const MyDetectorConstruction * detectorConstruction = static_cast < const MyDetectorConstruction *> (G4RunManager::GetRunManager() -> GetUserDetectorConstruction());   
         std::vector <G4LogicalVolume*> scoringVolumes = detectorConstruction -> GetAllScoringVolumes();
@@ -151,26 +150,15 @@ void MyRunAction::EndOfRunAction(const G4Run * thisRun)
         primaryEnergy = currentRun -> GetPrimaryEnergy();
         numberOfEvents = thisRun -> GetNumberOfEvent();
 
-        customRun -> EndOfRun();
+        // customRun -> EndOfRun();
 
-        G4AccumulableManager* accumulableManager = G4AccumulableManager::Instance();
-        accumulableManager->Merge();
-
-        G4double edep  = fEdep.GetValue();
-        G4double dose = edep/totalMass;
-        G4cout << G4endl;
-        G4cout << "Energy depostion: " << G4BestUnit(edep, "Energy") << G4endl;
-        G4cout << "Dose: " << G4BestUnit(dose,"Dose") << G4endl;
-
+        TotalEnergyDeposit = fEdep.GetValue();
+        radiationDose = TotalEnergyDeposit / totalMass;
 
         std::time_t now_start = std::chrono::system_clock::to_time_t(simulationStartTime);
 
         simulationEndTime = std::chrono::system_clock::now();
         std::time_t now_end = std::chrono::system_clock::to_time_t(simulationEndTime);
-        
-        // runIndex = rundIndex + 1;
-        // if (runIndex >= 1)
-        // else
         
         auto duration = std::chrono::duration_cast<std::chrono::seconds>(simulationEndTime - simulationStartTime);
         durationInSeconds = duration.count() * second;
@@ -180,8 +168,8 @@ void MyRunAction::EndOfRunAction(const G4Run * thisRun)
         G4cout << "============== Run Summary ===============" << G4endl;
         G4cout << "The run is: " << numberOfEvents << " " << particleName << " of "<< G4BestUnit(primaryEnergy, "Energy") << G4endl;
         G4cout << "--> Total mass of sample: " << G4BestUnit(totalMass, "Mass") << G4endl;
-        G4cout << "--> Total energy deposition: " << G4endl;
-        G4cout << "--> Total Radiation dosis : " << G4endl;
+        G4cout << "--> Total energy deposition: " << G4BestUnit(TotalEnergyDeposit, "Energy") << G4endl;
+        G4cout << "--> Total Radiation dosis : " << G4BestUnit(radiationDose,"Dose") << G4endl;
         G4cout << G4endl;
 
         std::tm * now_tm_0 = std::localtime(&now_start);

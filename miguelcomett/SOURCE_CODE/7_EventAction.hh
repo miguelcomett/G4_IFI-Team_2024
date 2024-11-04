@@ -26,6 +26,7 @@ class MyEventAction : public G4UserEventAction
         MyRunAction * fRunAction = nullptr;
         
         G4double fEDep;
+        G4double EDepBuffer;
 };
 
 #endif

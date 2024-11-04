@@ -34,6 +34,8 @@ class MyRunAction : public G4UserRunAction
 
         void AddEdep (G4double edep);
 
+        void fill();
+
     private:
 
         Run * customRun = nullptr;

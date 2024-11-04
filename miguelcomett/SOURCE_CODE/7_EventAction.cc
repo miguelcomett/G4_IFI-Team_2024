@@ -2,7 +2,8 @@
 
 extern int arguments;
 
-MyEventAction::MyEventAction(MyRunAction * runAction) : fRunAction(runAction) {fEDep = 0.0;}
+MyEventAction::MyEventAction(MyRunAction * runAction) : fRunAction(runAction) {fEDep = 0.0;
+}
 MyEventAction::~MyEventAction(){}
 
 void MyEventAction::AddEDep(G4double EDep) { fEDep = fEDep + EDep; }
@@ -12,6 +13,8 @@ void MyEventAction::BeginOfEventAction(const G4Event * ) {fEDep = 0.0;}
 void MyEventAction::EndOfEventAction(const G4Event * ) 
 { 
     fEDep = fEDep / keV;
+
+    EDepBuffer = fEDep;
 
     if (fEDep == 0.0){return;}
     G4int Event = G4RunManager::GetRunManager() -> GetCurrentEvent() -> GetEventID();
@@ -27,9 +30,9 @@ void MyEventAction::EndOfEventAction(const G4Event * )
 
     if (arguments == 4)
     {
-        analysisManager -> FillNtupleDColumn(1, 0, fEDep);
-        analysisManager -> AddNtupleRow(1);
+        analysisManager -> FillNtupleDColumn(2, 0, fEDep);
+        analysisManager -> AddNtupleRow(2);
     }
 
-    fRunAction->AddEdep(fEDep);
+    fRunAction -> AddEdep(fEDep);
 }

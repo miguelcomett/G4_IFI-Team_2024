@@ -59,9 +59,15 @@ MyRunAction::MyRunAction()
         analysisManager -> CreateNtupleDColumn("Detected_Energy_keV");
         analysisManager -> FinishNtuple(0);
 
-        analysisManager -> CreateNtuple("Sample EDep", "Sample EDep");
-        analysisManager -> CreateNtupleDColumn("Energy_Deposition_keV");
+        analysisManager -> CreateNtuple("Radiation Dose", "Radiation Dose");
+        analysisManager -> CreateNtupleDColumn("Mass");
+        analysisManager -> CreateNtupleDColumn("EDep_Sum");
+        analysisManager -> CreateNtupleDColumn("Dose");
         analysisManager -> FinishNtuple(1);
+
+        analysisManager -> CreateNtuple("Sample EDep (keV)", "Sample EDep");
+        analysisManager -> CreateNtupleDColumn("EDep_Spectra");
+        analysisManager -> FinishNtuple(2);
     }
 
     if (arguments == 5)
@@ -70,20 +76,24 @@ MyRunAction::MyRunAction()
         analysisManager -> CreateNtupleDColumn("X_axis");
         analysisManager -> CreateNtupleDColumn("Y_axis");
         analysisManager -> FinishNtuple(0);
+
+        analysisManager -> CreateNtuple("Radiation Dose", "Radiation Dose");
+        analysisManager -> CreateNtupleDColumn("Mass");
+        analysisManager -> CreateNtupleDColumn("EDep_Sum");
+        analysisManager -> CreateNtupleDColumn("Dose");
+        analysisManager -> FinishNtuple(1);
+
+        analysisManager -> CreateNtuple("prueba", "prueba");
+        analysisManager -> CreateNtupleDColumn("aaaa");
+        analysisManager -> FinishNtuple(2);
     }
 }
 
 MyRunAction::~MyRunAction(){}
 
-
-G4Run * MyRunAction::GenerateRun()
-{ 
-    customRun = new Run(); 
-    return customRun;
-}
+G4Run * MyRunAction::GenerateRun() { customRun = new Run(); return customRun; }
 
 void MyRunAction::AddEdep(G4double edep) { fEdep += edep; }
-
 
 void MyRunAction::BeginOfRunAction(const G4Run * thisRun)
 {
@@ -163,7 +173,6 @@ void MyRunAction::EndOfRunAction(const G4Run * thisRun)
         auto duration = std::chrono::duration_cast<std::chrono::seconds>(simulationEndTime - simulationStartTime);
         durationInSeconds = duration.count() * second;
 
-
         G4cout << G4endl;
         G4cout << "============== Run Summary ===============" << G4endl;
         G4cout << "The run is: " << numberOfEvents << " " << particleName << " of "<< G4BestUnit(primaryEnergy, "Energy") << G4endl;
@@ -184,9 +193,16 @@ void MyRunAction::EndOfRunAction(const G4Run * thisRun)
     }
     
     G4AnalysisManager * analysisManager = G4AnalysisManager::Instance();
-    if (analysisManager) 
-    {
-        analysisManager -> Write();
-        analysisManager -> CloseFile();    
-    }
+    analysisManager -> Write();
+    analysisManager -> CloseFile();    
+}
+
+void MyRunAction::fill()
+{
+    G4AnalysisManager * analysisManager = G4AnalysisManager::Instance();
+
+    analysisManager -> FillNtupleDColumn(1, 0, totalMass);
+    analysisManager -> FillNtupleDColumn(1, 1, TotalEnergyDeposit);
+    analysisManager -> FillNtupleDColumn(1, 2, radiationDose);
+    analysisManager -> AddNtupleRow(1);   
 }

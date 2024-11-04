@@ -62,12 +62,6 @@ MyRunAction::MyRunAction()
         analysisManager -> CreateNtuple("Sample EDep (keV)", "Sample EDep");
         analysisManager -> CreateNtupleDColumn("EDep_Spectra");
         analysisManager -> FinishNtuple(1);
-        
-        analysisManager -> CreateNtuple("Radiation Dose", "Radiation Dose");
-        analysisManager -> CreateNtupleDColumn("Mass");
-        // analysisManager -> CreateNtupleDColumn("EDep_Sum");
-        // analysisManager -> CreateNtupleDColumn("Dose");
-        analysisManager -> FinishNtuple(2);
     }
 
     if (arguments == 5)
@@ -183,9 +177,6 @@ void MyRunAction::EndOfRunAction(const G4Run * thisRun)
     }
 
     G4AnalysisManager * analysisManager = G4AnalysisManager::Instance();
-    analysisManager -> FillNtupleDColumn(2, 0, TotalEnergyDeposit);
-    analysisManager -> AddNtupleRow(2);
-
     analysisManager -> Write();
     analysisManager -> CloseFile();  
 }

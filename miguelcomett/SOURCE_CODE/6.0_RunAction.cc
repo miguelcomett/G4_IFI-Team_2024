@@ -1,16 +1,21 @@
 #include "6.0_RunAction.hh"
 
-extern int arguments;
-
-// void MyRunAction::SetStartTime(const std::chrono::time_point<std::chrono::system_clock> & startTime)
-// {
-//     simulationStartTime = startTime;
-// }
-
 MyRunAction::MyRunAction()
 {
-    G4AnalysisManager * analysisManager = G4AnalysisManager::Instance();
+    const G4double milligray = 1.0e-3*gray;
+    const G4double microgray = 1.0e-6*gray;
+    const G4double nanogray  = 1.0e-9*gray;
+    const G4double picogray  = 1.0e-12*gray;
 
+    new G4UnitDefinition("milligray", "milliGy" , "Dose", milligray);
+    new G4UnitDefinition("microgray", "microGy" , "Dose", microgray);
+    new G4UnitDefinition("nanogray" , "nanoGy"  , "Dose", nanogray);
+    new G4UnitDefinition("picogray" , "picoGy"  , "Dose", picogray);
+
+    G4AccumulableManager * accumulableManager = G4AccumulableManager::Instance();
+    accumulableManager -> RegisterAccumulable(fEdep);
+
+    G4AnalysisManager * analysisManager = G4AnalysisManager::Instance();
     analysisManager -> SetDefaultFileType("root");
     analysisManager -> SetNtupleMerging(true);
     analysisManager -> SetVerboseLevel(0);
@@ -77,9 +82,15 @@ G4Run * MyRunAction::GenerateRun()
     return customRun;
 }
 
+void MyRunAction::AddEdep(G4double edep) { fEdep += edep; }
+
 
 void MyRunAction::BeginOfRunAction(const G4Run * thisRun)
 {
+
+    G4AccumulableManager* accumulableManager = G4AccumulableManager::Instance();
+    accumulableManager->Reset();
+
     const MyPrimaryGenerator * primaryGenerator = static_cast < const MyPrimaryGenerator *> (G4RunManager::GetRunManager() -> GetUserPrimaryGeneratorAction()); 
     if (primaryGenerator && primaryGenerator -> GetParticleGun()) 
     {
@@ -141,6 +152,15 @@ void MyRunAction::EndOfRunAction(const G4Run * thisRun)
         numberOfEvents = thisRun -> GetNumberOfEvent();
 
         customRun -> EndOfRun();
+
+        G4AccumulableManager* accumulableManager = G4AccumulableManager::Instance();
+        accumulableManager->Merge();
+
+        G4double edep  = fEdep.GetValue();
+        G4double dose = edep/totalMass;
+        G4cout << G4endl;
+        G4cout << "Energy depostion: " << G4BestUnit(edep, "Energy") << G4endl;
+        G4cout << "Dose: " << G4BestUnit(dose,"Dose") << G4endl;
 
 
         std::time_t now_start = std::chrono::system_clock::to_time_t(simulationStartTime);

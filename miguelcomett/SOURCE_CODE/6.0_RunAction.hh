@@ -19,6 +19,8 @@
 #include "5_PrimaryGenerator.hh"
 #include "6.1_Run.hh"
 
+extern int arguments;
+
 class MyRunAction : public G4UserRunAction
 {
     public:
@@ -32,7 +34,9 @@ class MyRunAction : public G4UserRunAction
         void SetStartTime(const std::chrono::time_point<std::chrono::system_clock> & startTime);
 
         G4Run * GenerateRun() override;
-        
+
+        void AddEdep (G4double edep);
+
     private:
 
         Run * customRun = nullptr;
@@ -41,9 +45,9 @@ class MyRunAction : public G4UserRunAction
         G4int numberOfEvents, runID, index;
         G4double sampleMass, primaryEnergy, totalMass, durationInSeconds;
 
-        std::chrono::system_clock::time_point simulationStartTime, simulationEndTime;
+        G4Accumulable <G4double> fEdep = 0.0;
 
-        // Gint runIndex = 0;
+        std::chrono::system_clock::time_point simulationStartTime, simulationEndTime;
 };
 
 #endif

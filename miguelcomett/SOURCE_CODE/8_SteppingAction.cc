@@ -14,9 +14,12 @@ void MySteppingAction::UserSteppingAction(const G4Step * step)
     if (arguments == 1 || arguments == 2)
     {
         std::vector<G4LogicalVolume*> scoringVolumes = detectorConstruction -> GetAllScoringVolumes();
+        
         if (std::find(scoringVolumes.begin(), scoringVolumes.end(), Volume) == scoringVolumes.end()) {return;}
+            
             EDep = step -> GetTotalEnergyDeposit();
             if (EDep == 0.0) { return; }
+            // G4cout << "Energy deposition (keV): " << EDep << G4endl; 
             fEventAction -> AddEDep(EDep);
     }
 
@@ -31,35 +34,16 @@ void MySteppingAction::UserSteppingAction(const G4Step * step)
 
         G4RunManager::GetRunManager() -> AbortEvent();  // kill event after first interaction
     }
-    
-    noSecondaryGamma = false;
-    noSecondaryElectrons = true;
 
     if (arguments == 4 || arguments == 5)
     {
-        const std::vector<const G4Track*>* secondaries = step -> GetSecondaryInCurrentStep();
-
-        if (noSecondaryGamma)
-            for (const auto & secondary : * secondaries)
-            {
-                G4Track * nonPrimaryTrack = const_cast<G4Track *>(secondary);
-                nonPrimaryTrack -> SetTrackStatus(fStopAndKill);
-            }
-        
-        if (noSecondaryElectrons)
-            for (const auto & secondary : * secondaries)
-            {
-                if (secondary->GetDefinition()->GetParticleName() != "gamma")
-                {
-                    G4Track* nonPrimaryTrack = const_cast<G4Track*>(secondary);
-                    nonPrimaryTrack->SetTrackStatus(fStopAndKill);
-                }
-            }
-
         std::vector<G4LogicalVolume*> scoringVolumes = detectorConstruction -> GetAllScoringVolumes();
+        
         if (std::find(scoringVolumes.begin(), scoringVolumes.end(), Volume) == scoringVolumes.end()) {return;}
+            
             EDep = step -> GetTotalEnergyDeposit();
             if (EDep == 0.0) { return; }
+            // G4cout << "Energy deposition (keV): " << EDep << G4endl; 
             fEventAction -> AddEDep(EDep);
     }
 }

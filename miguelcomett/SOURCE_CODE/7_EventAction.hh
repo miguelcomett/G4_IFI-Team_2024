@@ -27,6 +27,10 @@ class MyEventAction : public G4UserEventAction
         
         G4double fEDep;
         G4double EDepBuffer;
+
+        G4int numberOfEvents;
+        G4int eventID;
+        G4int primaryEnergy;
 };
 
 #endif

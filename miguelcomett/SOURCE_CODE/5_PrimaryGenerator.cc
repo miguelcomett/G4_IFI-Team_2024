@@ -46,5 +46,7 @@ void MyPrimaryGenerator::GeneratePrimaries(G4Event * anEvent)
     G4ThreeVector photonMomentum(theta, phi, 1.0);
     ParticleGun -> SetParticleMomentumDirection(photonMomentum);
 
+    // G4double energy = ParticleGun -> GetParticleEnergy();
+
     ParticleGun -> GeneratePrimaryVertex(anEvent);
 }

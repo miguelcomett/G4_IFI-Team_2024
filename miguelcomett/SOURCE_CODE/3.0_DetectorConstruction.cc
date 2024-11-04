@@ -14,7 +14,7 @@ MyDetectorConstruction::MyDetectorConstruction()
 
     DetColumnNum = 10, DetRowNum = 10;
 
-    target_Thickness = 0.0001 * mm; 
+    target_Thickness = 40 * mm; 
 
     boneHeight = 60 * mm;
     innerBoneRadius = 0.0;
@@ -24,7 +24,7 @@ MyDetectorConstruction::MyDetectorConstruction()
 
     // thoraxAngle = 0;
 
-    isTarget = false; 
+    isTarget = true; 
     isArm = false;
         isBoneDivided = false;
         isHealthyBone = true;
@@ -34,7 +34,7 @@ MyDetectorConstruction::MyDetectorConstruction()
         isLungs = true;
         isRibcage = true;
         isThorax = true;
-        isFiller = true;
+        isFiller = false;
 }
 
 MyDetectorConstruction::~MyDetectorConstruction()
@@ -74,11 +74,11 @@ void MyDetectorConstruction::ConstructSDandField()
 
 void MyDetectorConstruction::ConstructTarget()
 { 
-    materialTarget = Bone;
+    materialTarget = Aluminum;
 
     Radiator_Position = G4ThreeVector(0.0, 0.0, 0.25*m);
 
-    solidRadiator = new G4Box("solidRadiator", 0.25*m, 0.25*m, target_Thickness/2);
+    solidRadiator = new G4Box("solidRadiator", 0.45*m, 0.45*m, target_Thickness/2);
     logicRadiator = new G4LogicalVolume(solidRadiator, materialTarget, "logicalRadiator");
     physicalRadiator = new G4PVPlacement(0, Radiator_Position, logicRadiator, "PhysicalRadiator", logicWorld, false, 0, true);
 

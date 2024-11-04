@@ -30,6 +30,9 @@ class MyRunAction : public G4UserRunAction
         void BeginOfRunAction(const G4Run * thisRun) override;
         void EndOfRunAction  (const G4Run * thisRun) override;
 
+        void SetPrimaryEnergy(G4double energy);
+        G4double GetPrimaryEnergy();
+
         G4Run * GenerateRun() override;
 
         void AddEdep (G4double edep);
@@ -41,7 +44,7 @@ class MyRunAction : public G4UserRunAction
         G4String particleName, directory, fileName;
         G4int numberOfEvents, runID, index;
         G4double sampleMass, primaryEnergy, totalMass, durationInSeconds, TotalEnergyDeposit, radiationDose;
-
+        
         G4Accumulable <G4double> fEdep = 0.0;
 
         std::chrono::system_clock::time_point simulationStartTime, simulationEndTime;

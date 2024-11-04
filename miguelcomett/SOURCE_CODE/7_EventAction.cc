@@ -2,17 +2,38 @@
 
 extern int arguments;
 
-MyEventAction::MyEventAction(MyRunAction * runAction) : fRunAction(runAction) {fEDep = 0.0;
-}
+MyEventAction::MyEventAction(MyRunAction * runAction) : fRunAction(runAction) {fEDep = 0.0;}
 MyEventAction::~MyEventAction(){}
 
 void MyEventAction::AddEDep(G4double EDep) { fEDep = fEDep + EDep; }
 
-void MyEventAction::BeginOfEventAction(const G4Event * ) {fEDep = 0.0;}
+void MyEventAction::BeginOfEventAction(const G4Event * event) 
+{
+    fEDep = 0.0;
+}
 
-void MyEventAction::EndOfEventAction(const G4Event * ) 
+void MyEventAction::EndOfEventAction(const G4Event * event) 
 { 
     fEDep = fEDep / keV;
+
+    const G4Run * thisRun = G4RunManager::GetRunManager() -> GetCurrentRun();
+    eventID = event -> GetEventID();
+    numberOfEvents = thisRun->GetNumberOfEventToBeProcessed();
+
+    // const Run * currentRun = static_cast<const Run *>();
+    // primaryEnergy = currentRun -> GetPrimaryEnergy();
+
+    if (eventID == 0) 
+    {
+        G4cout << G4endl; G4cout << G4endl;
+        G4cout << "++++++++++++++++++++Este es el primer evento." << G4endl;
+        // G4cout << "Energía: " << primaryEnergy << G4endl;
+    }
+
+    if (eventID == numberOfEvents - 1) 
+    {
+        G4cout << "--------------------Este es el último evento: " << eventID <<G4endl;
+    }
 
     EDepBuffer = fEDep;
 
@@ -30,8 +51,8 @@ void MyEventAction::EndOfEventAction(const G4Event * )
 
     if (arguments == 4)
     {
-        analysisManager -> FillNtupleDColumn(1, 0, fEDep);
-        analysisManager -> AddNtupleRow(1);
+        // analysisManager -> FillNtupleDColumn(1, 0, fEDep);
+        // analysisManager -> AddNtupleRow(1);
     }
 
     fRunAction -> AddEdep(fEDep);

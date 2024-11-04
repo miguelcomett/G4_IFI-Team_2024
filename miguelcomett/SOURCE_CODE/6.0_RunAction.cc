@@ -59,9 +59,18 @@ MyRunAction::MyRunAction()
         analysisManager -> CreateNtupleDColumn("Detected_Energy_keV");
         analysisManager -> FinishNtuple(0);
 
-        analysisManager -> CreateNtuple("Sample EDep (keV)", "Sample EDep");
-        analysisManager -> CreateNtupleDColumn("EDep_Spectra");
-        analysisManager -> FinishNtuple(1);
+        // analysisManager -> CreateNtuple("Run Summary", "Run Summary");
+        // analysisManager -> CreateNtupleDColumn("Number_of_Photons");
+        // analysisManager -> CreateNtupleDColumn("Initial_Energy_keV");
+        // analysisManager -> CreateNtupleDColumn("Total_Energy_keV");
+        // analysisManager -> CreateNtupleDColumn("Sample_Mass");
+        // analysisManager -> CreateNtupleDColumn("EDep_Value");
+        // analysisManager -> CreateNtupleDColumn("EDep_Spectra");
+        // analysisManager -> CreateNtupleDColumn("Radiation_Dose");
+        // analysisManager -> FinishNtuple(1);
+
+        // analysisManager -> CreateNtuple("Sample EDep (keV)", "Sample EDep");
+        // analysisManager -> FinishNtuple(1);
     }
 
     if (arguments == 5)
@@ -111,6 +120,8 @@ void MyRunAction::BeginOfRunAction(const G4Run * thisRun)
     if (isMaster){ simulationStartTime = std::chrono::system_clock::now(); }
 }
 
+void MyRunAction::SetPrimaryEnergy(G4double energy) { primaryEnergy = energy; }
+G4double MyRunAction::GetPrimaryEnergy() { return primaryEnergy; }
 
 void MyRunAction::EndOfRunAction(const G4Run * thisRun)
 {  

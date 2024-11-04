@@ -42,6 +42,8 @@ class MyRunAction : public G4UserRunAction
         G4double sampleMass, primaryEnergy, totalMass, durationInSeconds;
 
         std::chrono::system_clock::time_point simulationStartTime, simulationEndTime;
+
+        // Gint runIndex = 0;
 };
 
 #endif

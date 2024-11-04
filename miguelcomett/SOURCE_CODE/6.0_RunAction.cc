@@ -91,10 +91,12 @@ void MyRunAction::BeginOfRunAction(const G4Run * thisRun)
     runID = thisRun -> GetRunID();
     directory = std::string(ROOT_OUTPUT_DIR);
 
-    if (arguments == 1 || arguments == 2 || arguments == 4)
-        fileName = "/Rad_" + std::to_string(runID);
+    if (arguments == 1 || arguments == 2)
+        fileName = "/Sim_" + std::to_string(runID);
     if (arguments == 3)
         fileName = "/AttCoeff_" + std::to_string(runID);
+    if (arguments == 4)
+        fileName = "/Rad_" + std::to_string(runID);
     if (arguments == 5)
         fileName = "/CT_" + std::to_string(runID);
 
@@ -102,7 +104,7 @@ void MyRunAction::BeginOfRunAction(const G4Run * thisRun)
     analysisManager -> SetFileName(directory + fileName);
     analysisManager -> OpenFile();
 
-    if (isMaster && G4RunManager::GetRunManager() -> GetCurrentRun() -> GetRunID() == 0)
+    if (isMaster)
     {
         simulationStartTime = std::chrono::system_clock::now();
     }
@@ -140,13 +142,19 @@ void MyRunAction::EndOfRunAction(const G4Run * thisRun)
 
         customRun -> EndOfRun();
 
+
         std::time_t now_start = std::chrono::system_clock::to_time_t(simulationStartTime);
 
         simulationEndTime = std::chrono::system_clock::now();
         std::time_t now_end = std::chrono::system_clock::to_time_t(simulationEndTime);
         
+        // runIndex = rundIndex + 1;
+        // if (runIndex >= 1)
+        // else
+        
         auto duration = std::chrono::duration_cast<std::chrono::seconds>(simulationEndTime - simulationStartTime);
         durationInSeconds = duration.count() * second;
+
 
         G4cout << G4endl;
         G4cout << "============== Run Summary ===============" << G4endl;

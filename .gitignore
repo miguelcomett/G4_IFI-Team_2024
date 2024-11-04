@@ -1,6 +1,7 @@
 
 /miguelcomett/BUILD
 /miguelcomett/.venv
+<<<<<<< Updated upstream
 
 
 # gitignore PARA WINDOWS
@@ -265,3 +266,7 @@ a.out
 *build*
 .vs/
 {yourgitprojectname}/.vs
+=======
+/miguelcomett/BUILD
+miguelcomett/BUILD/.DS_Store
+>>>>>>> Stashed changes

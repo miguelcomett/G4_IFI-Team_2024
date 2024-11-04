@@ -68,6 +68,13 @@
         "variant": "cpp",
         "vector": "cpp",
         "algorithm": "cpp",
-        "*.icc": "cpp"
+        "*.icc": "cpp",
+        "qrot": "cpp",
+        "rotf": "cpp",
+        "vec2": "cpp",
+        "vec3": "cpp",
+        "vec4": "cpp",
+        "bsf": "cpp",
+        "senum": "cpp"
     }
 }

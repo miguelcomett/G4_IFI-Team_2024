@@ -13,6 +13,9 @@
 #include "G4AnalysisManager.hh"
 #include "G4Run.hh"
 #include <G4AccumulableManager.hh>
+#include "TFile.h"
+#include "TTree.h"
+#include "TNtuple.h"
 
 #include "3.0_DetectorConstruction.hh"
 #include "5_PrimaryGenerator.hh"
@@ -33,8 +36,6 @@ class MyRunAction : public G4UserRunAction
         G4Run * GenerateRun() override;
 
         void AddEdep (G4double edep);
-
-        void fill();
 
     private:
 

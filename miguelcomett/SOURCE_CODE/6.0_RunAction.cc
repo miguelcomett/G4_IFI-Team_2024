@@ -59,14 +59,14 @@ MyRunAction::MyRunAction()
         analysisManager -> CreateNtupleDColumn("Detected_Energy_keV");
         analysisManager -> FinishNtuple(0);
 
-        analysisManager -> CreateNtuple("Radiation Dose", "Radiation Dose");
-        analysisManager -> CreateNtupleDColumn("Mass");
-        analysisManager -> CreateNtupleDColumn("EDep_Sum");
-        analysisManager -> CreateNtupleDColumn("Dose");
-        analysisManager -> FinishNtuple(1);
-
         analysisManager -> CreateNtuple("Sample EDep (keV)", "Sample EDep");
         analysisManager -> CreateNtupleDColumn("EDep_Spectra");
+        analysisManager -> FinishNtuple(1);
+        
+        analysisManager -> CreateNtuple("Radiation Dose", "Radiation Dose");
+        analysisManager -> CreateNtupleDColumn("Mass");
+        // analysisManager -> CreateNtupleDColumn("EDep_Sum");
+        // analysisManager -> CreateNtupleDColumn("Dose");
         analysisManager -> FinishNtuple(2);
     }
 
@@ -76,16 +76,6 @@ MyRunAction::MyRunAction()
         analysisManager -> CreateNtupleDColumn("X_axis");
         analysisManager -> CreateNtupleDColumn("Y_axis");
         analysisManager -> FinishNtuple(0);
-
-        analysisManager -> CreateNtuple("Radiation Dose", "Radiation Dose");
-        analysisManager -> CreateNtupleDColumn("Mass");
-        analysisManager -> CreateNtupleDColumn("EDep_Sum");
-        analysisManager -> CreateNtupleDColumn("Dose");
-        analysisManager -> FinishNtuple(1);
-
-        analysisManager -> CreateNtuple("prueba", "prueba");
-        analysisManager -> CreateNtupleDColumn("aaaa");
-        analysisManager -> FinishNtuple(2);
     }
 }
 
@@ -191,18 +181,11 @@ void MyRunAction::EndOfRunAction(const G4Run * thisRun)
         G4cout << "==========================================" << G4endl;
         G4cout << G4endl;
     }
-    
+
     G4AnalysisManager * analysisManager = G4AnalysisManager::Instance();
+    analysisManager -> FillNtupleDColumn(2, 0, TotalEnergyDeposit);
+    analysisManager -> AddNtupleRow(2);
+
     analysisManager -> Write();
-    analysisManager -> CloseFile();    
-}
-
-void MyRunAction::fill()
-{
-    G4AnalysisManager * analysisManager = G4AnalysisManager::Instance();
-
-    analysisManager -> FillNtupleDColumn(1, 0, totalMass);
-    analysisManager -> FillNtupleDColumn(1, 1, TotalEnergyDeposit);
-    analysisManager -> FillNtupleDColumn(1, 2, radiationDose);
-    analysisManager -> AddNtupleRow(1);   
+    analysisManager -> CloseFile();  
 }

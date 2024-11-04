@@ -15,7 +15,7 @@ MyPrimaryGenerator::MyPrimaryGenerator()
     ParticleGun -> SetParticleDefinition(particle);
     ParticleGun -> SetParticleEnergy(40 * keV);
 
-    radius = 20.0;
+    radius = 25.0;
     angleInDegrees = 0.0;
 }
 

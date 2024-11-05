@@ -14,6 +14,8 @@
 #include "3.0_DetectorConstruction.hh"
 #include "5_PrimaryGenerator.hh"
 
+extern int arguments;
+
 class Run : public G4Run
 {
     public:
@@ -30,7 +32,6 @@ class Run : public G4Run
 
         G4String GetPrimaryParticleName() const;
         G4double GetPrimaryEnergy() const;
-
 
     private:
 

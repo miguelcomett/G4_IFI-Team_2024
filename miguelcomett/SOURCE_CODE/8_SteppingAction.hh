@@ -11,6 +11,8 @@
 #include "6.1_Run.hh"
 #include "7_EventAction.hh"
 
+extern int arguments;
+
 class MySteppingAction : public G4UserSteppingAction
 {
     public:
@@ -25,11 +27,9 @@ class MySteppingAction : public G4UserSteppingAction
         MyEventAction * fEventAction;
         G4LogicalVolume * scoringVolume;
         G4LogicalVolume * Volume;
-
         G4StepPoint * endPoint;
         
         G4String processName;
-
         G4double EDep;
 };
 

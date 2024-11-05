@@ -11,6 +11,8 @@
 #include "6.0_RunAction.hh"
 #include "6.1_Run.hh"
 
+extern int arguments;
+
 class MyEventAction : public G4UserEventAction
 {
     public:
@@ -27,7 +29,7 @@ class MyEventAction : public G4UserEventAction
         
         MyRunAction * fRunAction = nullptr;
         
-        G4double fEDep;
+        G4double fEDep, EDep_keV;
 };
 
 #endif

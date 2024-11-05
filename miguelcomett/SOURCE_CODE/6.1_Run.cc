@@ -1,8 +1,6 @@
 #include "6.0_RunAction.hh"
 #include "6.1_Run.hh"
 
-extern int arguments;
-
 Run::Run(){}
 Run::~Run(){}
 
@@ -35,8 +33,8 @@ void Run::EndOfRun()
         G4cout << G4endl; G4cout << G4endl;
         G4cout << "============== Run Summary ===============" << G4endl;
         G4cout << "     The run is: " << numberOfEvent << " " << particleName << " of "<< G4BestUnit(link_Energy, "Energy") << G4endl;
-        if (detectorConstruction -> isTarget == true) G4cout << "      Through " << G4BestUnit(thickness, "Length") << "of " << material -> GetName() << G4endl;
-        if (detectorConstruction -> isTarget == true) G4cout << "        (Density: " << G4BestUnit(density, "Volumic Mass") << ")" << G4endl;
+        G4cout << "      Through " << G4BestUnit(thickness, "Length") << "of " << material -> GetName() << G4endl;
+        G4cout << "        (Density: " << G4BestUnit(density, "Volumic Mass") << ")" << G4endl;
         G4cout << "==========================================" << G4endl;
         G4cout << G4endl; G4cout << G4endl;
 

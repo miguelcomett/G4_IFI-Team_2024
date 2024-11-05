@@ -17,8 +17,7 @@ MyDetectorConstruction::MyDetectorConstruction()
     armRotation = new G4RotationMatrix(0, 90*deg, 0);
     armPosition = G4ThreeVector(0.0, 0.0, 0.0);
 
-    isTarget = true; 
-    isArm = true;
+    isArm = false;
         isBoneDivided = false;
         isHealthyBone = true;
         isOsteoBone = false;
@@ -43,7 +42,8 @@ G4VPhysicalVolume * MyDetectorConstruction::Construct()
     logicWorld = new G4LogicalVolume(solidWorld, worldMaterial, "LogicalWorld");
     physicalWorld = new G4PVPlacement(0, G4ThreeVector(0.0, 0.0, 0.0), logicWorld, "PhysicalWorld", 0, false, 0, true);
 
-    if (isTarget) ConstructTarget(); else if (isArm) ConstructArm(); else if (is3DModel) ConstructThorax();
+    if (arguments == 3) {ConstructTarget();} else 
+    if (isArm) ConstructArm(); else if (is3DModel) ConstructThorax();
 
     solidDetector = new G4Box("solidDetector", xWorld/DetRowNum, yWorld/DetColumnNum, 0.01*m);
     logicDetector = new G4LogicalVolume(solidDetector, Silicon, "logicalDetector");

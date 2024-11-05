@@ -29,6 +29,8 @@
 #include "3.2_Geometry3D.hh"
 #include "3.3_GeometryReader.hh"
 
+extern int arguments;
+
 class MyDetectorConstruction : public G4VUserDetectorConstruction
 {   
     public:
@@ -48,8 +50,8 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
         G4Material * GetMaterial() const {return materialTarget;}
 	    G4double GetThickness() const {return targetThickness;}
 
-        G4bool  isArm, isHealthyBone, isOsteoBone, isPlacas, isBoneDivided, is3DModel, isTarget, 
-                isHeart, isLungs, isRibcage, isFiller, isThorax,
+        G4bool  isArm, isHealthyBone, isOsteoBone, isBoneDivided, 
+                is3DModel, isHeart, isLungs, isRibcage, isFiller, isThorax,
                 checkOverlaps;
     
     private:
@@ -71,7 +73,7 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
                  regionMinZ, regionMaxZ, regionMinRadius, regionMaxRadius, r, theta, z, x, y,
                  innerMuscleRadius, outerMuscleRadius, innerGrasaRadius, outerGrasaRadius, innerSkinRadius, outerSkinRadius,
                  fractionMass_VO2, fractionMass_SiO2, fTargetAngle;
-        G4double thoraxAngle = 0.0, targetThickness = 70 * mm;
+        G4double thoraxAngle = 0.0, targetThickness = 10 * mm;
 
         G4Box    * solidWorld, * solidDetector, * solidRadiator;
         G4Tubs   * solidBone, * solidMuscle, * solidGrasa, * solidSkin, * solidBone2, * osteoBone, * healthyBone; 

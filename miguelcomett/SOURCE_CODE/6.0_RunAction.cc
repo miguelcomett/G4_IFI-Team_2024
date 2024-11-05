@@ -51,23 +51,20 @@ MyRunAction::MyRunAction()
         analysisManager -> CreateNtuple("Photons", "Photons");
         analysisManager -> CreateNtupleDColumn("X_axis");
         analysisManager -> CreateNtupleDColumn("Y_axis");
-        // analysisManager -> CreateNtupleDColumn("Detected_Energy_keV");
+        analysisManager -> CreateNtupleDColumn("Detected_Energy_keV");
         analysisManager -> FinishNtuple(0);
-
-        analysisManager -> CreateNtuple("Run Summary 1", "Run Summary 1");
-        analysisManager -> CreateNtupleDColumn("Number_of_Photons");
-        analysisManager -> CreateNtupleDColumn("Initial_Energy_keV");
-        analysisManager -> CreateNtupleDColumn("Sample_Mass_g");
-        analysisManager -> FinishNtuple(1);
-
-        analysisManager -> CreateNtuple("Run Summary 2", "Run Summary 2");
-        analysisManager -> CreateNtupleDColumn("EDep_Value_PeV");
-        analysisManager -> CreateNtupleDColumn("Radiation_Dose_mSv");
-        analysisManager -> FinishNtuple(2);
 
         analysisManager -> CreateNtuple("EDep Sample", "EDep Sample");
         analysisManager -> CreateNtupleDColumn("EDep_Spectra");
-        analysisManager -> FinishNtuple(3);
+        analysisManager -> FinishNtuple(1);
+
+        // analysisManager -> CreateNtuple("Run Summary", "Run Summary");
+        // analysisManager -> CreateNtupleDColumn("Number_of_Photons");
+        // analysisManager -> CreateNtupleDColumn("Initial_Energy_keV");
+        // analysisManager -> CreateNtupleDColumn("Sample_Mass_g");
+        // analysisManager -> CreateNtupleDColumn("EDep_Value_PeV");
+        // analysisManager -> CreateNtupleDColumn("Radiation_Dose_mSv");
+        // analysisManager -> FinishNtuple(2);
     }
 
     if (arguments == 5)
@@ -76,17 +73,6 @@ MyRunAction::MyRunAction()
         analysisManager -> CreateNtupleDColumn("X_axis");
         analysisManager -> CreateNtupleDColumn("Y_axis");
         analysisManager -> FinishNtuple(0);
-
-        analysisManager -> CreateNtuple("Run Summary 1", "Run Summary 1");
-        analysisManager -> CreateNtupleDColumn("Number_of_Photons");
-        analysisManager -> CreateNtupleDColumn("Initial_Energy_keV");
-        analysisManager -> CreateNtupleDColumn("Sample_Mass_g");
-        analysisManager -> FinishNtuple(1);
-
-        analysisManager -> CreateNtuple("Run Summary 2", "Run Summary 2");
-        analysisManager -> CreateNtupleDColumn("EDep_Value_PeV");
-        analysisManager -> CreateNtupleDColumn("Radiation_Dose_mSv");
-        analysisManager -> FinishNtuple(2);
     }
 }
 

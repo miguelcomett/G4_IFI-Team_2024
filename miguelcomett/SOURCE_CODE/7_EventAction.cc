@@ -22,8 +22,8 @@ void MyEventAction::EndOfEventAction(const G4Event * event)
     
     if (arguments == 4)
     {
-        if (fEDep == 0.0) {analysisManager -> FillNtupleDColumn(3, 0, fEDep);}
-        analysisManager -> AddNtupleRow(3);
+        if (fEDep == 0.0) {analysisManager -> FillNtupleDColumn(1, 0, fEDep);}
+        analysisManager -> AddNtupleRow(1);
     }
 
     fRunAction -> AddEdep(fEDep);

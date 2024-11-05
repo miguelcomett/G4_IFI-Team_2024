@@ -6,6 +6,8 @@
 #include <chrono>
 #include <iostream>
 #include <vector> 
+#include <filesystem>
+#include <string>
 
 #include "Randomize.hh"
 #include "G4UIManager.hh"
@@ -14,6 +16,11 @@
 #include "G4Run.hh"
 #include <G4AccumulableManager.hh>
 #include "G4Threading.hh"
+
+#include "TFileMerger.h"
+#include <TFile.h>
+#include <TTree.h>
+#include <TFileMerger.h>
 
 #include "3.0_DetectorConstruction.hh"
 #include "5_PrimaryGenerator.hh"
@@ -34,6 +41,8 @@ class MyRunAction : public G4UserRunAction
         G4Run * GenerateRun() override;
 
         void AddEdep (G4double edep);
+
+        void MergeRootFiles();
 
     private:
 

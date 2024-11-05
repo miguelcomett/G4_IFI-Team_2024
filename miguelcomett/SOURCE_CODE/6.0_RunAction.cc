@@ -12,7 +12,7 @@ MyRunAction::MyRunAction()
 
     G4AnalysisManager * analysisManager = G4AnalysisManager::Instance();
     analysisManager -> SetDefaultFileType("root");
-    if (G4Threading::IsMultithreadedApplication() && arguments != 3) {analysisManager -> SetNtupleMerging(true);}
+    // if (G4Threading::IsMultithreadedApplication() && arguments != 3) {analysisManager -> SetNtupleMerging(true);}
     analysisManager -> SetVerboseLevel(0);
 
     if (arguments == 1 || arguments == 2)
@@ -58,13 +58,13 @@ MyRunAction::MyRunAction()
         analysisManager -> CreateNtupleDColumn("EDep_Spectra");
         analysisManager -> FinishNtuple(1);
 
-        // analysisManager -> CreateNtuple("Run Summary", "Run Summary");
-        // analysisManager -> CreateNtupleDColumn("Number_of_Photons");
-        // analysisManager -> CreateNtupleDColumn("Initial_Energy_keV");
-        // analysisManager -> CreateNtupleDColumn("Sample_Mass_g");
-        // analysisManager -> CreateNtupleDColumn("EDep_Value_PeV");
-        // analysisManager -> CreateNtupleDColumn("Radiation_Dose_mSv");
-        // analysisManager -> FinishNtuple(2);
+        analysisManager -> CreateNtuple("Run Summary", "Run Summary");
+        analysisManager -> CreateNtupleDColumn("Number_of_Photons");
+        analysisManager -> CreateNtupleDColumn("Initial_Energy_keV");
+        analysisManager -> CreateNtupleDColumn("Sample_Mass_g");
+        analysisManager -> CreateNtupleDColumn("EDep_Value_PeV");
+        analysisManager -> CreateNtupleDColumn("Radiation_Dose_mSv");
+        analysisManager -> FinishNtuple(2);
     }
 
     if (arguments == 5)
@@ -165,7 +165,7 @@ void MyRunAction::EndOfRunAction(const G4Run * thisRun)
         G4cout << "The run is: " << numberOfEvents << " " << particleName << " of "<< G4BestUnit(primaryEnergy, "Energy") << G4endl;
         G4cout << "--> Total mass of sample: " << G4BestUnit(totalMass, "Mass") << G4endl;
         G4cout << "--> Total energy deposition: " << G4BestUnit(TotalEnergyDeposit, "Energy") << G4endl;
-        G4cout << "--> Total Radiation dosis : " << G4BestUnit(radiationDose, "Dose") << G4endl;
+        G4cout << "--> Radiation dose : " << G4BestUnit(radiationDose, "Dose") << G4endl;
         G4cout << G4endl;
 
         std::tm * now_tm_0 = std::localtime(&now_start);
@@ -181,12 +181,17 @@ void MyRunAction::EndOfRunAction(const G4Run * thisRun)
     
     if (arguments == 4) 
     {   
-        // analysisManager -> FillNtupleDColumn(2, 0, numberOfEvents);
-    //     analysisManager -> FillNtupleDColumn(2, 1, primaryEnergy);
-    //     analysisManager -> FillNtupleDColumn(2, 2, totalMass);
-    //     analysisManager -> FillNtupleDColumn(2, 3, TotalEnergyDeposit);
-    //     analysisManager -> FillNtupleDColumn(2, 4, radiationDose);
-    //     analysisManager -> AddNtupleRow(2);
+        primaryEnergy = primaryEnergy / keV;
+        totalMass = totalMass / kg;
+        TotalEnergyDeposit = TotalEnergyDeposit / MeV;
+        radiationDose = radiationDose / microgray;
+
+        analysisManager -> FillNtupleDColumn(2, 0, numberOfEvents);
+        analysisManager -> FillNtupleDColumn(2, 1, primaryEnergy);
+        analysisManager -> FillNtupleDColumn(2, 2, totalMass);
+        analysisManager -> FillNtupleDColumn(2, 3, TotalEnergyDeposit);
+        analysisManager -> FillNtupleDColumn(2, 4, radiationDose);
+        analysisManager -> AddNtupleRow(2);
     }
 
     if (isMaster) {customRun -> EndOfRun();}

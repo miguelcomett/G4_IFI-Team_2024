@@ -12,7 +12,7 @@ MyRunAction::MyRunAction()
 
     G4AnalysisManager * analysisManager = G4AnalysisManager::Instance();
     analysisManager -> SetDefaultFileType("root");
-    if (G4Threading::IsMultithreadedApplication()) {analysisManager -> SetNtupleMerging(true);}
+    // if (G4Threading::IsMultithreadedApplication() && arguments != 3) {analysisManager -> SetNtupleMerging(true);}
     analysisManager -> SetVerboseLevel(0);
 
     if (arguments == 1 || arguments == 2)
@@ -58,13 +58,13 @@ MyRunAction::MyRunAction()
         analysisManager -> CreateNtupleDColumn("EDep_Spectra");
         analysisManager -> FinishNtuple(1);
 
-        // analysisManager -> CreateNtuple("Run Summary", "Run Summary");
-        // analysisManager -> CreateNtupleDColumn("Number_of_Photons");
-        // analysisManager -> CreateNtupleDColumn("Initial_Energy_keV");
-        // analysisManager -> CreateNtupleDColumn("Sample_Mass_g");
-        // analysisManager -> CreateNtupleDColumn("EDep_Value_PeV");
-        // analysisManager -> CreateNtupleDColumn("Radiation_Dose_mSv");
-        // analysisManager -> FinishNtuple(2);
+        analysisManager -> CreateNtuple("Run Summary", "Run Summary");
+        analysisManager -> CreateNtupleDColumn("Number_of_Photons");
+        analysisManager -> CreateNtupleDColumn("Initial_Energy_keV");
+        analysisManager -> CreateNtupleDColumn("Sample_Mass_g");
+        analysisManager -> CreateNtupleDColumn("EDep_Value_PeV");
+        analysisManager -> CreateNtupleDColumn("Radiation_Dose_mSv");
+        analysisManager -> FinishNtuple(2);
     }
 
     if (arguments == 5)
@@ -146,8 +146,6 @@ void MyRunAction::EndOfRunAction(const G4Run * thisRun)
         primaryEnergy = currentRun -> GetPrimaryEnergy();
         numberOfEvents = thisRun -> GetNumberOfEvent();
 
-        customRun -> EndOfRun();
-
         TotalEnergyDeposit = fEdep.GetValue();
         radiationDose = TotalEnergyDeposit / totalMass;
 
@@ -177,6 +175,8 @@ void MyRunAction::EndOfRunAction(const G4Run * thisRun)
         G4cout << "==========================================" << G4endl;
         G4cout << G4endl;
     }
+
+    if (isMaster) {customRun -> EndOfRun();}
 
     G4AnalysisManager * analysisManager = G4AnalysisManager::Instance();
     analysisManager -> Write();

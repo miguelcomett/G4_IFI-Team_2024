@@ -100,14 +100,13 @@ void Run::Merge(const G4Run * run)
     link_Energy = localRun -> link_Energy;
         
     std::map<G4String,G4int>::const_iterator it;
-    for (it  = localRun -> processCounter.begin(); 
-        it != localRun -> processCounter.end(); ++it) 
+    for (it  = localRun -> processCounter.begin(); it != localRun -> processCounter.end(); ++it) 
     {
         processName = it -> first;
         localCount  = it -> second;
 
-        if ( processCounter.find(processName) == processCounter.end()) 
-        {processCounter[processName] = localCount;} else {processCounter[processName] += localCount;}         
+        if ( processCounter.find(processName) == processCounter.end()) {processCounter[processName] = localCount;} 
+        else {processCounter[processName] += localCount;}         
     }
     
     G4Run::Merge(run);  

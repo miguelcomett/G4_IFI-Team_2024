@@ -12,7 +12,7 @@ MyRunAction::MyRunAction()
 
     G4AnalysisManager * analysisManager = G4AnalysisManager::Instance();
     analysisManager -> SetDefaultFileType("root");
-    analysisManager -> SetNtupleMerging(true);
+    if (G4Threading::IsMultithreadedApplication()) {analysisManager -> SetNtupleMerging(true);}
     analysisManager -> SetVerboseLevel(0);
 
     if (arguments == 1 || arguments == 2)
@@ -101,11 +101,11 @@ void MyRunAction::BeginOfRunAction(const G4Run * thisRun)
     G4AccumulableManager * accumulableManager = G4AccumulableManager::Instance();
     accumulableManager -> Reset();
 
-    const MyPrimaryGenerator * primaryGenerator = static_cast < const MyPrimaryGenerator *> (G4RunManager::GetRunManager() -> GetUserPrimaryGeneratorAction()); 
+    primaryGenerator = static_cast < const MyPrimaryGenerator *> (G4RunManager::GetRunManager() -> GetUserPrimaryGeneratorAction()); 
     if (primaryGenerator && primaryGenerator -> GetParticleGun()) 
     {
-        G4ParticleDefinition * particle = primaryGenerator -> GetParticleGun() -> GetParticleDefinition();
-        G4double energy                 = primaryGenerator -> GetParticleGun() -> GetParticleEnergy();
+        particle = primaryGenerator -> GetParticleGun() -> GetParticleDefinition();
+        energy = primaryGenerator -> GetParticleGun() -> GetParticleEnergy();
         customRun -> SetPrimary(particle, energy);
     }
 
@@ -130,11 +130,11 @@ void MyRunAction::BeginOfRunAction(const G4Run * thisRun)
 
 void MyRunAction::EndOfRunAction(const G4Run * thisRun)
 {  
-    G4AccumulableManager * accumulableManager = G4AccumulableManager::Instance();
-    accumulableManager -> Merge();
-            
     if (isMaster && arguments != 3) 
     { 
+        G4AccumulableManager * accumulableManager = G4AccumulableManager::Instance();
+        accumulableManager -> Merge();
+
         const MyDetectorConstruction * detectorConstruction = static_cast < const MyDetectorConstruction *> (G4RunManager::GetRunManager() -> GetUserDetectorConstruction());   
         std::vector <G4LogicalVolume*> scoringVolumes = detectorConstruction -> GetAllScoringVolumes();
         
@@ -160,7 +160,7 @@ void MyRunAction::EndOfRunAction(const G4Run * thisRun)
         primaryEnergy = currentRun -> GetPrimaryEnergy();
         numberOfEvents = thisRun -> GetNumberOfEvent();
 
-        // customRun -> EndOfRun();
+        customRun -> EndOfRun();
 
         TotalEnergyDeposit = fEdep.GetValue();
         radiationDose = TotalEnergyDeposit / totalMass;

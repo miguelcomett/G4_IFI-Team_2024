@@ -13,6 +13,7 @@
 #include "G4AnalysisManager.hh"
 #include "G4Run.hh"
 #include <G4AccumulableManager.hh>
+#include "G4Threading.hh"
 
 #include "3.0_DetectorConstruction.hh"
 #include "5_PrimaryGenerator.hh"
@@ -38,13 +39,15 @@ class MyRunAction : public G4UserRunAction
 
         Run * customRun = nullptr;
 
+        const MyPrimaryGenerator * primaryGenerator;
+        G4Accumulable <G4double> fEdep = 0.0;
+        std::chrono::system_clock::time_point simulationStartTime, simulationEndTime;
+
+        G4ParticleDefinition * particle;
+
         G4String particleName, directory, fileName;
         G4int numberOfEvents, runID, index;
-        G4double sampleMass, primaryEnergy, totalMass, durationInSeconds, TotalEnergyDeposit, radiationDose;
-        
-        G4Accumulable <G4double> fEdep = 0.0;
-
-        std::chrono::system_clock::time_point simulationStartTime, simulationEndTime;
+        G4double energy, sampleMass, primaryEnergy, totalMass, durationInSeconds, TotalEnergyDeposit, radiationDose;
 
         const G4double milligray = 1.0e-3*gray;
         const G4double microgray = 1.0e-6*gray;

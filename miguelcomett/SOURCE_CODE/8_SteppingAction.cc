@@ -10,17 +10,17 @@ void MySteppingAction::UserSteppingAction(const G4Step * step)
     Volume = step -> GetPreStepPoint() -> GetTouchableHandle() -> GetVolume() -> GetLogicalVolume();
     const MyDetectorConstruction * detectorConstruction = static_cast < const MyDetectorConstruction *> (G4RunManager::GetRunManager() -> GetUserDetectorConstruction());
     scoringVolume = detectorConstruction -> GetScoringVolume();
+    std::vector<G4LogicalVolume*> scoringVolumes = detectorConstruction -> GetAllScoringVolumes();
 
     if (arguments == 1 || arguments == 2)
-    {
-        std::vector<G4LogicalVolume*> scoringVolumes = detectorConstruction -> GetAllScoringVolumes();
-        
+    {   
         if (std::find(scoringVolumes.begin(), scoringVolumes.end(), Volume) == scoringVolumes.end()) {return;}
-            
+        {
             EDep = step -> GetTotalEnergyDeposit();
             if (EDep > 0.0) { fEventAction -> AddEDep(EDep); }
             // G4cout << "Energy deposition (keV): " << EDep << G4endl; 
             fEventAction -> AddEDep(EDep);
+        }
     }
 
     if (arguments == 3) 
@@ -37,13 +37,12 @@ void MySteppingAction::UserSteppingAction(const G4Step * step)
     }
 
     if (arguments == 4 || arguments == 5)
-    {
-        std::vector<G4LogicalVolume*> scoringVolumes = detectorConstruction -> GetAllScoringVolumes();
-        
+    {   
         if (std::find(scoringVolumes.begin(), scoringVolumes.end(), Volume) == scoringVolumes.end()) {return;}
-            
+        {       
             EDep = step -> GetTotalEnergyDeposit();
             if (EDep > 0.0) { fEventAction -> AddEDep(EDep); }
             // G4cout << "Energy deposition (keV): " << EDep << G4endl; 
+        }
     }
 }

@@ -8,7 +8,7 @@ MyDetectorConstruction::MyDetectorConstruction()
     DetectorMessenger = new G4GenericMessenger(this, "/myDetector/", "Detector Construction");
     DetectorMessenger -> DeclareProperty("nColumns", DetColumnNum, "Number of columns");
     DetectorMessenger -> DeclareProperty("nRows", DetRowNum, "Number of rows");
-    DetectorMessenger -> DeclareProperty("ThicknessTarget", target_Thickness, "Thickness of the target");
+    DetectorMessenger -> DeclareProperty("ThicknessTarget", targetThickness, "Thickness of the target");
     DetectorMessenger -> DeclareProperty("Rotation", thoraxAngle, "Rotate the 3D model");
 
     boneHeight = 60 * mm;
@@ -17,7 +17,7 @@ MyDetectorConstruction::MyDetectorConstruction()
     armRotation = new G4RotationMatrix(0, 90*deg, 0);
     armPosition = G4ThreeVector(0.0, 0.0, 0.0);
 
-    isTarget = false; 
+    isTarget = true; 
     isArm = true;
         isBoneDivided = false;
         isHealthyBone = true;
@@ -71,7 +71,7 @@ void MyDetectorConstruction::ConstructTarget()
 
     Radiator_Position = G4ThreeVector(0.0, 0.0, 0.25*m);
 
-    solidRadiator = new G4Box("solidRadiator", 0.45*m, 0.45*m, target_Thickness/2);
+    solidRadiator = new G4Box("solidRadiator", 0.45*m, 0.45*m, targetThickness/2);
     logicRadiator = new G4LogicalVolume(solidRadiator, materialTarget, "logicalRadiator");
     physicalRadiator = new G4PVPlacement(0, Radiator_Position, logicRadiator, "PhysicalRadiator", logicWorld, false, 0, true);
 

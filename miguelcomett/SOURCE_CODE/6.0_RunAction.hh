@@ -20,7 +20,8 @@
 #include "TFileMerger.h"
 #include <TFile.h>
 #include <TTree.h>
-#include <TFileMerger.h>
+#include <filesystem>
+#include <iostream>
 
 #include "3.0_DetectorConstruction.hh"
 #include "5_PrimaryGenerator.hh"
@@ -43,6 +44,7 @@ class MyRunAction : public G4UserRunAction
         void AddEdep (G4double edep);
 
         void MergeRootFiles();
+        void SingleData(const std::string& mergedFilePath);
 
     private:
 

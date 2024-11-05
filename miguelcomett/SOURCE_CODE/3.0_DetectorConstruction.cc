@@ -183,7 +183,7 @@ void MyDetectorConstruction::ConstructThorax()
     #ifdef __APPLE__
         std::string modelPath = "/Users/miguelcomett/geant4-v11.2.2_2/ESTANCIA/IFI.03.Radiography/miguelcomett/3D_Models/";
     #else
-        std::string modelPath = "C:\\Users\\A01067387\\Documents\\Models2\\"; // Define el directorio de los modelos 3D
+        std::string modelPath = "C:\\Users\\conej\\Documents\\Universidad\\Geant4\\Projects\\Models2\\"; // Define el directorio de los modelos 3D
     #endif
 
     Model3DRotation = new G4RotationMatrix(0*deg, -90*deg, (thoraxAngle+180)*deg);

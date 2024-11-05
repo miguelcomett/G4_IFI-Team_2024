@@ -7,9 +7,9 @@ MySteppingAction::~MySteppingAction() {}
 
 void MySteppingAction::UserSteppingAction(const G4Step * step)
 {
-    G4LogicalVolume * Volume = step -> GetPreStepPoint() -> GetTouchableHandle() -> GetVolume() -> GetLogicalVolume();
+    Volume = step -> GetPreStepPoint() -> GetTouchableHandle() -> GetVolume() -> GetLogicalVolume();
     const MyDetectorConstruction * detectorConstruction = static_cast < const MyDetectorConstruction *> (G4RunManager::GetRunManager() -> GetUserDetectorConstruction());
-    G4LogicalVolume * ScoringVolume = detectorConstruction -> GetScoringVolume();
+    scoringVolume = detectorConstruction -> GetScoringVolume();
 
     if (arguments == 1 || arguments == 2)
     {
@@ -25,10 +25,11 @@ void MySteppingAction::UserSteppingAction(const G4Step * step)
 
     if (arguments == 3) 
     {
-        if(Volume != ScoringVolume) { return; }
+        if(Volume != scoringVolume) { return; }
+        // G4cout << "particle touches target: " << scoringVolume << G4endl;
 
-        G4StepPoint * endPoint = step -> GetPostStepPoint();
-        G4String processName = endPoint -> GetProcessDefinedStep() -> GetProcessName();
+        endPoint = step -> GetPostStepPoint();
+        processName = endPoint -> GetProcessDefinedStep() -> GetProcessName();
         Run * run = static_cast <Run *> (G4RunManager::GetRunManager() -> GetNonConstCurrentRun()); 
         run -> CountProcesses(processName);
 

@@ -71,7 +71,7 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
                  regionMinZ, regionMaxZ, regionMinRadius, regionMaxRadius, r, theta, z, x, y,
                  innerMuscleRadius, outerMuscleRadius, innerGrasaRadius, outerGrasaRadius, innerSkinRadius, outerSkinRadius,
                  fractionMass_VO2, fractionMass_SiO2, fTargetAngle;
-        G4double thoraxAngle = 0.0, target_Thickness = 40 * mm;
+        G4double thoraxAngle = 0.0, target_Thickness = 70 * mm;
 
         G4Box    * solidWorld, * solidDetector, * solidRadiator;
         G4Tubs   * solidBone, * solidMuscle, * solidGrasa, * solidSkin, * solidBone2, * osteoBone, * healthyBone; 

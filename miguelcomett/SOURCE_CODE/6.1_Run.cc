@@ -23,6 +23,8 @@ void Run::CountProcesses(G4String processName)
 
 void Run::EndOfRun()
 {
+    G4cout << G4endl; G4cout << G4endl;
+    G4cout << "============== Run Summary ===============" << G4endl;
     const MyDetectorConstruction * detectorConstruction = static_cast < const MyDetectorConstruction *> (G4RunManager::GetRunManager() -> GetUserDetectorConstruction());     
 
     if (arguments == 3)

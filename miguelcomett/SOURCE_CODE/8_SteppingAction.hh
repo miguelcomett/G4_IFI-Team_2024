@@ -23,6 +23,13 @@ class MySteppingAction : public G4UserSteppingAction
     private:
 
         MyEventAction * fEventAction;
+        G4LogicalVolume * scoringVolume;
+        G4LogicalVolume * Volume;
+
+        G4StepPoint * endPoint;
+        
+        G4String processName;
+
         G4double EDep;
 };
 

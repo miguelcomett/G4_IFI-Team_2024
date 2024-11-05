@@ -196,13 +196,3 @@ void MyRunAction::EndOfRunAction(const G4Run * thisRun)
     analysisManager -> Write();
     analysisManager -> CloseFile();  
 }
-
-void MyRunAction::IncrementEventCount() {
-    // eventsProcessed++;
-    eventsProcessed = eventsProcessed + 1;
-    // std::cout << "Events processed: " << eventsProcessed << std::endl;
-}
-
-int MyRunAction::GetEventCount() const {
-    return eventsProcessed.load();
-}

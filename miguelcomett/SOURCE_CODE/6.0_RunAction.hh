@@ -1,14 +1,13 @@
 #ifndef RunAction_hh
 #define RunAction_hh
 
-#include "Randomize.hh"
 #include <iomanip>
 #include <ctime> 
 #include <chrono>
 #include <iostream>
 #include <vector> 
-#include <atomic>
 
+#include "Randomize.hh"
 #include "G4UIManager.hh"
 #include "G4UserRunAction.hh"
 #include "G4AnalysisManager.hh"
@@ -35,12 +34,7 @@ class MyRunAction : public G4UserRunAction
 
         void AddEdep (G4double edep);
 
-        void IncrementEventCount();
-        int GetEventCount() const;
-
     private:
-        
-        std::atomic<int> eventsProcessed{0};
 
         Run * customRun = nullptr;
 

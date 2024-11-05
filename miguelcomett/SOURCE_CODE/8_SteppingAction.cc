@@ -18,7 +18,7 @@ void MySteppingAction::UserSteppingAction(const G4Step * step)
         if (std::find(scoringVolumes.begin(), scoringVolumes.end(), Volume) == scoringVolumes.end()) {return;}
             
             EDep = step -> GetTotalEnergyDeposit();
-            if (EDep == 0.0) { return; }
+            if (EDep > 0.0) { fEventAction -> AddEDep(EDep); }
             // G4cout << "Energy deposition (keV): " << EDep << G4endl; 
             fEventAction -> AddEDep(EDep);
     }
@@ -42,8 +42,7 @@ void MySteppingAction::UserSteppingAction(const G4Step * step)
         if (std::find(scoringVolumes.begin(), scoringVolumes.end(), Volume) == scoringVolumes.end()) {return;}
             
             EDep = step -> GetTotalEnergyDeposit();
-            if (EDep == 0.0) { return; }
+            if (EDep > 0.0) { fEventAction -> AddEDep(EDep); }
             // G4cout << "Energy deposition (keV): " << EDep << G4endl; 
-            fEventAction -> AddEDep(EDep);
     }
 }

@@ -2,11 +2,6 @@
 
 MyRunAction::MyRunAction()
 {
-    const G4double milligray = 1.0e-3*gray;
-    const G4double microgray = 1.0e-6*gray;
-    const G4double nanogray  = 1.0e-9*gray;
-    const G4double picogray  = 1.0e-12*gray;
-
     new G4UnitDefinition("milligray", "milliGy" , "Dose", milligray);
     new G4UnitDefinition("microgray", "microGy" , "Dose", microgray);
     new G4UnitDefinition("nanogray" , "nanoGy"  , "Dose", nanogray);
@@ -56,21 +51,23 @@ MyRunAction::MyRunAction()
         analysisManager -> CreateNtuple("Photons", "Photons");
         analysisManager -> CreateNtupleDColumn("X_axis");
         analysisManager -> CreateNtupleDColumn("Y_axis");
-        analysisManager -> CreateNtupleDColumn("Detected_Energy_keV");
+        // analysisManager -> CreateNtupleDColumn("Detected_Energy_keV");
         analysisManager -> FinishNtuple(0);
 
-        // analysisManager -> CreateNtuple("Run Summary", "Run Summary");
-        // analysisManager -> CreateNtupleDColumn("Number_of_Photons");
-        // analysisManager -> CreateNtupleDColumn("Initial_Energy_keV");
-        // analysisManager -> CreateNtupleDColumn("Total_Energy_keV");
-        // analysisManager -> CreateNtupleDColumn("Sample_Mass");
-        // analysisManager -> CreateNtupleDColumn("EDep_Value");
-        // analysisManager -> CreateNtupleDColumn("EDep_Spectra");
-        // analysisManager -> CreateNtupleDColumn("Radiation_Dose");
-        // analysisManager -> FinishNtuple(1);
+        analysisManager -> CreateNtuple("Run Summary 1", "Run Summary 1");
+        analysisManager -> CreateNtupleDColumn("Number_of_Photons");
+        analysisManager -> CreateNtupleDColumn("Initial_Energy_keV");
+        analysisManager -> CreateNtupleDColumn("Sample_Mass_g");
+        analysisManager -> FinishNtuple(1);
 
-        // analysisManager -> CreateNtuple("Sample EDep (keV)", "Sample EDep");
-        // analysisManager -> FinishNtuple(1);
+        analysisManager -> CreateNtuple("Run Summary 2", "Run Summary 2");
+        analysisManager -> CreateNtupleDColumn("EDep_Value_PeV");
+        analysisManager -> CreateNtupleDColumn("Radiation_Dose_mSv");
+        analysisManager -> FinishNtuple(2);
+
+        analysisManager -> CreateNtuple("EDep Sample", "EDep Sample");
+        analysisManager -> CreateNtupleDColumn("EDep_Spectra");
+        analysisManager -> FinishNtuple(3);
     }
 
     if (arguments == 5)
@@ -79,6 +76,17 @@ MyRunAction::MyRunAction()
         analysisManager -> CreateNtupleDColumn("X_axis");
         analysisManager -> CreateNtupleDColumn("Y_axis");
         analysisManager -> FinishNtuple(0);
+
+        analysisManager -> CreateNtuple("Run Summary 1", "Run Summary 1");
+        analysisManager -> CreateNtupleDColumn("Number_of_Photons");
+        analysisManager -> CreateNtupleDColumn("Initial_Energy_keV");
+        analysisManager -> CreateNtupleDColumn("Sample_Mass_g");
+        analysisManager -> FinishNtuple(1);
+
+        analysisManager -> CreateNtuple("Run Summary 2", "Run Summary 2");
+        analysisManager -> CreateNtupleDColumn("EDep_Value_PeV");
+        analysisManager -> CreateNtupleDColumn("Radiation_Dose_mSv");
+        analysisManager -> FinishNtuple(2);
     }
 }
 
@@ -119,9 +127,6 @@ void MyRunAction::BeginOfRunAction(const G4Run * thisRun)
 
     if (isMaster){ simulationStartTime = std::chrono::system_clock::now(); }
 }
-
-void MyRunAction::SetPrimaryEnergy(G4double energy) { primaryEnergy = energy; }
-G4double MyRunAction::GetPrimaryEnergy() { return primaryEnergy; }
 
 void MyRunAction::EndOfRunAction(const G4Run * thisRun)
 {  
@@ -190,4 +195,14 @@ void MyRunAction::EndOfRunAction(const G4Run * thisRun)
     G4AnalysisManager * analysisManager = G4AnalysisManager::Instance();
     analysisManager -> Write();
     analysisManager -> CloseFile();  
+}
+
+void MyRunAction::IncrementEventCount() {
+    // eventsProcessed++;
+    eventsProcessed = eventsProcessed + 1;
+    // std::cout << "Events processed: " << eventsProcessed << std::endl;
+}
+
+int MyRunAction::GetEventCount() const {
+    return eventsProcessed.load();
 }

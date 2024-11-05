@@ -10,7 +10,7 @@ MyDetectorConstruction::MyDetectorConstruction()
     DetectorMessenger -> DeclareProperty("nColumns", DetColumnNum, "Number of columns");
     DetectorMessenger -> DeclareProperty("nRows", DetRowNum, "Number of rows");
     DetectorMessenger -> DeclareProperty("ThicknessTarget", target_Thickness, "Thickness of the target");
-    // DetectorMessenger -> DeclareProperty("Rotation", , "Rotate the 3D model");
+    DetectorMessenger -> DeclareProperty("Rotation", thoraxAngle, "Rotate the 3D model");
 
     DetColumnNum = 10, DetRowNum = 10;
 
@@ -22,9 +22,9 @@ MyDetectorConstruction::MyDetectorConstruction()
     targetRotation = new G4RotationMatrix(0, 90*deg, 0);
     targetPosition = G4ThreeVector(0.0, 0.0, 0.0);
 
-    // thoraxAngle = 0;
+    thoraxAngle = 0;
 
-    isTarget = true; 
+    isTarget = false; 
     isArm = false;
         isBoneDivided = false;
         isHealthyBone = true;
@@ -34,7 +34,7 @@ MyDetectorConstruction::MyDetectorConstruction()
         isLungs = true;
         isRibcage = true;
         isThorax = true;
-        isFiller = false;
+        isFiller = true;
 }
 
 MyDetectorConstruction::~MyDetectorConstruction()
@@ -193,7 +193,7 @@ void MyDetectorConstruction::ConstructThorax()
         std::string modelPath = "C:\\Users\\A01067387\\Documents\\Models2\\"; // Define el directorio de los modelos 3D
     #endif
 
-    thoraxAngle = 0;
+    // thoraxAngle = 70;
     Model3DRotation = new G4RotationMatrix(0*deg, -90*deg, (thoraxAngle+180)*deg);
     originMatrix = new G4RotationMatrix(0, 0, 0);
         

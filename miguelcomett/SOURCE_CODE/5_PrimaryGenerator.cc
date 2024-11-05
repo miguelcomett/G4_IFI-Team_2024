@@ -6,20 +6,15 @@ MyPrimaryGenerator::MyPrimaryGenerator()
     GeneratorMessenger -> DeclareProperty("Radius", radius, "Change the Radius of the beam cone");
     GeneratorMessenger -> DeclareProperty("Angle", angleInDegrees, "Change the angle of the beam cone");
 
-    ParticleGun = new G4ParticleGun(1);
-
-    G4ParticleTable * particleTable = G4ParticleTable::GetParticleTable();
-    G4String particleName = "gamma";
-    G4ParticleDefinition * particle = particleTable -> FindParticle(particleName);
-
-    ParticleGun -> SetParticleDefinition(particle);
-    ParticleGun -> SetParticleEnergy(40 * keV);
-
-    radius = 20.0;
-    angleInDegrees = 0.0;
+    particleGun = new G4ParticleGun(1);
+    particleTable = G4ParticleTable::GetParticleTable();
+    particleName = "gamma";
+    particle = particleTable -> FindParticle(particleName);
+    particleGun -> SetParticleDefinition(particle);
+    particleGun -> SetParticleEnergy(40 * keV);
 }
 
-MyPrimaryGenerator::~MyPrimaryGenerator() {delete ParticleGun;}
+MyPrimaryGenerator::~MyPrimaryGenerator() {delete particleGun;}
 
 void MyPrimaryGenerator::GeneratePrimaries(G4Event * anEvent)
 { 
@@ -33,7 +28,7 @@ void MyPrimaryGenerator::GeneratePrimaries(G4Event * anEvent)
     z0 = - 40.0 * cm;
 
     G4ThreeVector photonPosition(x0, y0, z0);
-    ParticleGun -> SetParticlePosition(photonPosition);
+    particleGun -> SetParticlePosition(photonPosition);
 
     G4bool fullAngle = true;
     if (fullAngle == true) {angle = 2.0;} else {angle = 1.0;}
@@ -44,9 +39,9 @@ void MyPrimaryGenerator::GeneratePrimaries(G4Event * anEvent)
     theta = angleInCarts * (G4UniformRand() - 0.5) * angle;
     phi   = angleInCarts * (G4UniformRand() - 0.5) * angle;
     G4ThreeVector photonMomentum(theta, phi, 1.0);
-    ParticleGun -> SetParticleMomentumDirection(photonMomentum);
+    particleGun -> SetParticleMomentumDirection(photonMomentum);
 
-    // G4double energy = ParticleGun -> GetParticleEnergy();
+    // G4double energy = particleGun -> GetParticleEnergy();
 
-    ParticleGun -> GeneratePrimaryVertex(anEvent);
+    particleGun -> GeneratePrimaryVertex(anEvent);
 }

@@ -1,7 +1,8 @@
 #ifndef DetectorConstruction_hh
 #define DetectorConstruction_hh
 
-// #include <vector> 
+#include <vector> 
+#include <string>
 
 #include "G4SystemOfUnits.hh"
 #include "G4VPhysicalVolume.hh"
@@ -63,11 +64,14 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
 
         G4GenericMessenger * DetectorMessenger;
 
-        G4int DetColumnNum, DetRowNum, numPores; 
-        G4double target_Thickness, innerBoneRadius, outerBoneRadius, boneHeight, poreRadius, xWorld, yWorld, zWorld, 
+        G4int numPores;
+        G4int DetColumnNum = 10, DetRowNum = 10; 
+        
+        G4double innerBoneRadius, outerBoneRadius, boneHeight, poreRadius, xWorld, yWorld, zWorld, 
                  regionMinZ, regionMaxZ, regionMinRadius, regionMaxRadius, r, theta, z, x, y,
                  innerMuscleRadius, outerMuscleRadius, innerGrasaRadius, outerGrasaRadius, innerSkinRadius, outerSkinRadius,
-                 fractionMass_VO2, fractionMass_SiO2, fTargetAngle, thoraxAngle;
+                 fractionMass_VO2, fractionMass_SiO2, fTargetAngle;
+        G4double thoraxAngle = 0.0, target_Thickness = 40 * mm;
 
         G4Box    * solidWorld, * solidDetector, * solidRadiator;
         G4Tubs   * solidBone, * solidMuscle, * solidGrasa, * solidSkin, * solidBone2, * osteoBone, * healthyBone; 
@@ -81,8 +85,8 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
         G4VPhysicalVolume * physicalWorld, * physicalRadiator, * physicalDetector, * physBone, * physArm, 
                           * physMuscle, * physGrasa, * physSkin, * physOs, * physHealthy;
                         
-        G4ThreeVector targetPosition, DetectorPosition, porePosition, osteo_position, healthy_position, Radiator_Position;
-        G4RotationMatrix * targetRotation, * Model3DRotation, * originMatrix; 
+        G4ThreeVector armPosition, DetectorPosition, porePosition, osteo_position, healthy_position, Radiator_Position;
+        G4RotationMatrix * armRotation, * Model3DRotation, * originMatrix; 
 
         G4Element  * C, * Al, * N, * O, * Ca, * Mg, * V, * Cd, * Te, * W;
         G4Material * SiO2, * H2O, * Aerogel, * worldMaterial, * Calcium, * Magnesium, * Aluminum, * Air, * Silicon, * materialTarget, 

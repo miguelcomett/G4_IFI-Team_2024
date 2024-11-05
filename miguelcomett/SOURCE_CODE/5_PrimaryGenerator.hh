@@ -22,14 +22,20 @@ class MyPrimaryGenerator : public G4VUserPrimaryGeneratorAction
 
         virtual void GeneratePrimaries(G4Event *);
 
-        G4ParticleGun * GetParticleGun() const {return ParticleGun;}
+        G4ParticleGun * GetParticleGun() const {return particleGun;}
     
     private:
 
-        G4ParticleGun * ParticleGun;        
+        G4ParticleGun * particleGun;        
         G4GenericMessenger * GeneratorMessenger;
+
+        G4String particleName;
+        G4ParticleTable * particleTable;
+        G4ParticleDefinition * particle;
+        
+        G4double theta, phi, angle, angleInRadians, angleInCarts, x0, y0, z0;
+        G4double radius = 20.0, angleInDegrees = 0.0;
         const G4double pi = 3.14159265358979323846;
-        G4double theta, phi, radius, angle, angleInDegrees, angleInRadians, angleInCarts, x0, y0, z0;
 };
 
 #endif

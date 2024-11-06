@@ -46,6 +46,52 @@ def Merge_Roots(directory, starts_with, output_name):
 
     print("Writting file as: ", merged_file)
 
+
+# 1.1.1 ========================================================================================================================================================
+
+
+def Merge_Roots_Optimized(directory, starts_with, output_name):
+
+    import uproot; import os; from tqdm import tqdm
+
+    file_list = []
+
+    # Crear lista de archivos para procesar
+    for file in os.listdir(directory):
+        if file.endswith('.root') and not file.startswith('merge') and not file.startswith(output_name):
+            if starts_with == '' or file.startswith(starts_with):
+                file_list.append(os.path.join(directory, file))
+
+    # Crear el nombre de archivo de salida con numeración si ya existe
+    merged_file = os.path.join(directory, output_name)
+    counter = 0
+    while os.path.exists(f"{merged_file}_{counter}.root"):
+        counter += 1
+    merged_file = f"{merged_file}_{counter}.root"
+
+    with uproot.recreate(merged_file) as f_out:
+        for file in tqdm(file_list, desc="Merging ROOT files", unit="file"):
+            with uproot.open(file) as f_in:
+                for key in f_in.keys():
+                    base_key = key.split(';')[0]  # Obtener el nombre base sin número de ciclo
+                    obj = f_in[key]
+
+                    # Solo procesar si es un TTree
+                    if isinstance(obj, uproot.TTree):
+                        new_data = obj.arrays(library="np")
+
+                        # Si el árbol ya existe en el archivo de salida, añadir los datos
+                        if base_key in f_out:
+                            f_out[base_key].extend(new_data)
+                        else:
+                            # Crear un nuevo TTree en el archivo de salida con los primeros datos
+                            f_out[base_key] = new_data
+
+    print("Archivo final creado en:", merged_file)
+
+
+
+
 # 1.2. ========================================================================================================================================================
 
 def ModifyRoot(directory, root_name, tree_name, branch_names, output_name, new_tree_name, new_branch_names):

@@ -1,97 +1,5 @@
 # 1.1. ========================================================================================================================================================
 
-def Merge_Roots(directory, starts_with, output_name):
-
-    import uproot; import os; import numpy as np; from tqdm import tqdm
-
-    file_list = []
-
-    for file in os.listdir(directory):
-        if file.endswith('.root') and not file.startswith('merge') and not file.startswith(output_name):
-            if not starts_with == '' and file.startswith(starts_with):
-                    file_list.append(os.path.join(directory, file))
-    
-    merged_file = os.path.join(directory, output_name)
-    
-    counter = 0
-    while True:
-        if not os.path.exists(f"{merged_file}_{counter}.root"):
-            merged_file = f"{merged_file}_{counter}.root"
-            break
-        counter = counter + 1
-
-    with uproot.recreate(merged_file) as f_out:
-        data_dict = {}  # Dictionary to store merged data temporarily
-        
-        for file in tqdm(file_list, desc = "Reading files", unit = "File", leave = True):
-            
-            with uproot.open(file) as f_in:
-                for key in f_in.keys():
-                    obj = f_in[key]
-                    
-                    if isinstance(obj, uproot.TTree):
-                        new_data = obj.arrays(library="np")
-                        base_key = key.split(';')[0] # Extract base key name (ignore cycle numbers)
-
-                        if base_key in data_dict: # If base_key is already in data_dict, concatenate data
-                            existing_data = data_dict[base_key]
-                            combined_data = {k: np.concatenate([existing_data[k], new_data[k]]) for k in new_data.keys() if k in existing_data}
-                            data_dict[base_key] = {**existing_data, **combined_data} # Update with the combined data
-                        
-                        else:
-                            data_dict[base_key] = new_data # If base_key is not in data_dict, add new data
-
-        for key, data in tqdm(data_dict.items(), desc = 'Writing file', unit='data', leave = True):
-            f_out[key] = data
-
-    print("Writting file as: ", merged_file)
-
-
-# 1.1.1 ========================================================================================================================================================
-
-
-def Merge_Roots_Optimized(directory, starts_with, output_name):
-
-    import uproot; import os; from tqdm import tqdm
-
-    file_list = []
-
-    # Crear lista de archivos para procesar
-    for file in os.listdir(directory):
-        if file.endswith('.root') and not file.startswith('merge') and not file.startswith(output_name):
-            if starts_with == '' or file.startswith(starts_with):
-                file_list.append(os.path.join(directory, file))
-
-    # Crear el nombre de archivo de salida con numeración si ya existe
-    merged_file = os.path.join(directory, output_name)
-    counter = 0
-    while os.path.exists(f"{merged_file}_{counter}.root"):
-        counter += 1
-    merged_file = f"{merged_file}_{counter}.root"
-
-    with uproot.recreate(merged_file) as f_out:
-        for file in tqdm(file_list, desc="Merging ROOT files", unit="file"):
-            with uproot.open(file) as f_in:
-                for key in f_in.keys():
-                    base_key = key.split(';')[0]  # Obtener el nombre base sin número de ciclo
-                    obj = f_in[key]
-
-                    # Solo procesar si es un TTree
-                    if isinstance(obj, uproot.TTree):
-                        new_data = obj.arrays(library="np")
-
-                        # Si el árbol ya existe en el archivo de salida, añadir los datos
-                        if base_key in f_out:
-                            f_out[base_key].extend(new_data)
-                        else:
-                            # Crear un nuevo TTree en el archivo de salida con los primeros datos
-                            f_out[base_key] = new_data
-
-    print("Archivo final creado en:", merged_file)
-
-# 1.1.2 ========================================================================================================================================================
-
-
 def Merge_Roots_Memory_Optimized(directory, starts_with, output_name):
 
     import uproot; import os; from tqdm import tqdm
@@ -130,6 +38,63 @@ def Merge_Roots_Memory_Optimized(directory, starts_with, output_name):
                                 f_out[base_key] = new_data
 
     print("Archivo final creado en:", merged_file)
+
+# 1.1.1 ========================================================================================================================================================
+
+import uproot
+import os
+from tqdm import tqdm
+from concurrent.futures import ThreadPoolExecutor
+import threading
+
+def process_file(file, f_out, lock, step_size="10 MB"):
+    with uproot.open(file) as f_in:
+        for key in f_in.keys():
+            base_key = key.split(';')[0]
+            obj = f_in[key]
+
+            # Solo procesar si es un TTree
+            if isinstance(obj, uproot.TTree):
+                # Leer los datos por partes para optimizar el uso de memoria
+                for new_data in obj.iterate(library="np", step_size=step_size):
+                    # Lock para asegurar que la escritura en f_out sea thread-safe
+                    with lock:
+                        # Añadir o crear el TTree en el archivo de salida
+                        if base_key in f_out:
+                            f_out[base_key].extend(new_data)
+                        else:
+                            f_out[base_key] = new_data
+
+def Merge_Roots_Memory_Optimized_Parallel(directory, starts_with, output_name, max_workers=4):
+    file_list = []
+
+    # Crear lista de archivos para procesar
+    for file in os.listdir(directory):
+        if file.endswith('.root') and not file.startswith('merge') and not file.startswith(output_name):
+            if starts_with == '' or file.startswith(starts_with):
+                file_list.append(os.path.join(directory, file))
+
+    # Crear el nombre de archivo de salida con numeración si ya existe
+    merged_file = os.path.join(directory, output_name)
+    counter = 0
+    while os.path.exists(f"{merged_file}_{counter}.root"):
+        counter += 1
+    merged_file = f"{merged_file}_{counter}.root"
+
+    # Crear un lock para el acceso a f_out
+    lock = threading.Lock()
+
+    with uproot.recreate(merged_file) as f_out:
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            futures = [
+                executor.submit(process_file, file, f_out, lock)
+                for file in file_list
+            ]
+            for future in tqdm(futures, desc="Merging ROOT files", unit="file"):
+                future.result()  # Asegura que se complete cada tarea
+
+    print("Archivo final creado en:", merged_file)
+
 
 
 # 1.2. ========================================================================================================================================================

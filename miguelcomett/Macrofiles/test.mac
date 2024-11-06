@@ -3,4 +3,4 @@
 
 /gun/energy 80 keV
 /run/printProgress 0
-/run/beamOn 100
+/run/beamOn 10000

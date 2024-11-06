@@ -197,10 +197,15 @@ void MyRunAction::EndOfRunAction(const G4Run * thisRun)
     if (isMaster) {customRun -> EndOfRun();}
 
     analysisManager -> Write();
-    analysisManager -> CloseFile();  
+    analysisManager -> CloseFile();
     
     if (isMaster) {MergeRootFiles();}
+
+    std::string currentPath = std::filesystem::current_path().string();
+    G4cout << "Current working directory: " << currentPath << G4endl;
 }
+
+
 
 void MyRunAction::MergeRootFiles()
 {
@@ -216,17 +221,20 @@ void MyRunAction::MergeRootFiles()
     else if (arguments == 5)
         fileName = "/CT_" + std::to_string(runID);
 
-    // Directorio donde están los archivos ROOT
-    std::string rootDirectory = "C:\\Users\\conej\\Documents\\Universidad\\Geant4\\Projects\\Main\\miguelcomett\\build\\ROOT\\";
+    // Obtener el directorio actual (donde está el ejecutable, probablemente en "build/Release")
+    std::string currentPath = std::filesystem::current_path().string();
 
-    // Crear la subcarpeta "Output" si no existe
+    // Navegar al directorio superior y luego a "ROOT"
+    std::string rootDirectory = std::filesystem::path(currentPath).parent_path().string() + "\\ROOT\\";
+
+    // Crear la subcarpeta "Output" dentro de ROOT si no existe
     std::string outputDirectory = rootDirectory + "Output\\";
     if (!std::filesystem::exists(outputDirectory)) {
         std::filesystem::create_directory(outputDirectory);
         G4cout << "Output folder created at: " << outputDirectory << G4endl;
     }
 
-    // Iterar sobre los archivos en el directorio y agregar archivos .root al merger
+    // Iterar sobre los archivos en el directorio ROOT y agregar archivos .root al merger
     for (const auto& entry : std::filesystem::directory_iterator(rootDirectory)) {
         if (entry.is_regular_file() && entry.path().extension() == ".root") {
             std::string filePath = entry.path().string();
@@ -251,6 +259,7 @@ void MyRunAction::MergeRootFiles()
         G4cout << "Error during ROOT file merging!" << G4endl;
     }
 }
+
 
 
 

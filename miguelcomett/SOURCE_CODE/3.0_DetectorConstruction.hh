@@ -29,6 +29,9 @@
 #include "3.2_Geometry3D.hh"
 #include "3.3_GeometryReader.hh"
 
+#include <filesystem>
+#include <iostream>
+
 extern int arguments;
 
 class MyDetectorConstruction : public G4VUserDetectorConstruction

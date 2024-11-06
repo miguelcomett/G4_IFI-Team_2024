@@ -12,7 +12,6 @@ MyRunAction::MyRunAction()
 
     G4AnalysisManager * analysisManager = G4AnalysisManager::Instance();
     analysisManager -> SetDefaultFileType("root");
-    // if (G4Threading::IsMultithreadedApplication() && arguments != 3) {analysisManager -> SetNtupleMerging(true);}
     analysisManager -> SetVerboseLevel(0);
 
     if (arguments == 1 || arguments == 2)
@@ -124,7 +123,7 @@ void MyRunAction::EndOfRunAction(const G4Run * thisRun)
     if (isMaster && arguments != 3) 
     { 
 
-        const MyDetectorConstruction * detectorConstruction = static_cast < const MyDetectorConstruction *> (G4RunManager::GetRunManager() -> GetUserDetectorConstruction());   
+        detectorConstruction = static_cast < const MyDetectorConstruction *> (G4RunManager::GetRunManager() -> GetUserDetectorConstruction());   
         std::vector <G4LogicalVolume*> scoringVolumes = detectorConstruction -> GetAllScoringVolumes();
         
         totalMass = 0.0;
@@ -199,7 +198,7 @@ void MyRunAction::EndOfRunAction(const G4Run * thisRun)
     analysisManager -> Write();
     analysisManager -> CloseFile();  
     
-    if (isMaster) {MergeRootFiles();}
+    // if (isMaster) {MergeRootFiles();}
 }
 
 void MyRunAction::MergeRootFiles()
@@ -216,7 +215,7 @@ void MyRunAction::MergeRootFiles()
     else if (arguments == 5)
         fileName = "/CT_" + std::to_string(runID);
 
-    // Directorio donde están los archivos ROOT
+    // Directorio donde estï¿½n los archivos ROOT
     std::string rootDirectory = "C:\\Users\\conej\\Documents\\Universidad\\Geant4\\Projects\\Main\\miguelcomett\\build\\ROOT\\";
 
     // Crear la subcarpeta "Output" si no existe
@@ -233,7 +232,7 @@ void MyRunAction::MergeRootFiles()
             merger.AddFile(filePath.c_str());
             G4cout << "Added file: " << filePath << G4endl;
 
-            // Eliminar el archivo después de agregarlo al merger
+            // Eliminar el archivo despuï¿½s de agregarlo al merger
             std::filesystem::remove(entry.path());
             G4cout << "Deleted file: " << filePath << G4endl;
         }
@@ -262,7 +261,7 @@ void MyRunAction::SingleData(const std::string& mergedFileName)
         return;
     }
 
-    // Obtener el árbol del archivo
+    // Obtener el ï¿½rbol del archivo
     TTree* tree = dynamic_cast<TTree*>(mergedFile->Get("Run Summary"));
     if (!tree) {
         G4cout << "Error: Tree 'Run Summary' not found in the merged file." << G4endl;
@@ -280,38 +279,38 @@ void MyRunAction::SingleData(const std::string& mergedFileName)
     tree->SetBranchAddress("EDep_Value_PeV", &edepValue);
     tree->SetBranchAddress("Radiation_Dose_mSv", &radiationDose);
 
-    // Inicializa las variables para los valores máximos
+    // Inicializa las variables para los valores mï¿½ximos
     double maxNumberOfPhotons = -DBL_MAX;
     double maxInitialEnergy = -DBL_MAX;
     double maxSampleMass = -DBL_MAX;
     double maxEdepValue = -DBL_MAX;
     double maxRadiationDose = -DBL_MAX;
 
-    Long64_t maxEntryIndex = -1; // Para almacenar el índice de la entrada con el valor máximo
+    Long64_t maxEntryIndex = -1; // Para almacenar el ï¿½ndice de la entrada con el valor mï¿½ximo
 
-    // Creamos un nuevo árbol vacío para almacenar las entradas válidas
+    // Creamos un nuevo ï¿½rbol vacï¿½o para almacenar las entradas vï¿½lidas
     TTree* newTree = tree->CloneTree(0);
 
-    // Itera sobre todas las entradas del árbol
+    // Itera sobre todas las entradas del ï¿½rbol
     for (Long64_t i = 0; i < tree->GetEntries(); ++i) {
         tree->GetEntry(i); // Leer la entrada
 
-        // Comprobar si alguno de los valores es cero y, si es así, no agregarlo
+        // Comprobar si alguno de los valores es cero y, si es asï¿½, no agregarlo
         if (numberOfPhotons == 0 || initialEnergy == 0 || sampleMass == 0 || edepValue == 0 || radiationDose == 0) {
             continue; // Si alguno de los valores es cero, pasar a la siguiente entrada
         }
 
-        // Comparar y actualizar los valores máximos
+        // Comparar y actualizar los valores mï¿½ximos
         if (numberOfPhotons > maxNumberOfPhotons) {
             maxNumberOfPhotons = numberOfPhotons;
             maxInitialEnergy = initialEnergy;
             maxSampleMass = sampleMass;
             maxEdepValue = edepValue;
             maxRadiationDose = radiationDose;
-            maxEntryIndex = i; // Guardamos el índice de la entrada con los valores máximos
+            maxEntryIndex = i; // Guardamos el ï¿½ndice de la entrada con los valores mï¿½ximos
         }
 
-        // Rellenar el nuevo árbol con las entradas válidas
+        // Rellenar el nuevo ï¿½rbol con las entradas vï¿½lidas
         newTree->Fill();
     }
 
@@ -321,23 +320,23 @@ void MyRunAction::SingleData(const std::string& mergedFileName)
         return;
     }
 
-    // Crear un nuevo árbol vacío con la misma estructura
+    // Crear un nuevo ï¿½rbol vacï¿½o con la misma estructura
     TTree* maxTree = tree->CloneTree(0);
 
-    // Obtener la entrada con el valor máximo
+    // Obtener la entrada con el valor mï¿½ximo
     tree->GetEntry(maxEntryIndex);
 
-    // Establecer las ramas del nuevo árbol con los valores máximos
+    // Establecer las ramas del nuevo ï¿½rbol con los valores mï¿½ximos
     maxTree->SetBranchAddress("Number_of_Photons", &maxNumberOfPhotons);
     maxTree->SetBranchAddress("Initial_Energy_keV", &maxInitialEnergy);
     maxTree->SetBranchAddress("Sample_Mass_g", &maxSampleMass);
     maxTree->SetBranchAddress("EDep_Value_PeV", &maxEdepValue);
     maxTree->SetBranchAddress("Radiation_Dose_mSv", &maxRadiationDose);
 
-    // Llenar el nuevo árbol con solo la entrada máxima
+    // Llenar el nuevo ï¿½rbol con solo la entrada mï¿½xima
     maxTree->Fill();
 
-    // Sobrescribir el árbol original con el nuevo árbol que solo tiene la entrada máxima
+    // Sobrescribir el ï¿½rbol original con el nuevo ï¿½rbol que solo tiene la entrada mï¿½xima
     maxTree->Write("Run Summary", TObject::kOverwrite);
 
     // Cerrar el archivo

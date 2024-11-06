@@ -50,7 +50,7 @@ MyRunAction::MyRunAction()
         analysisManager -> CreateNtuple("Photons", "Photons");
         analysisManager -> CreateNtupleDColumn("X_axis");
         analysisManager -> CreateNtupleDColumn("Y_axis");
-        analysisManager -> CreateNtupleDColumn("Detected_Energy_keV");
+        // analysisManager -> CreateNtupleDColumn("Detected_Energy_keV");
         analysisManager -> FinishNtuple(0);
 
         analysisManager -> CreateNtuple("EDep Sample", "EDep Sample");
@@ -68,9 +68,9 @@ MyRunAction::MyRunAction()
 
     if (arguments == 5)
     {
-        analysisManager -> CreateNtuple("Photons", "Photons");
-        analysisManager -> CreateNtupleDColumn("X_axis");
-        analysisManager -> CreateNtupleDColumn("Y_axis");
+        analysisManager -> CreateNtuple("Hits", "Hits");
+        analysisManager -> CreateNtupleDColumn("x_ax");
+        analysisManager -> CreateNtupleDColumn("y_ax");
         analysisManager -> FinishNtuple(0);
     }
 }

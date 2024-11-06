@@ -89,7 +89,47 @@ def Merge_Roots_Optimized(directory, starts_with, output_name):
 
     print("Archivo final creado en:", merged_file)
 
+# 1.1.2 ========================================================================================================================================================
 
+
+def Merge_Roots_Memory_Optimized(directory, starts_with, output_name):
+
+    import uproot; import os; from tqdm import tqdm
+
+    file_list = []
+
+    # Crear lista de archivos para procesar
+    for file in os.listdir(directory):
+        if file.endswith('.root') and not file.startswith('merge') and not file.startswith(output_name):
+            if starts_with == '' or file.startswith(starts_with):
+                file_list.append(os.path.join(directory, file))
+
+    # Crear el nombre de archivo de salida con numeración si ya existe
+    merged_file = os.path.join(directory, output_name)
+    counter = 0
+    while os.path.exists(f"{merged_file}_{counter}.root"):
+        counter += 1
+    merged_file = f"{merged_file}_{counter}.root"
+
+    with uproot.recreate(merged_file) as f_out:
+        for file in tqdm(file_list, desc="Merging ROOT files", unit="file"):
+            with uproot.open(file) as f_in:
+                for key in f_in.keys():
+                    base_key = key.split(';')[0]  # Obtener el nombre base sin número de ciclo
+                    obj = f_in[key]
+
+                    # Solo procesar si es un TTree
+                    if isinstance(obj, uproot.TTree):
+                        # Leer los datos por partes para optimizar el uso de memoria
+                        for new_data in obj.iterate(library="np", step_size="10 MB"):
+                            # Si el árbol ya existe en el archivo de salida, añadir los datos en partes
+                            if base_key in f_out:
+                                f_out[base_key].extend(new_data)
+                            else:
+                                # Crear un nuevo TTree en el archivo de salida con los primeros datos
+                                f_out[base_key] = new_data
+
+    print("Archivo final creado en:", merged_file)
 
 
 # 1.2. ========================================================================================================================================================

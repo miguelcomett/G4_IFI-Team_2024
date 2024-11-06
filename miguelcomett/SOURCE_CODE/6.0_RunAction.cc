@@ -200,8 +200,8 @@ void MyRunAction::EndOfRunAction(const G4Run * thisRun)
     
     if (isMaster) {MergeRootFiles();}
 
-    std::string currentPath = std::filesystem::current_path().string();
-    G4cout << "Current working directory: " << currentPath << G4endl;
+    /*std::string currentPath = std::filesystem::current_path().string();
+    G4cout << "Current working directory: " << currentPath << G4endl;*/
 }
 
 

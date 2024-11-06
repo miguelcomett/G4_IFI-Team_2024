@@ -15,16 +15,19 @@ G4String Run::GetPrimaryParticleName() const {return link_ParticleDefinition ? l
 
 void Run::CountProcesses(G4String processName) 
 {
-    std::map <G4String, G4int> ::iterator it = processCounter.find(processName);
-    if ( it == processCounter.end()) {processCounter[processName] = 1;} else {processCounter[processName]++;}
+    if (arguments == 3)
+    {
+        std::map <G4String, G4int> ::iterator it = processCounter.find(processName);
+        if ( it == processCounter.end()) {processCounter[processName] = 1;} else {processCounter[processName]++;}
+    }
 } 
 
 void Run::EndOfRun()
 {
-    const MyDetectorConstruction * detectorConstruction = static_cast < const MyDetectorConstruction *> (G4RunManager::GetRunManager() -> GetUserDetectorConstruction());     
-
     if (arguments == 3)
     {
+        detectorConstruction = static_cast < const MyDetectorConstruction *> (G4RunManager::GetRunManager() -> GetUserDetectorConstruction());     
+        
         material = detectorConstruction -> GetMaterial();
         density = material  -> GetDensity();
         thickness = detectorConstruction -> GetThickness();
@@ -47,7 +50,7 @@ void Run::EndOfRun()
         for (it = processCounter.begin(); it != processCounter.end(); it++) 
         {
             processName = it -> first;
-            count    = it -> second;
+            count = it -> second;
             totalCount = totalCount + count; 
             G4cout << processName << " = " << count << G4endl;
             if (processName == "Transportation") survive = count;
@@ -94,7 +97,7 @@ void Run::Merge(const G4Run * run)
 
     link_ParticleDefinition = localRun -> link_ParticleDefinition;
     link_Energy = localRun -> link_Energy;
-        
+            
     std::map<G4String,G4int>::const_iterator it;
     for (it  = localRun -> processCounter.begin(); it != localRun -> processCounter.end(); ++it) 
     {
@@ -104,6 +107,6 @@ void Run::Merge(const G4Run * run)
         if ( processCounter.find(processName) == processCounter.end()) {processCounter[processName] = localCount;} 
         else {processCounter[processName] += localCount;}         
     }
-    
+        
     G4Run::Merge(run);  
 } 

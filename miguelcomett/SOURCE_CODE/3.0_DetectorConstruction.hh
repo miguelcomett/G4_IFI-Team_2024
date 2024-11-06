@@ -70,7 +70,7 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
         G4GenericMessenger * DetectorMessenger;
 
         G4int numPores;
-        G4int DetColumnNum = 10, DetRowNum = 10; 
+        G4int DetColumnNum = 2, DetRowNum = 2; 
         
         G4double innerBoneRadius, outerBoneRadius, boneHeight, poreRadius, xWorld, yWorld, zWorld, 
                  regionMinZ, regionMaxZ, regionMinRadius, regionMaxRadius, r, theta, z, x, y,

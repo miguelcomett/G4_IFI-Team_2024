@@ -24,8 +24,6 @@ class Run : public G4Run
         ~Run();
 
         void SetPrimary(G4ParticleDefinition * particle, G4double energy);
-        G4ParticleDefinition * link_ParticleDefinition = nullptr;
-
         void CountProcesses(G4String processName);
         void Merge(const G4Run *) override;
         void EndOfRun();
@@ -36,6 +34,9 @@ class Run : public G4Run
     private:
 
         std::map <G4String, G4int> processCounter;
+
+        const MyDetectorConstruction * detectorConstruction;
+        G4ParticleDefinition * link_ParticleDefinition = nullptr;
 
         G4Material * material;
         

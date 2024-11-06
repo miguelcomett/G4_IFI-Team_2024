@@ -50,6 +50,8 @@ class MyRunAction : public G4UserRunAction
 
         Run * customRun = nullptr;
 
+        const MyDetectorConstruction * detectorConstruction;
+
         const MyPrimaryGenerator * primaryGenerator;
         G4Accumulable <G4double> fEdep = 0.0;
         std::chrono::system_clock::time_point simulationStartTime, simulationEndTime;

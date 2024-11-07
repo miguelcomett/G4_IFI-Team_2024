@@ -208,8 +208,8 @@ void MyRunAction::EndOfRunAction(const G4Run * thisRun)
     
     if (isMaster) {MergeRootFiles();}
 
-    std::string currentPath = std::filesystem::current_path().string();
-    G4cout << "Current working directory: " << currentPath << G4endl;
+    //std::string currentPath = std::filesystem::current_path().string();
+    //G4cout << "Current working directory: " << currentPath << G4endl;
 }
 
 void MyRunAction::MergeRootFiles()
@@ -221,7 +221,13 @@ void MyRunAction::MergeRootFiles()
     std::string currentPath = std::filesystem::current_path().string();
 
     // Navegar al directorio superior y luego a "ROOT"
-    std::string rootDirectory = std::filesystem::path(currentPath).parent_path().string() + "\\ROOT\\";
+    //std::string rootDirectory = std::filesystem::path(currentPath).parent_path().string() + "\\ROOT\\";
+
+    #ifdef __APPLE__
+        std::string rootDirectory = std::filesystem::path(currentPath).string() + "\\ROOT\\";
+    #else
+        std::string rootDirectory = std::filesystem::path(currentPath).parent_path().string() + "\\ROOT\\";
+    #endif
 
     // Crear la subcarpeta "Output" dentro de ROOT si no existe
     std::string outputDirectory = rootDirectory + "Output\\";

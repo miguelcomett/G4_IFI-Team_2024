@@ -1,6 +1,6 @@
 
-/miguelcomett/BUILD
-/miguelcomett/.venv
+/MedX_Engine/BUILD
+/MedX_Engine/.venv
 <<<<<<< Updated upstream
 
 
@@ -267,6 +267,6 @@ a.out
 .vs/
 {yourgitprojectname}/.vs
 =======
-/miguelcomett/BUILD
-miguelcomett/BUILD/.DS_Store
+/MedX_Engine/BUILD
+MedX_Engine/BUILD/.DS_Store
 >>>>>>> Stashed changes

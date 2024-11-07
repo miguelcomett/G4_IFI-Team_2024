@@ -397,12 +397,12 @@ void MyRunAction::SingleData(const std::string& mergedFileName)
     double maxRadiationDose   = -DBL_MAX;
 
     Long64_t maxEntryIndex = -1;
-    TTree* newTree = tree->CloneTree(0);
+    TTree * newTree = tree -> CloneTree(0);
 
     G4cout << "Starting to iterate over entries..." << G4endl;
-    for (Long64_t i = 0; i < tree->GetEntries(); ++i)
+    for (Long64_t i = 0; i < tree -> GetEntries(); ++i)
     {
-        tree->GetEntry(i);
+        tree -> GetEntry(i);
 
         // Debugging: Print entry values
         G4cout << "Entry " << i << " - Photons: " << numberOfPhotons
@@ -428,7 +428,7 @@ void MyRunAction::SingleData(const std::string& mergedFileName)
             maxEntryIndex = i;
         }
 
-        newTree->Fill();
+        newTree -> Fill();
     }
 
     if (maxEntryIndex == -1)
@@ -440,18 +440,18 @@ void MyRunAction::SingleData(const std::string& mergedFileName)
     }
 
     G4cout << "Creating tree for maximum entry only..." << G4endl;
-    TTree* maxTree = tree->CloneTree(0);
-    tree->GetEntry(maxEntryIndex);
+    TTree* maxTree = tree -> CloneTree(0);
+    tree -> GetEntry(maxEntryIndex);
 
-    maxTree->SetBranchAddress("Number_of_Photons", &maxNumberOfPhotons);
-    maxTree->SetBranchAddress("Initial_Energy_keV", &maxInitialEnergy);
-    maxTree->SetBranchAddress("Sample_Mass_g", &maxSampleMass);
-    maxTree->SetBranchAddress("EDep_Value_PeV", &maxEdepValue);
-    maxTree->SetBranchAddress("Radiation_Dose_mSv", &maxRadiationDose);
+    maxTree -> SetBranchAddress("Number_of_Photons", & maxNumberOfPhotons);
+    maxTree -> SetBranchAddress("Initial_Energy_keV", & maxInitialEnergy);
+    maxTree -> SetBranchAddress("Sample_Mass_g", & maxSampleMass);
+    maxTree -> SetBranchAddress("EDep_Value_PeV", & maxEdepValue);
+    maxTree -> SetBranchAddress("Radiation_Dose_mSv", & maxRadiationDose);
 
-    maxTree->Fill();
-    maxTree->Write("Run Summary", TObject::kOverwrite);
+    maxTree -> Fill();
+    maxTree -> Write("Run Summary", TObject::kOverwrite);
 
-    mergedFile->Close();
+    mergedFile -> Close();
     G4cout << "Process completed successfully. Zero entries removed, maximum entry retained in: " << mergedFileName << G4endl;
 }

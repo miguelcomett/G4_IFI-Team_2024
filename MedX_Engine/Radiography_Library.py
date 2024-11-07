@@ -96,11 +96,13 @@ def MergeRoots_Parallel(directory, starts_with, output_name, max_workers = 9):
 
     print("Archivo final creado en:", merged_file)
 
-# 1.3. ========================================================================================================================================================
+# 1.2. ========================================================================================================================================================
 
 def ModifyRoot(directory, root_name, tree_name, branch_names, output_name, new_tree_name, new_branch_names):
 
-    import uproot; import uproot.writing; import os
+    import uproot
+    import uproot.writing
+    import os
 
     input_file = directory + root_name + '.root'
     with uproot.open(input_file) as file:       
@@ -208,10 +210,10 @@ def IsolateTissues(low_energy_img, high_energy_img, sigma1, sigma2, wn, save_in,
     from scipy.ndimage import gaussian_filter
     import matplotlib.pyplot as plt
 
-    U_b_l = 0.75187 # mu1
-    U_b_h = 0.301189 # mu2
-    U_t_l = 0.28283 # mu3
-    U_t_h = 0.19155 # mu4
+    U_b_l = 0.7519 # mu1
+    U_b_h = 0.3012 # mu2
+    U_t_l = 0.26 # mu3
+    U_t_h = 0.18 # mu4
 
     SLS_Bone = ( (U_t_h/U_t_l) * low_energy_img ) - high_energy_img
     SLS_Tissue = high_energy_img - ( low_energy_img * (U_b_h/U_b_l) )
@@ -219,9 +221,15 @@ def IsolateTissues(low_energy_img, high_energy_img, sigma1, sigma2, wn, save_in,
     SSH_Bone = ( (U_t_h/U_t_l) * low_energy_img) - gaussian_filter(high_energy_img, sigma = sigma1)
     SSH_Tissue = gaussian_filter(high_energy_img, sigma = sigma1) - ( low_energy_img * (U_b_h/U_b_l) )
 
-    ACNR_Bone     = SLS_Bone +  gaussian_filter(SLS_Tissue, sigma = sigma1) - 1
+    ACNR_Bone = SLS_Bone + gaussian_filter(SLS_Tissue, sigma = sigma1) - 1
     ACNR_SSH_Bone = SSH_Bone + (gaussian_filter(SSH_Tissue, sigma = sigma2) * wn) - 1
-    ACNR_Tissue   = SLS_Tissue + gaussian_filter(SLS_Bone, sigma = sigma1) - 1
+    ACNR_Tissue = SLS_Tissue + gaussian_filter(SLS_Bone, sigma = sigma1) - 1
+
+    # w  = U_t_h / U_t_l
+    # wc = U_b_h / U_b_l
+    # low  = - (wn * wc * gaussian_filter(low_energy_img, sigma = sigma1) ) + (w * low_energy_img)
+    # high = - high_energy_img + ( wn * gaussian_filter(high_energy_img, sigma = sigma1))
+    # ACNR_LONG_bone = low + high
 
     plt.imshow(low_energy_img, cmap='gray'); plt.axis('off')
     if save_as_1 != '': plt.savefig(save_in + save_as_1, bbox_inches = 'tight', dpi = 600); plt.close()
@@ -232,28 +240,28 @@ def IsolateTissues(low_energy_img, high_energy_img, sigma1, sigma2, wn, save_in,
     plt.imshow(SLS_Tissue, cmap='gray'); plt.axis('off')
     if save_as_4 != '': plt.savefig(save_in + save_as_4, bbox_inches = 'tight', dpi = 600); plt.close()
     plt.imshow(SSH_Bone, cmap='gray'); plt.axis('off')
-    if save_as_5 != '': plt.savefig(save_in + save_as_5, bbox_inches = 'tight', dpi = 600); plt.close()
+    if save_as_5 != '': plt.savefig(save_in + save_as_4, bbox_inches = 'tight', dpi = 600); plt.close()
     plt.imshow(SSH_Tissue, cmap='gray'); plt.axis('off')
-    if save_as_6 != '': plt.savefig(save_in + save_as_6, bbox_inches = 'tight', dpi = 600); plt.close()
+    if save_as_6 != '': plt.savefig(save_in + save_as_5, bbox_inches = 'tight', dpi = 600); plt.close()
     plt.imshow(ACNR_Bone, cmap='gray'); plt.axis('off')
-    if save_as_7 != '': plt.savefig(save_in + save_as_7, bbox_inches = 'tight', dpi = 600); plt.close()
+    if save_as_7 != '': plt.savefig(save_in + save_as_6, bbox_inches = 'tight', dpi = 600); plt.close()
     plt.imshow(ACNR_Tissue, cmap='gray'); plt.axis('off')
-    if save_as_8 != '': plt.savefig(save_in + save_as_8, bbox_inches = 'tight', dpi = 600); 
+    if save_as_8 != '': plt.savefig(save_in + save_as_4, bbox_inches = 'tight', dpi = 600); 
     plt.close()
 
     plt.figure(figsize = (18, 10))
     plt.tight_layout()
-    plt.subplot(2, 4, 1); plt.imshow(low_energy_img,  cmap='gray'); plt.axis('off');  plt.title("Low Energy")
-    plt.subplot(2, 4, 2); plt.imshow(high_energy_img, cmap='gray'); plt.axis('off');  plt.title("High Energy")
-    plt.subplot(2, 4, 3); plt.imshow(SLS_Bone,        cmap='gray'); plt.axis('off');  plt.title("Bone [SLS]")
-    plt.subplot(2, 4, 4); plt.imshow(SLS_Tissue,      cmap='gray'); plt.axis('off');  plt.title("Tissue [SLS]")
-    plt.subplot(2, 4, 5); plt.imshow(SSH_Bone,        cmap='gray'); plt.axis('off');  plt.title("Bone [SSH]")
-    plt.subplot(2, 4, 6); plt.imshow(SSH_Tissue,      cmap='gray'); plt.axis('off');  plt.title("Tissue [SSh]")
-    plt.subplot(2, 4, 7); plt.imshow(ACNR_Bone,       cmap='gray'); plt.axis('off');  plt.title("Bone [ACNR]")
+    plt.subplot(2, 4, 1); plt.imshow(low_energy_img,    cmap='gray'); plt.axis('off');  plt.title("Low Energy")
+    plt.subplot(2, 4, 2); plt.imshow(high_energy_img,   cmap='gray'); plt.axis('off');  plt.title("High Energy")
+    plt.subplot(2, 4, 3); plt.imshow(SLS_Bone,          cmap='gray'); plt.axis('off');  plt.title("Bone [SLS]")
+    plt.subplot(2, 4, 4); plt.imshow(SLS_Tissue,        cmap='gray'); plt.axis('off');  plt.title("Tissue [SLS]")
+    plt.subplot(2, 4, 5); plt.imshow(SSH_Bone,          cmap='gray'); plt.axis('off');  plt.title("Bone [SSH]")
+    plt.subplot(2, 4, 6); plt.imshow(SSH_Tissue,        cmap='gray'); plt.axis('off');  plt.title("Tissue [SSh]")
+    plt.subplot(2, 4, 7); plt.imshow(ACNR_Bone,         cmap='gray'); plt.axis('off');  plt.title("Bone [ACNR]")
     # plt.subplot(2, 4, 8); plt.imshow(ACNR_SSH_Bone,     cmap='gray'); plt.axis('off');  plt.title("Bone [ACNR + SSH]")
-    plt.subplot(2, 4, 8); plt.imshow(ACNR_Tissue,     cmap='gray'); plt.axis('off');  plt.title("Tissue [ACNR]")
+    plt.subplot(2, 4, 8); plt.imshow(ACNR_Tissue,       cmap='gray'); plt.axis('off');  plt.title("Tissue [ACNR]")
    
-    return SLS_Bone, SSH_Bone, ACNR_Bone, ACNR_Tissue
+    return SLS_Bone, SSH_Bone, ACNR_Bone, ACNR_SSH_Bone
 
 def BMO(SLS_Bone, SLS_Tissue):
 
@@ -561,7 +569,7 @@ def Plotly_Heatmap(array, xlim, ylim, title, x_label, y_label, annotation, width
 
 # 8.0 ========================================================================================================================================================
 
-def CT_Heatmap_from_Dask(x_data, y_data, size_x, size_y, log_factor, x_shift, y_shift, pixel_size):
+def CT_Heatmap_from_Dask(x_data, y_data, size_x, size_y, x_shift, y_shift, pixel_size):
 
     import matplotlib.pyplot as plt; import numpy as np
     import dask.array as da; import dask.dataframe as dd
@@ -575,18 +583,11 @@ def CT_Heatmap_from_Dask(x_data, y_data, size_x, size_y, log_factor, x_shift, y_
     heatmap = heatmap.T
     heatmap = np.rot90(heatmap, 2)
 
-    heatmap = heatmap.compute()  
+    heatmap = heatmap.compute() 
     x_edges = x_edges.compute()  
     y_edges = y_edges.compute()
-    
-    # maxi = np.max(heatmap)
-    # log_map = np.log(maxi/(heatmap + log_factor)) / (pixel_size * 0.1)
 
-    log_map = heatmap
-
-    # plt.imshow(log_map, cmap = 'gray', extent=[x_edges[0], x_edges[-1], y_edges[0], y_edges[-1]])
-
-    return log_map, x_edges, y_edges
+    return heatmap, x_edges, y_edges
 
 
 def Calculate_Projections(directory, roots, tree_name, x_branch, y_branch, dimensions, log_factor, pixel_size, csv_folder):
@@ -620,7 +621,7 @@ def Calculate_Projections(directory, roots, tree_name, x_branch, y_branch, dimen
 
 def htmps_from_csv(csv_folder, roots):
 
-    import numpy as np
+    import numpy as np; from tqdm import tqdm
 
     start = roots[0]
     end = roots[1]
@@ -628,23 +629,23 @@ def htmps_from_csv(csv_folder, roots):
     sims = np.arange(start, end+1, deg)
     
     htmps = np.zeros(len(sims), dtype=object)
-    for i, sim in enumerate(sims):
+    for i, sim in tqdm(enumerate(sims), desc = 'Creating heatmaps from CSV files', unit = ' heatmaps', leave = True):
         name = csv_folder + f"/Sim{round(sim)}.csv"
         htmps[i] = np.genfromtxt(name, delimiter = ',')
 
     return htmps
 
-def LogaritmicTransformation(radiographs, log_factor, pixel_size):
+def LogaritmicTransformation(radiographs, log_factor, pixel_size, sigma):
     
-    import matplotlib.pyplot as plt; import numpy as np
+    import matplotlib.pyplot as plt; import numpy as np; from scipy import ndimage; from tqdm import tqdm
 
     # maxi =  np.max(radiographs[0])
     htmps = np.zeros(len(radiographs), dtype = 'object')
 
-    for i, radiograph in enumerate(radiographs):
-
+    for i, radiograph in tqdm(enumerate(radiographs), desc = 'Computing logarithmic transformation', unit = ' Heatmaps', leave = True):
+        radiograph = ndimage.gaussian_filter(radiograph, sigma)
         maxi = np.max(radiograph)
-        htmps[i] = np.log(maxi/(radiograph + log_factor)) / (pixel_size * 0.1)
+        htmps[i] = np.log(maxi/(radiograph + np.where(radiograph == 0, log_factor, 0))) / (pixel_size * 0.1)
 
     plt.imshow(htmps[-1]); plt.colorbar(); plt.show()
 
@@ -656,6 +657,7 @@ def RadonReconstruction(roots, htmps, slices):
     from skimage.transform import iradon
     import numpy as np; import matplotlib.pyplot as plt
     import plotly.graph_objects as go; import plotly.io as pio
+    from tqdm import tqdm
 
     height = len(htmps[0])
     n = height/(slices+1)
@@ -668,13 +670,10 @@ def RadonReconstruction(roots, htmps, slices):
     thetas = np.arange(start, end+1, deg)
     reconstructed_imgs = np.zeros(slices, dtype="object")
 
-    for i, layer in enumerate(heights):
+    for i, layer in tqdm(enumerate(heights), desc = 'Reconstructing slices', unit = ' slice', leave = True):
 
         p = np.array([heatmap[layer] for heatmap in htmps]).T
         reconstructed_imgs[i] = iradon(p, theta = thetas)
-        #reconstructed_imgs[i][reconstructed_imgs[i] > 0.2] = 0
-        reconstructed_imgs[i][reconstructed_imgs[i] < 0] = 0
-        reconstructed_imgs[i][reconstructed_imgs[i] > 0.5] = 0
 
     # plt.figure(figsize = (6,6)); plt.imshow(reconstructed_imgs[slices//2], cmap = 'gray'); plt.colorbar(); plt.show()
     
@@ -685,18 +684,16 @@ def RadonReconstruction(roots, htmps, slices):
     return reconstructed_imgs
 
 
-def coefficients_to_HU(reconstructed_imgs, slices, mu_water):
+def coefficients_to_HU(reconstructed_imgs, slices, mu_water, air_parameter):
 
     import numpy as np; import plotly.graph_objects as go; import plotly.io as pio
-
-    # air_parameter = -600
 
     HU_images = np.zeros(slices, dtype="object")
 
     for i in range(len(HU_images)):
 
         HU_images[i] = np.round(1000 * ((reconstructed_imgs[i] - mu_water) / mu_water)).astype(int)
-        # HU_images[i][HU_images[i] < air_parameter] = -1000
+        HU_images[i][HU_images[i] < air_parameter] = -1000
 
     fig = go.Figure(go.Heatmap(z = HU_images[0], colorscale = [[0, 'black'], [1, 'white']],))
     fig.update_layout(width = 800, height = 800, xaxis = dict(autorange = 'reversed'), yaxis = dict(autorange = 'reversed'))
@@ -705,70 +702,146 @@ def coefficients_to_HU(reconstructed_imgs, slices, mu_water):
     return HU_images
 
 
-def export_to_dicom(HU_images, size_y, slices, directory):
+def export_to_dicom(HU_images, size_y, directory, compressed):
 
-    import numpy as np; import pydicom; from pydicom.dataset import Dataset, FileDataset; from pydicom.uid import ExplicitVRLittleEndian
-
-    image2d = HU_images[0].astype(np.uint16)
+    import numpy as np; import pydicom; from pydicom.pixels import compress
+    from pydicom.dataset import Dataset, FileDataset; from pydicom.uid import RLELossless
+    from pydicom.uid import ExplicitVRLittleEndian; from pydicom.encaps import encapsulate
+    
+    image2d = HU_images[0].astype('int16')
 
     print("Setting file meta information...")
 
-    meta = pydicom.Dataset()
-    meta.MediaStorageSOPClassUID = pydicom.uid.CTImageStorage
-    meta.MediaStorageSOPInstanceUID = pydicom.uid.generate_uid()
-    meta.TransferSyntaxUID = pydicom.uid.ImplicitVRLittleEndian  
-
-    ds = Dataset()
-    ds.file_meta = meta
-
-    ds.is_little_endian = True
-    ds.is_implicit_VR = False
-
-    ds.SOPClassUID = pydicom.uid.CTImageStorage 
-    ds.PatientName = "NAME^NONE"
-    ds.PatientID = "NOID"
-
-    ds.Modality = "CT"
-    ds.SeriesInstanceUID = pydicom.uid.generate_uid()
-    ds.StudyInstanceUID = pydicom.uid.generate_uid()
-    ds.FrameOfReferenceUID = pydicom.uid.generate_uid()
-    ds.SeriesNumber = 4
-
-    ds.BitsStored = 16
-    ds.BitsAllocated = 16
-    ds.SamplesPerPixel = 1
-    ds.HighBit = 15
-
-    ds.Rows = image2d.shape[0]
-    ds.Columns = image2d.shape[1]
-    ds.AcquisitionNumber = 1
-
-    ds.ImageOrientationPatient = r"1\0\0\0\1\0"
-    ds.ImageType = r"ORIGINAL\PRIMARY\AXIAL"
-
-    ds.RescaleIntercept = "0"
-    ds.RescaleSlope = "1"
-    ds.PixelSpacing = r"0.5\0.5"
-    ds.PhotometricInterpretation = "MONOCHROME2"
-    ds.PixelRepresentation = 1
-    # ds.RescaleIntercept = "-1024"
-    ds.RescaleType = 'HU'
-
-    pydicom.dataset.validate_file_meta(ds.file_meta, enforce_standard=True)
-
     print("Setting pixel data...")
-    i = 0
-    for image in HU_images:
-        thickness = (size_y * 2)/slices
-        image2d = image.astype(np.uint16)
-        ds.PixelData = image2d.tobytes()
-        name = directory + f"/I{i}.dcm"
-        ds.SliceThickness = str(thickness)
-        ds.SpacingBetweenSlices = str(thickness)
-        ds.ImagePositionPatient = f"0\\0\\{thickness * i}"
-        ds.SliceLocation = str(thickness * i)+'00'
-        ds.InstanceNumber = i+1
-        ds.save_as(name)
-        i += 1
+    
+    # instanceUID =  pydicom.uid.generate_uid()
+    seriesUID = pydicom.uid.generate_uid()
+    studyInstance = pydicom.uid.generate_uid()
+    frameOfReference = pydicom.uid.generate_uid()
+
+    if compressed:
+        for i, image in enumerate(HU_images):
+            meta = pydicom.Dataset()
+            meta.MediaStorageSOPClassUID = pydicom.uid.CTImageStorage
+            instanceUID_var = pydicom.uid.generate_uid()
+            meta.MediaStorageSOPInstanceUID = instanceUID_var
+            # meta.TransferSyntaxUID = '1.2.840.10008.1.2.4.70' #LOSSLESS
+            meta.TransferSyntaxUID= pydicom.uid.ImplicitVRLittleEndian
+            # instanceUID_var = instanceUID[:-7]+f".000{i+1}.0"
+            ds = Dataset()
+            ds.file_meta = meta
+
+            # ds.is_little_endian = True
+            # ds.is_implicit_VR = False
+
+            ds.SOPInstanceUID = instanceUID_var
+            ds.SOPClassUID = pydicom.uid.CTImageStorage 
+            ds.PatientName = "NAME^NONE"
+            ds.PatientID = "NOID"
+
+            ds.Modality = "CT"
+            ds.SeriesInstanceUID = seriesUID
+            ds.StudyInstanceUID = studyInstance
+            ds.FrameOfReferenceUID = frameOfReference
+            ds.SeriesNumber = 3
+
+            ds.BitsStored = 16
+            ds.BitsAllocated = 16
+            ds.SamplesPerPixel = 1
+            ds.HighBit = 15
+            ds.WindowCenter = 30
+            ds.WindowWidth = 100
+
+            ds.Rows = image2d.shape[0]
+            ds.Columns = image2d.shape[1]
+            ds.AcquisitionNumber = 1
+
+            ds.ImageOrientationPatient = r"1\0\0\0\1\0"
+            ds.ImageType = r"ORIGINAL\PRIMARY\AXIAL"
+
+            ds.RescaleIntercept = "0"
+            ds.RescaleSlope = "1"
+            ds.PixelSpacing = r"0.5\0.5"
+            ds.PhotometricInterpretation = "MONOCHROME2"
+            ds.PixelRepresentation = 1
+            # ds.RescaleIntercept = "-1024"
+            ds.RescaleType = 'HU'
+            name = directory + f"/I{i}"
+            # pydicom.dataset.validate_file_meta(ds.file_meta, enforce_standard=True)
+            thickness = (size_y * 2)/len(HU_images)
+            ds.SliceThickness = str(thickness)
+            ds.SpacingBetweenSlices = str(thickness)
+            ds.ImagePositionPatient = f"0\\0\\{thickness * i}"
+            ds.SliceLocation = str(thickness * i)+'00'
+            ds.InstanceNumber = i+1
+            # instanceUID_var = instanceUID[:-7]+f".000{i+1}.0"
+            # meta.MediaStorageSOPInstanceUID = instanceUID_var
+            # ds.SOPInstanceUID = instanceUID_var
+            image2d = image.astype('int16')
+            # ds.PixelData = image2d.tobytes()
+            ds.PixelData = encapsulate([image2d.tobytes()])
+            ds.compress(RLELossless)
+            pydicom.dataset.validate_file_meta(ds.file_meta, enforce_standard=True)
+            ds.save_as(name + '.dcm')
+        
+    else:
+        for i, image in enumerate(HU_images):
+            
+            meta = pydicom.Dataset()
+            meta.MediaStorageSOPClassUID = pydicom.uid.CTImageStorage
+            instanceUID_var = pydicom.uid.generate_uid()
+            # instanceUID_var = instanceUID[:-7]+f".000{i+1}.0"
+            meta.MediaStorageSOPInstanceUID = instanceUID_var
+            # meta.TransferSyntaxUID = '1.2.840.10008.1.2.4.70' #LOSSLESS
+            meta.TransferSyntaxUID= pydicom.uid.ImplicitVRLittleEndian
+            ds = Dataset()
+            ds.file_meta = meta
+
+            ds.is_little_endian = True
+            ds.is_implicit_VR = False
+
+            ds.SOPInstanceUID = instanceUID_var
+            ds.SOPClassUID = pydicom.uid.CTImageStorage 
+            ds.PatientName = "NAME^NONE"
+            ds.PatientID = "NOID"
+
+            ds.Modality = "CT"
+            ds.SeriesInstanceUID = seriesUID
+            ds.StudyInstanceUID = studyInstance
+            ds.FrameOfReferenceUID = frameOfReference
+            ds.SeriesNumber = 3
+
+            ds.BitsStored = 16
+            ds.BitsAllocated = 16
+            ds.SamplesPerPixel = 1
+            ds.HighBit = 15
+            ds.WindowCenter = 30
+            ds.WindowWidth = 100
+
+            ds.Rows = image2d.shape[0]
+            ds.Columns = image2d.shape[1]
+            ds.AcquisitionNumber = 1
+
+            ds.ImageOrientationPatient = r"1\0\0\0\1\0"
+            ds.ImageType = r"ORIGINAL\PRIMARY\AXIAL"
+
+            ds.RescaleIntercept = "0"
+            ds.RescaleSlope = "1"
+            ds.PixelSpacing = r"0.5\0.5"
+            ds.PhotometricInterpretation = "MONOCHROME2"
+            ds.PixelRepresentation = 1
+            # ds.RescaleIntercept = "-1024"
+            ds.RescaleType = 'HU'
+            name = directory + f"/I{i}"
+            pydicom.dataset.validate_file_meta(ds.file_meta, enforce_standard=True)
+            thickness = (size_y * 2)/len(HU_images)
+            ds.SliceThickness = str(thickness)
+            ds.SpacingBetweenSlices = str(thickness)
+            ds.ImagePositionPatient = f"0\\0\\{thickness * i}"
+            ds.SliceLocation = str(thickness * i)+'00'
+            ds.InstanceNumber = i+1
+            image2d = image.astype('int16')
+            ds.PixelData = image2d.tobytes()
+            ds.save_as(name + '.dcm')
 
 # end ========================================================================================================================================================

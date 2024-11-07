@@ -181,7 +181,7 @@ void MyDetectorConstruction::ConstructThorax()
     G4STL stl; 
 
     // Obtener el directorio actual (donde está el ejecutable, probablemente en "build/Release")
-    //std::string currentPath = (std::filesystem::current_path().parent_path().string())+"/3D_Models/";
+    std::string currentPath = (std::filesystem::current_path().string());
     //G4cout << "##########  Current DETECTOR   ############### directory: " << currentPath << G4endl;
     
     #ifdef __APPLE__

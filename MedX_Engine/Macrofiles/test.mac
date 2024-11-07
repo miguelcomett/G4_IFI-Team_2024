@@ -13,8 +13,12 @@
 
 /gun/energy 40 keV
 /run/printProgress 
-/run/beamOn 10
+/run/beamOn 1000
 
 /gun/energy 80 keV
 /run/printProgress 
-/run/beamOn 
+/run/beamOn 1000
+
+/run/beamOn 1000
+/run/beamOn 1000
+/run/beamOn 1000

@@ -1,4 +1,5 @@
 #include "6.0_RunAction.hh"
+#include <regex>
 
 MyRunAction::MyRunAction()
 {
@@ -220,60 +221,74 @@ void MyRunAction::MergeRootFiles()
     TFileMerger merger;
     merger.SetFastMethod(true);
 
-    // Obtener el directorio actual (donde está el ejecutable, probablemente en "build/Release")
     std::string currentPath = std::filesystem::current_path().string();
 
-    // Navegar al directorio superior y luego a "ROOT"
-    //std::string rootDirectory = std::filesystem::path(currentPath).parent_path().string() + "\\ROOT\\";
+#ifdef __APPLE__
+    std::string rootDirectory = std::filesystem::path(currentPath).string() + "/ROOT/";
+#else
+    std::string rootDirectory = std::filesystem::path(currentPath).parent_path().string() + "/ROOT/";
+#endif
 
-    #ifdef __APPLE__
-        std::string rootDirectory = std::filesystem::path(currentPath).string() + "/ROOT/";
-    #else
-        std::string rootDirectory = std::filesystem::path(currentPath).parent_path().string() + "/ROOT/";
-    #endif
-
-    // Crear la subcarpeta "Output" dentro de ROOT si no existe
     std::string outputDirectory = rootDirectory + "Output/";
-    if (!std::filesystem::exists(outputDirectory)) 
+    if (!std::filesystem::exists(outputDirectory))
     {
         std::filesystem::create_directory(outputDirectory);
         G4cout << G4endl;
         G4cout << "-> Output folder created at: " << outputDirectory << G4endl;
     }
 
-    // Iterar sobre los archivos en el directorio ROOT y agregar archivos .root al merger
-    for (const auto & entry : std::filesystem::directory_iterator(rootDirectory)) 
+    // Definir el nombre base del archivo según el valor de 'arguments'
+    std::string fileName;
+    if (arguments == 1 || arguments == 2)
+        fileName = "Sim_";
+    else if (arguments == 3)
+        fileName = "AttCoeff_";
+    else if (arguments == 4)
+        fileName = "Rad_";
+    else if (arguments == 5)
+        fileName = "CT_";
+
+    // Encontrar el primer índice disponible para el archivo de salida
+    int fileIndex = 0;
+    std::string mergedFileName;
+    do
     {
-        if (entry.is_regular_file() && entry.path().extension() == ".root") 
+        mergedFileName = outputDirectory + fileName + "_" + std::to_string(fileIndex) + std::to_string(runID) + ".root";
+        fileIndex++;
+    } while (std::filesystem::exists(mergedFileName));
+
+    // Iterar sobre los archivos en el directorio ROOT y agregar archivos .root al merger
+    for (const auto& entry : std::filesystem::directory_iterator(rootDirectory))
+    {
+        if (entry.is_regular_file() && entry.path().extension() == ".root")
         {
             std::string filePath = entry.path().string();
             merger.AddFile(filePath.c_str());
             G4cout << "-> Added file: " << filePath << G4endl;
 
-            std::filesystem::remove(entry.path()); // Eliminar el archivo despues de agregarlo al merger
+            std::filesystem::remove(entry.path()); // Eliminar el archivo después de agregarlo al merger
             G4cout << "-> Deleted file: " << filePath << G4endl;
             G4cout << G4endl;
         }
     }
 
-    // G4cout << G4endl;
-
-    std::string mergedFileName = outputDirectory + "merged_output.root"; // Nombre del archivo final fusionado en la subcarpeta Output
     merger.OutputFile(mergedFileName.c_str());
 
-    if (merger.Merge()) 
+    if (merger.Merge())
     {
-        // G4cout << G4endl;
-        G4cout << "Successfully merged ROOT files into: " << G4endl;
-        G4cout << mergedFileName << G4endl;
+        G4cout << "Successfully merged ROOT files into: " << mergedFileName << G4endl;
         SingleData(mergedFileName);
-        // G4cout << "Current working directory: " << rootDirectory << G4endl;
     }
-    else { G4cout << "Error during ROOT file merging!" << G4endl; }
+    else
+    {
+        G4cout << "Error during ROOT file merging!" << G4endl;
+    }
 
     G4cout << "==========================================" << G4endl;
     G4cout << G4endl;
 }
+
+
 
 void MyRunAction::SingleData(const std::string & mergedFileName)
 {

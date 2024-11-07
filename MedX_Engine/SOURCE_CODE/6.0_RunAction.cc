@@ -248,7 +248,12 @@ void MyRunAction::MergeRootFiles()
     #endif
 
     // Nueva ruta para Output/ fuera de ROOT/
-    std::string outputDirectory = std::filesystem::path(currentPath).parent_path().string() + "/ROOT/";
+        // Modificado: La carpeta Output se moverá al mismo nivel que ROOT
+    #ifdef __APPLE__
+            std::string outputDirectory = std::filesystem::path(currentPath).string() + "/ROOT/";
+    #else
+            std::string outputDirectory = std::filesystem::path(currentPath).parent_path().string() + "/ROOT/";
+    #endif
 
     // Crear la carpeta Output si no existe
     if (!std::filesystem::exists(outputDirectory))

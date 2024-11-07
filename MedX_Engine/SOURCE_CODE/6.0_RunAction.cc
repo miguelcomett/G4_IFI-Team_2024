@@ -273,6 +273,8 @@ void MyRunAction::SingleData(const std::string & mergedFileName)
         return;
     }
 
+    double numberOfPhotons, initialEnergy, sampleMass, edepValue, radiationDose;  // Variables para almacenar los datos de las columnas
+
     // Configura las ramas
     tree -> SetBranchAddress("Number_of_Photons",  & numberOfPhotons);
     tree -> SetBranchAddress("Initial_Energy_keV", & initialEnergy);

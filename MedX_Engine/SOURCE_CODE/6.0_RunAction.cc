@@ -256,14 +256,14 @@ void MyRunAction::MergeRootFiles()
         }
     }
 
-    G4cout << G4endl;
+    // G4cout << G4endl;
 
     std::string mergedFileName = outputDirectory + "merged_output.root"; // Nombre del archivo final fusionado en la subcarpeta Output
     merger.OutputFile(mergedFileName.c_str());
 
     if (merger.Merge()) 
     {
-        G4cout << G4endl;
+        // G4cout << G4endl;
         G4cout << "Successfully merged ROOT files into: " << G4endl;
         G4cout << mergedFileName << G4endl;
         SingleData(mergedFileName);

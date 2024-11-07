@@ -1,30 +1,30 @@
 #include "5.0_PrimaryGenerator.hh"
 
-MyPrimaryGenerator::MyPrimaryGenerator(): fGunMode(0), fPgun(-40.0*cm), fGunAngle(0.0), energy(80*keV), radius(20.0), spectrumFileName("fSpectrum.txt"), GeneratorMessenger(new PrimaryGeneratorMessenger(this))
+MyPrimaryGenerator::MyPrimaryGenerator(): fGunMode(1), fPgun(-40.0*cm), fGunAngle(0.0), energy(80*keV), radius(20.0), spectrumFileName("fSpectrum.txt"), GeneratorMessenger(new PrimaryGeneratorMessenger(this))
 {
     particleGun = new G4ParticleGun(1);
     particleTable = G4ParticleTable::GetParticleTable();
     particleName = "gamma";
     particle = particleTable -> FindParticle(particleName);
     particleGun -> SetParticleDefinition(particle);   
+
+   if (fGunMode == 1) { InitFunction(); }
 }
 
 MyPrimaryGenerator::~MyPrimaryGenerator() {delete particleGun; delete GeneratorMessenger;}
 
 void MyPrimaryGenerator::GeneratePrimaries(G4Event * anEvent)
 { 
-    if (fGunMode == 0) { particleGun->SetParticleEnergy(energy); } // Energia monocromatica
+    if (fGunMode == 0) { particleGun -> SetParticleEnergy(energy); } // Energia monocromatica
 	else	
     if (fGunMode == 1) // Espectro real
     {
 	    realEnergy = InverseCumul(); 
 	    particleGun -> SetParticleEnergy(realEnergy);
     }
-    else { particleGun->SetParticleEnergy(energy); }
 	
     x0 = 2 * (G4UniformRand() - 0.5);
     y0 = 2 * (G4UniformRand() - 0.5);
-
 
     x0 = x0 * radius * cm;
     y0 = y0 * radius * cm;
@@ -146,7 +146,6 @@ G4double MyPrimaryGenerator::InverseCumul() // Function to estimate counts
     
     return Xrndm;
 }
-
 
 void MyPrimaryGenerator::ReadSpectrumFromFile(const std::string & filename, std::vector<G4double> & xx, std::vector<G4double> & yy, G4int & fNPoints) 
 { // Function to fill the vectors

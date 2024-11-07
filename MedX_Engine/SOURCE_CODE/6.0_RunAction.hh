@@ -24,6 +24,8 @@
 #include "5.0_PrimaryGenerator.hh"
 #include "6.1_Run.hh"
 
+#include <regex>
+
 extern int arguments;
 
 class MyRunAction : public G4UserRunAction

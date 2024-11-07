@@ -1,5 +1,4 @@
 #include "6.0_RunAction.hh"
-#include <regex>
 
 MyRunAction::MyRunAction()
 {
@@ -215,26 +214,26 @@ void MyRunAction::EndOfRunAction(const G4Run * thisRun)
 
 void MyRunAction::MergeRootFiles()
 {
-    G4cout << G4endl;
-    G4cout << "============= Merging Process ============" << G4endl;
+    // G4cout << G4endl;
+    // G4cout << "============= Merging Process ============" << G4endl;
 
     TFileMerger merger;
     merger.SetFastMethod(true);
 
     std::string currentPath = std::filesystem::current_path().string();
 
-#ifdef __APPLE__
-    std::string rootDirectory = std::filesystem::path(currentPath).string() + "/ROOT/";
-#else
-    std::string rootDirectory = std::filesystem::path(currentPath).parent_path().string() + "/ROOT/";
-#endif
+    #ifdef __APPLE__
+        std::string rootDirectory = std::filesystem::path(currentPath).string() + "/ROOT/";
+    #else
+        std::string rootDirectory = std::filesystem::path(currentPath).parent_path().string() + "/ROOT/";
+    #endif
 
     std::string outputDirectory = rootDirectory + "Output/";
     if (!std::filesystem::exists(outputDirectory))
     {
         std::filesystem::create_directory(outputDirectory);
-        G4cout << G4endl;
-        G4cout << "-> Output folder created at: " << outputDirectory << G4endl;
+        // G4cout << G4endl;
+        // G4cout << "-> Output folder merger at: " << outputDirectory << G4endl;
     }
 
     // Definir el nombre base del archivo según el valor de 'arguments'
@@ -263,12 +262,12 @@ void MyRunAction::MergeRootFiles()
         if (entry.is_regular_file() && entry.path().extension() == ".root")
         {
             std::string filePath = entry.path().string();
-            merger.AddFile(filePath.c_str());
-            G4cout << "-> Added file: " << filePath << G4endl;
+            merger.AddFile(filePath.c_str(), false);
+            // G4cout << "-> Added file: " << filePath << G4endl;
 
             std::filesystem::remove(entry.path()); // Eliminar el archivo después de agregarlo al merger
-            G4cout << "-> Deleted file: " << filePath << G4endl;
-            G4cout << G4endl;
+            // G4cout << "-> Deleted file: " << filePath << G4endl;
+            // G4cout << G4endl;
         }
     }
 
@@ -276,16 +275,16 @@ void MyRunAction::MergeRootFiles()
 
     if (merger.Merge())
     {
-        G4cout << "Successfully merged ROOT files into: " << mergedFileName << G4endl;
+        // G4cout << "Successfully merged ROOT files into: " << mergedFileName << G4endl;
         SingleData(mergedFileName);
     }
     else
     {
-        G4cout << "Error during ROOT file merging!" << G4endl;
+        // G4cout << "Error during ROOT file merging!" << G4endl;
     }
 
-    G4cout << "==========================================" << G4endl;
-    G4cout << G4endl;
+    // G4cout << "==========================================" << G4endl;
+    // G4cout << G4endl;
 }
 
 
@@ -295,14 +294,14 @@ void MyRunAction::SingleData(const std::string & mergedFileName)
     TFile * mergedFile = TFile::Open(mergedFileName.c_str(), "UPDATE");
     if (!mergedFile || mergedFile -> IsZombie()) 
     {
-        G4cout << "Error: Unable to open the merged file: " << mergedFileName << G4endl;
+        // G4cout << "Error: Unable to open the merged file: " << mergedFileName << G4endl;
         return;
     }
 
     TTree * tree = dynamic_cast<TTree*>(mergedFile -> Get("Run Summary")); // Obtener el arbol del archivo
     if (!tree) 
     {
-        G4cout << "Error: Tree 'Run Summary' not found in the merged file." << G4endl;
+        // G4cout << "Error: Tree 'Run Summary' not found in the merged file." << G4endl;
         mergedFile -> Close();
         return;
     }
@@ -352,7 +351,7 @@ void MyRunAction::SingleData(const std::string & mergedFileName)
 
     if (maxEntryIndex == -1) 
     {
-        G4cout << "Error: No valid entries found in the tree." << G4endl;
+        // G4cout << "Error: No valid entries found in the tree." << G4endl;
         mergedFile -> Close();
         return;
     }
@@ -374,5 +373,5 @@ void MyRunAction::SingleData(const std::string & mergedFileName)
     maxTree -> Write("Run Summary", TObject::kOverwrite); // Sobrescribir el arbol original con el nuevo arbol que solo tiene la entrada maxima
 
     mergedFile -> Close();
-    G4cout << "Zero entries have been removed, and only the maximum entry has been kept in the merged ROOT file: " << mergedFileName << G4endl;
+    // G4cout << "Zero entries have been removed, and only the maximum entry has been kept in the merged ROOT file: " << mergedFileName << G4endl;
 }

@@ -12,7 +12,7 @@
 #include "G4AnalysisManager.hh"
 
 #include "3.0_DetectorConstruction.hh"
-#include "5_PrimaryGenerator.hh"
+#include "5.0_PrimaryGenerator.hh"
 
 extern int arguments;
 

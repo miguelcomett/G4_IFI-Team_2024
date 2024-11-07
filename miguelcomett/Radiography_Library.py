@@ -1,6 +1,6 @@
 # 1.1. ========================================================================================================================================================
 
-def Merge_Roots_Memory_Optimized(directory, starts_with, output_name):
+def MergeRoots(directory, starts_with, output_name):
 
     import uproot; import os; from tqdm import tqdm
 
@@ -39,13 +39,10 @@ def Merge_Roots_Memory_Optimized(directory, starts_with, output_name):
 
     print("Archivo final creado en:", merged_file)
 
-# 1.1.1 ========================================================================================================================================================
+# 1.2. ========================================================================================================================================================
 
-import uproot
-import os
-from tqdm import tqdm
-from concurrent.futures import ThreadPoolExecutor
-import threading
+import uproot; import os; from tqdm import tqdm
+from concurrent.futures import ThreadPoolExecutor; import threading
 
 def process_file(file, f_out, lock, step_size="10 MB"):
     with uproot.open(file) as f_in:
@@ -55,17 +52,21 @@ def process_file(file, f_out, lock, step_size="10 MB"):
 
             # Solo procesar si es un TTree
             if isinstance(obj, uproot.TTree):
+                
                 # Leer los datos por partes para optimizar el uso de memoria
                 for new_data in obj.iterate(library="np", step_size=step_size):
+                    
                     # Lock para asegurar que la escritura en f_out sea thread-safe
                     with lock:
+                        
                         # Añadir o crear el TTree en el archivo de salida
                         if base_key in f_out:
                             f_out[base_key].extend(new_data)
                         else:
                             f_out[base_key] = new_data
 
-def Merge_Roots_Memory_Optimized_Parallel(directory, starts_with, output_name, max_workers=4):
+def MergeRoots_Parallel(directory, starts_with, output_name, max_workers = 9):
+    
     file_list = []
 
     # Crear lista de archivos para procesar
@@ -95,9 +96,7 @@ def Merge_Roots_Memory_Optimized_Parallel(directory, starts_with, output_name, m
 
     print("Archivo final creado en:", merged_file)
 
-
-
-# 1.2. ========================================================================================================================================================
+# 1.3. ========================================================================================================================================================
 
 def ModifyRoot(directory, root_name, tree_name, branch_names, output_name, new_tree_name, new_branch_names):
 

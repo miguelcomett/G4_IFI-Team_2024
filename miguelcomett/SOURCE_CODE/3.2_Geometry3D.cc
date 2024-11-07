@@ -1,5 +1,3 @@
-#include "G4TriangularFacet.hh"
-
 #include "3.2_Geometry3D.hh"
 
 G4TessellatedSolid * G4STL::Read(const G4String & path, const G4String & name)

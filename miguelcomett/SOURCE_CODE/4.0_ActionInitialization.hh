@@ -4,10 +4,10 @@
 #include "G4VUserActionInitialization.hh"
 
 #include "3.0_DetectorConstruction.hh"
-#include "5_PrimaryGenerator.hh"
+#include "5.0_PrimaryGenerator.hh"
 #include "6.0_RunAction.hh"
 #include "6.1_Run.hh"
-#include "8_SteppingAction.hh"
+#include "8.0_SteppingAction.hh"
 
 class MyActionInitialization : public G4VUserActionInitialization
 {

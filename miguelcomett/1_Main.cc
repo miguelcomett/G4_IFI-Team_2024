@@ -11,9 +11,9 @@
 #include "G4UIExecutive.hh"
 #include "G4RunManagerFactory.hh"
 
-#include "2_PhysicsList.hh"
+#include "2.0_PhysicsList.hh"
 #include "3.0_DetectorConstruction.hh"
-#include "4_ActionInitialization.hh"
+#include "4.0_ActionInitialization.hh"
 
 int arguments = 0;
 

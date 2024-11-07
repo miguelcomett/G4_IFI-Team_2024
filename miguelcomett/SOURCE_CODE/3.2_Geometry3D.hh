@@ -1,6 +1,7 @@
 #pragma once
-#include "globals.hh"
 
+#include "globals.hh"
+#include "G4TriangularFacet.hh"
 #include "G4SystemOfUnits.hh"
 #include "G4TessellatedSolid.hh"
 

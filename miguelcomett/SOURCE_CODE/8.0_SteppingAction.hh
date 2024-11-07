@@ -9,7 +9,7 @@
 
 #include "3.0_DetectorConstruction.hh"
 #include "6.1_Run.hh"
-#include "7_EventAction.hh"
+#include "7.0_EventAction.hh"
 
 extern int arguments;
 

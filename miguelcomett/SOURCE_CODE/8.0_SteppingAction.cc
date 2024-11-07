@@ -1,4 +1,4 @@
-#include "8_SteppingAction.hh"
+#include "8.0_SteppingAction.hh"
 
 MySteppingAction::MySteppingAction(MyEventAction * eventAction) { fEventAction = eventAction; }
 MySteppingAction::~MySteppingAction() {}

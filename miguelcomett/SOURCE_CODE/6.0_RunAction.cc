@@ -198,13 +198,11 @@ void MyRunAction::EndOfRunAction(const G4Run * thisRun)
     analysisManager -> Write();
     analysisManager -> CloseFile();
     
-    if (isMaster) {MergeRootFiles();}
+    // if (isMaster) {MergeRootFiles();}
 
     /*std::string currentPath = std::filesystem::current_path().string();
     G4cout << "Current working directory: " << currentPath << G4endl;*/
 }
-
-
 
 void MyRunAction::MergeRootFiles()
 {
@@ -259,10 +257,7 @@ void MyRunAction::MergeRootFiles()
     }
 }
 
-
-
-
-void MyRunAction::SingleData(const std::string& mergedFileName)
+void MyRunAction::SingleData(const std::string & mergedFileName)
 {
     TFile* mergedFile = TFile::Open(mergedFileName.c_str(), "UPDATE");
     if (!mergedFile || mergedFile->IsZombie()) {
@@ -352,4 +347,3 @@ void MyRunAction::SingleData(const std::string& mergedFileName)
     mergedFile->Close();
     G4cout << "Zero entries have been removed, and only the maximum entry has been kept in the merged ROOT file: " << mergedFileName << G4endl;
 }
-

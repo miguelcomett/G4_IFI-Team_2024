@@ -258,6 +258,7 @@ void MyRunAction::MergeRootFiles()
     {
         G4cout << "Successfully merged ROOT files into: " << mergedFileName << G4endl;
         SingleData(mergedFileName);
+        G4cout << "Current working directory: " << rootDirectory << G4endl;
     }
     else { G4cout << "Error during ROOT file merging!" << G4endl; }
 }

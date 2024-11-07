@@ -179,15 +179,16 @@ void MyDetectorConstruction::ConstructBoneDivided()
 void MyDetectorConstruction::ConstructThorax()
 {
     G4STL stl; 
+
+    // Obtener el directorio actual (donde está el ejecutable, probablemente en "build/Release")
+    std::string currentPath = std::filesystem::current_path().string();
     
     #ifdef __APPLE__
-        std::string modelPath = "/Users/miguelcomett/geant4-v11.2.2_2/ESTANCIA/IFI.03.Radiography/miguelcomett/3D_Models/";
+        std::string modelPath = std::filesystem::path(currentPath).parent_path().parent_path() + "/3D_Models/";
     #else
-        // Obtener el directorio actual (donde está el ejecutable, probablemente en "build/Release")
-        std::string currentPath = std::filesystem::current_path().string();
 
         // Navegar al directorio superior y luego a "ROOT"
-        std::string modelPath = std::filesystem::path(currentPath).parent_path().parent_path().string() + "\\3D_Models\\";
+        std::string modelPath = std::filesystem::path(currentPath).parent_path().parent_path().string() + "/3D_Models/";
         //std::string modelPath = "C:\\Users\\conej\\Documents\\Universidad\\Geant4\\Projects\\Models2\\"; // Define el directorio de los modelos 3D
     #endif
 

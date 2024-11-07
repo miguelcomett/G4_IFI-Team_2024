@@ -94,6 +94,19 @@ void MyRunAction::BeginOfRunAction(const G4Run * thisRun)
     G4AccumulableManager * accumulableManager = G4AccumulableManager::Instance();
     accumulableManager -> Reset();
 
+    // Obtener la ruta actual
+    std::string currentPath = std::filesystem::current_path().string();
+
+    // Definir la ruta de la carpeta ROOT al mismo nivel que el directorio principal
+    std::string rootDirectory = std::filesystem::path(currentPath).parent_path().string() + "/ROOT_temp/";
+
+    // Comprobar si la carpeta ROOT existe, si no, crearla
+    if (!std::filesystem::exists(rootDirectory))
+    {
+        std::filesystem::create_directory(rootDirectory);
+        // G4cout << "Created ROOT directory at: " << rootDirectory << G4endl;
+    }
+
     primaryGenerator = static_cast < const MyPrimaryGenerator *> (G4RunManager::GetRunManager() -> GetUserPrimaryGeneratorAction()); 
     if (primaryGenerator && primaryGenerator -> GetParticleGun()) 
     {
@@ -222,17 +235,20 @@ void MyRunAction::MergeRootFiles()
 
     std::string currentPath = std::filesystem::current_path().string();
 
+    // Modificado: La carpeta Output se moverá al mismo nivel que ROOT
     #ifdef __APPLE__
-        std::string rootDirectory = std::filesystem::path(currentPath).string() + "/ROOT/";
+        std::string rootDirectory = std::filesystem::path(currentPath).string() + "/ROOT_temp/";
     #else
-        std::string rootDirectory = std::filesystem::path(currentPath).parent_path().string() + "/ROOT/";
+        std::string rootDirectory = std::filesystem::path(currentPath).parent_path().string() + "/ROOT_temp/";
     #endif
 
-    std::string outputDirectory = rootDirectory + "Output/";
+    // Nueva ruta para Output/ fuera de ROOT/
+    std::string outputDirectory = std::filesystem::path(currentPath).parent_path().string() + "/ROOT/";
+
+    // Crear la carpeta Output si no existe
     if (!std::filesystem::exists(outputDirectory))
     {
         std::filesystem::create_directory(outputDirectory);
-        // G4cout << G4endl;
         // G4cout << "-> Output folder merger at: " << outputDirectory << G4endl;
     }
 
@@ -271,6 +287,7 @@ void MyRunAction::MergeRootFiles()
         }
     }
 
+    // Guardar el archivo fusionado en la nueva carpeta Output
     merger.OutputFile(mergedFileName.c_str());
 
     if (merger.Merge())
@@ -283,9 +300,13 @@ void MyRunAction::MergeRootFiles()
         // G4cout << "Error during ROOT file merging!" << G4endl;
     }
 
+    // Eliminar la carpeta ROOT después de terminar el proceso de fusión
+    std::filesystem::remove_all(rootDirectory); // Elimina la carpeta ROOT/ y su contenido
+
     // G4cout << "==========================================" << G4endl;
     // G4cout << G4endl;
 }
+
 
 
 

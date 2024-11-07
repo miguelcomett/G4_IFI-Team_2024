@@ -214,6 +214,9 @@ void MyRunAction::EndOfRunAction(const G4Run * thisRun)
 
 void MyRunAction::MergeRootFiles()
 {
+    G4cout << G4endl;
+    G4cout << "============ Merging Process ============" << G4endl;
+
     TFileMerger merger;
     merger.SetFastMethod(true);
 
@@ -261,6 +264,9 @@ void MyRunAction::MergeRootFiles()
         G4cout << "Current working directory: " << rootDirectory << G4endl;
     }
     else { G4cout << "Error during ROOT file merging!" << G4endl; }
+
+    G4cout << "==================================" << G4endl;
+    G4cout << G4endl;
 }
 
 void MyRunAction::SingleData(const std::string & mergedFileName)
@@ -272,7 +278,7 @@ void MyRunAction::SingleData(const std::string & mergedFileName)
         return;
     }
 
-    TTree * tree = dynamic_cast<TTree*>(mergedFile -> Get("Run Summary")); // Obtener el arrbol del archivo
+    TTree * tree = dynamic_cast<TTree*>(mergedFile -> Get("Run Summary")); // Obtener el arbol del archivo
     if (!tree) 
     {
         G4cout << "Error: Tree 'Run Summary' not found in the merged file." << G4endl;
@@ -291,10 +297,10 @@ void MyRunAction::SingleData(const std::string & mergedFileName)
 
     // Inicializa las variables para los valores maximos
     double maxNumberOfPhotons = -DBL_MAX;
-    double maxInitialEnergy = -DBL_MAX;
-    double maxSampleMass = -DBL_MAX;
-    double maxEdepValue = -DBL_MAX;
-    double maxRadiationDose = -DBL_MAX;
+    double maxInitialEnergy   = -DBL_MAX;
+    double maxSampleMass      = -DBL_MAX;
+    double maxEdepValue       = -DBL_MAX;
+    double maxRadiationDose   = -DBL_MAX;
 
     Long64_t maxEntryIndex = -1; // Para almacenar el indice de la entrada con el valor maximo
 

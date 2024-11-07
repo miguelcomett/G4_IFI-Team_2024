@@ -237,7 +237,8 @@ void MyRunAction::MergeRootFiles()
     if (!std::filesystem::exists(outputDirectory)) 
     {
         std::filesystem::create_directory(outputDirectory);
-        G4cout << "Output folder created at: " << outputDirectory << G4endl;
+        G4cout << G4endl;
+        G4cout << "-> Output folder created at: " << outputDirectory << G4endl;
     }
 
     // Iterar sobre los archivos en el directorio ROOT y agregar archivos .root al merger
@@ -247,21 +248,26 @@ void MyRunAction::MergeRootFiles()
         {
             std::string filePath = entry.path().string();
             merger.AddFile(filePath.c_str());
-            G4cout << "Added file: " << filePath << G4endl;
+            G4cout << "-> Added file: " << filePath << G4endl;
 
             std::filesystem::remove(entry.path()); // Eliminar el archivo despues de agregarlo al merger
-            G4cout << "Deleted file: " << filePath << G4endl;
+            G4cout << "-> Deleted file: " << filePath << G4endl;
+            G4cout << G4endl;
         }
     }
+
+    G4cout << G4endl;
 
     std::string mergedFileName = outputDirectory + "merged_output.root"; // Nombre del archivo final fusionado en la subcarpeta Output
     merger.OutputFile(mergedFileName.c_str());
 
     if (merger.Merge()) 
     {
-        G4cout << "Successfully merged ROOT files into: " << mergedFileName << G4endl;
+        G4cout << G4endl;
+        G4cout << "Successfully merged ROOT files into: " << G4endl;
+        G4cout << mergedFileName << G4endl;
         SingleData(mergedFileName);
-        G4cout << "Current working directory: " << rootDirectory << G4endl;
+        // G4cout << "Current working directory: " << rootDirectory << G4endl;
     }
     else { G4cout << "Error during ROOT file merging!" << G4endl; }
 
@@ -306,7 +312,7 @@ void MyRunAction::SingleData(const std::string & mergedFileName)
 
     TTree * newTree = tree -> CloneTree(0); // Creamos un nuevo arbol vacio para almacenar las entradas validas
 
-    for (Long64_t i = 0; i < tree->GetEntries(); ++i) // Itera sobre todas las entradas del arbol
+    for (Long64_t i = 0; i < tree -> GetEntries(); ++i) // Itera sobre todas las entradas del arbol
     {
         tree -> GetEntry(i); // Leer la entrada
 
@@ -331,6 +337,7 @@ void MyRunAction::SingleData(const std::string & mergedFileName)
 
     if (maxEntryIndex == -1) 
     {
+        G4cout << G4endl;
         G4cout << "Error: No valid entries found in the tree." << G4endl;
         mergedFile -> Close();
         return;

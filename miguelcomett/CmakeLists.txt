@@ -85,9 +85,7 @@ file(COPY ${MACROFILES} DESTINATION ${PROJECT_BINARY_DIR}/Release)
 # Copy .txt files to the main build directory
 file(GLOB TEXTFILES "${PROJECT_SOURCE_DIR}/*.txt")
 file(COPY ${TEXTFILES} DESTINATION ${PROJECT_BINARY_DIR}/)
-if (CMAKE_BUILD_TYPE STREQUAL "Release") # Optional: Copy .txt files to the Release directory within the build
-    file(COPY ${TEXTFILES} DESTINATION ${PROJECT_BINARY_DIR}/Release)
-endif()
+file(COPY ${TEXTFILES} DESTINATION ${PROJECT_BINARY_DIR}/Release)
 
 # Copy data (.dat) files to the binary directory
 file(GLOB DATA_FILES "*.dat")

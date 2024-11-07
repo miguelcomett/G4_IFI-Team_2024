@@ -27,6 +27,7 @@ PrimaryGeneratorMessenger::PrimaryGeneratorMessenger(MyPrimaryGenerator * gun) :
 PrimaryGeneratorMessenger::~PrimaryGeneratorMessenger()
 {
 	delete fPgunCmd;
+	delete fPgunRadiusCmd;
 	delete fPgunAngleCmd; 
 	delete fParticleModeCmd; 
 }

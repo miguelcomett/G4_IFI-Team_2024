@@ -1,6 +1,6 @@
 #include "5.0_PrimaryGenerator.hh"
 
-MyPrimaryGenerator::MyPrimaryGenerator(): fGunMode(1), fPgun(-45.0*cm), fGunAngle(0.0), energy(80*keV), radius(10.0), spectrumFileName("fSpectrum.txt"), GeneratorMessenger(new PrimaryGeneratorMessenger(this))
+MyPrimaryGenerator::MyPrimaryGenerator(): fGunMode(0), fPgun(-45.0*cm), fGunAngle(0.0), energy(80*keV), fGunRadius(10.0), spectrumFileName("fSpectrum.txt"), GeneratorMessenger(new PrimaryGeneratorMessenger(this))
 {
     particleGun = new G4ParticleGun(1);
     particleTable = G4ParticleTable::GetParticleTable();
@@ -15,8 +15,8 @@ MyPrimaryGenerator::~MyPrimaryGenerator() {delete particleGun; delete GeneratorM
 
 void MyPrimaryGenerator::GeneratePrimaries(G4Event * anEvent)
 { 
-    if (fGunMode == 0) { particleGun -> SetParticleEnergy(energy); } // Energia monocromatica
-	else	
+    if (fGunMode == 0) { } // Energia monocromatica  particleGun->SetParticleEnergy(energy); No definir energia si se quiere cambio dimaico
+	// else	
     if (fGunMode == 1) // Espectro real
     {
 	    realEnergy = InverseCumul(); 
@@ -26,8 +26,8 @@ void MyPrimaryGenerator::GeneratePrimaries(G4Event * anEvent)
     x0 = 2 * (G4UniformRand() - 0.5);
     y0 = 2 * (G4UniformRand() - 0.5);
 
-    x0 = x0 * radius * cm;
-    y0 = y0 * radius * cm;
+    x0 = x0 * fGunRadius * cm;
+    y0 = y0 * fGunRadius * cm;
     z0 = fPgun; // Messenger used
     
     x0 = x0 - 1;

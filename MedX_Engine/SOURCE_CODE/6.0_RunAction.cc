@@ -366,7 +366,7 @@ void MyRunAction::SingleData(const std::string& mergedFileName)
 {
     G4cout << "Opening merged file: " << mergedFileName << G4endl;
     TFile* mergedFile = TFile::Open(mergedFileName.c_str(), "UPDATE");
-    if (!mergedFile || mergedFile->IsZombie())
+    if (!mergedFile || mergedFile -> IsZombie())
     {
         G4cout << "Error: Unable to open the merged file: " << mergedFileName << G4endl;
         return;
@@ -391,10 +391,10 @@ void MyRunAction::SingleData(const std::string& mergedFileName)
 
     G4cout << "Branch addresses set. Initializing maximum values..." << G4endl;
     double maxNumberOfPhotons = -DBL_MAX;
-    double maxInitialEnergy = -DBL_MAX;
-    double maxSampleMass = -DBL_MAX;
-    double maxEdepValue = -DBL_MAX;
-    double maxRadiationDose = -DBL_MAX;
+    double maxInitialEnergy   = -DBL_MAX;
+    double maxSampleMass      = -DBL_MAX;
+    double maxEdepValue       = -DBL_MAX;
+    double maxRadiationDose   = -DBL_MAX;
 
     Long64_t maxEntryIndex = -1;
     TTree* newTree = tree->CloneTree(0);

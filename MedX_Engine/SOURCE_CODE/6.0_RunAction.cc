@@ -224,13 +224,13 @@ void MyRunAction::MergeRootFiles()
     //std::string rootDirectory = std::filesystem::path(currentPath).parent_path().string() + "\\ROOT\\";
 
     #ifdef __APPLE__
-        std::string rootDirectory = std::filesystem::path(currentPath).string() + "\\ROOT\\";
+        std::string rootDirectory = std::filesystem::path(currentPath).string() + "/ROOT/";
     #else
         std::string rootDirectory = std::filesystem::path(currentPath).parent_path().string() + "\\ROOT\\";
     #endif
 
     // Crear la subcarpeta "Output" dentro de ROOT si no existe
-    std::string outputDirectory = rootDirectory + "Output\\";
+    std::string outputDirectory = rootDirectory + "Output/";
     if (!std::filesystem::exists(outputDirectory)) 
     {
         std::filesystem::create_directory(outputDirectory);

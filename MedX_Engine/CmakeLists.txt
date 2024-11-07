@@ -95,7 +95,7 @@ file(COPY ${DATA_FILES} DESTINATION ${PROJECT_BINARY_DIR})
 # file(GLOB IFI.03.Radiography-SCRIPTS ${PROJECT_SOURCE_DIR}/Macrofiles/*)
 
 # Define ROOT output directory and create it if not existing
-set(ROOT "${PROJECT_BINARY_DIR}/ROOT_files")
+set(ROOT "${PROJECT_BINARY_DIR}/ROOT_temp")
 add_definitions(-DROOT_OUTPUT_DIR="${ROOT}")
 file(MAKE_DIRECTORY ${ROOT})
 

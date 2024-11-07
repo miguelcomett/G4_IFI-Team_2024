@@ -100,9 +100,9 @@ void MyRunAction::BeginOfRunAction(const G4Run * thisRun)
 
     // Modificado: La carpeta Output se moverá al mismo nivel que ROOT
     #ifdef __APPLE__
-        std::string rootDirectory = std::filesystem::path(currentPath).string() + "/ROOT_files/";
+        std::string rootDirectory = std::filesystem::path(currentPath).string() + "/ROOT_temp/";
     #else
-        std::string rootDirectory = std::filesystem::path(currentPath).parent_path().string() + "/ROOT_files/";
+        std::string rootDirectory = std::filesystem::path(currentPath).parent_path().string() + "/ROOT_temp/";
     #endif
 
     // Comprobar si la carpeta ROOT existe, si no, crearla
@@ -242,9 +242,9 @@ void MyRunAction::MergeRootFiles()
 
     // Modificado: La carpeta Output se moverá al mismo nivel que ROOT
     #ifdef __APPLE__
-        std::string rootDirectory = std::filesystem::path(currentPath).string() + "/ROOT_files/";
+        std::string rootDirectory = std::filesystem::path(currentPath).string() + "/ROOT_temp/";
     #else
-        std::string rootDirectory = std::filesystem::path(currentPath).parent_path().string() + "/ROOT_files/";
+        std::string rootDirectory = std::filesystem::path(currentPath).parent_path().string() + "/ROOT_temp/";
     #endif
 
     // Nueva ruta para Output/ fuera de ROOT/

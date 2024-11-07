@@ -50,12 +50,8 @@ MyRunAction::MyRunAction()
         analysisManager -> CreateNtuple("Photons", "Photons");
         analysisManager -> CreateNtupleDColumn("X_axis");
         analysisManager -> CreateNtupleDColumn("Y_axis");
-        // analysisManager -> CreateNtupleDColumn("Detected_Energy_keV");
+        analysisManager -> CreateNtupleDColumn("Detected_Energy_keV");
         analysisManager -> FinishNtuple(0);
-
-        analysisManager -> CreateNtuple("EDep Sample", "EDep Sample");
-        analysisManager -> CreateNtupleDColumn("EDep_Spectra");
-        analysisManager -> FinishNtuple(1);
 
         analysisManager -> CreateNtuple("Run Summary", "Run Summary");
         analysisManager -> CreateNtupleDColumn("Number_of_Photons");
@@ -63,6 +59,10 @@ MyRunAction::MyRunAction()
         analysisManager -> CreateNtupleDColumn("Sample_Mass_g");
         analysisManager -> CreateNtupleDColumn("EDep_Value_PeV");
         analysisManager -> CreateNtupleDColumn("Radiation_Dose_mSv");
+        analysisManager -> FinishNtuple(1);
+
+        analysisManager -> CreateNtuple("EDep Sample", "EDep Sample");
+        analysisManager -> CreateNtupleDColumn("EDep_Spectra");
         analysisManager -> FinishNtuple(2);
     }
 
@@ -72,6 +72,14 @@ MyRunAction::MyRunAction()
         analysisManager -> CreateNtupleDColumn("x_ax");
         analysisManager -> CreateNtupleDColumn("y_ax");
         analysisManager -> FinishNtuple(0);
+
+        analysisManager -> CreateNtuple("Run Summary", "Run Summary");
+        analysisManager -> CreateNtupleDColumn("Number_of_Photons");
+        analysisManager -> CreateNtupleDColumn("Initial_Energy_keV");
+        analysisManager -> CreateNtupleDColumn("Sample_Mass_g");
+        analysisManager -> CreateNtupleDColumn("EDep_Value_PeV");
+        analysisManager -> CreateNtupleDColumn("Radiation_Dose_mSv");
+        analysisManager -> FinishNtuple(1);
     }
 }
 
@@ -178,19 +186,19 @@ void MyRunAction::EndOfRunAction(const G4Run * thisRun)
         G4cout << G4endl;
     }
     
-    if (arguments == 4) 
+    if (arguments == 4 || arguments == 5) 
     {   
         primaryEnergy = primaryEnergy / keV;
         totalMass = totalMass / kg;
         TotalEnergyDeposit = TotalEnergyDeposit / MeV;
         radiationDose = radiationDose / microgray;
 
-        analysisManager -> FillNtupleDColumn(2, 0, numberOfEvents);
-        analysisManager -> FillNtupleDColumn(2, 1, primaryEnergy);
-        analysisManager -> FillNtupleDColumn(2, 2, totalMass);
-        analysisManager -> FillNtupleDColumn(2, 3, TotalEnergyDeposit);
-        analysisManager -> FillNtupleDColumn(2, 4, radiationDose);
-        analysisManager -> AddNtupleRow(2);
+        analysisManager -> FillNtupleDColumn(1, 0, numberOfEvents);
+        analysisManager -> FillNtupleDColumn(1, 1, primaryEnergy);
+        analysisManager -> FillNtupleDColumn(1, 2, totalMass);
+        analysisManager -> FillNtupleDColumn(1, 3, TotalEnergyDeposit);
+        analysisManager -> FillNtupleDColumn(1, 4, radiationDose);
+        analysisManager -> AddNtupleRow(1);
     }
 
     if (isMaster) {customRun -> EndOfRun();}

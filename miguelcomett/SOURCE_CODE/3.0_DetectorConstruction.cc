@@ -23,9 +23,9 @@ MyDetectorConstruction::MyDetectorConstruction()
         isOsteoBone = false;
     is3DModel = true;
         isHeart = true;
-        isLungs = false;
-        isRibcage = false;
-        isThorax = false;
+        isLungs = true;
+        isRibcage = true;
+        isThorax = true;
         isFiller = true;
 }
 
@@ -202,6 +202,10 @@ void MyDetectorConstruction::ConstructThorax()
     {
         logicHeart = new G4LogicalVolume(Heart, Muscle, "Heart");
         new G4PVPlacement(Model3DRotation, samplePosition, logicHeart, "Heart", logicWorld, false, 0, true);
+        
+        scoringVolume_1 = logicHeart;
+        scoringVolumes.push_back(scoringVolume_1);
+        
         G4cout << "> Modelo HEART importado exitosamente" << G4endl;
     }
     if (isHeart && !Heart)  {G4cout << G4endl; G4cout << "--> Modelo HEART no importado" << G4endl;}
@@ -212,6 +216,10 @@ void MyDetectorConstruction::ConstructThorax()
     {
         logicLungs = new G4LogicalVolume(Lungs, Air, "Lungs");
         new G4PVPlacement(Model3DRotation, samplePosition, logicLungs, "Lungs", logicWorld, false, 0, true);
+        
+        scoringVolume_2 = logicLungs;
+        scoringVolumes.push_back(scoringVolume_2);
+       
         G4cout << "> Modelo LUNGS importado exitosamente" << G4endl;
     }
     if (isLungs && !Lungs) {G4cout << "--> Modelo LUNGS no importado" << G4endl;}
@@ -222,6 +230,10 @@ void MyDetectorConstruction::ConstructThorax()
     {
         logicRibcage = new G4LogicalVolume(Ribcage, Bone, "Ribcage");
         new G4PVPlacement(Model3DRotation, samplePosition, logicRibcage, "Ribcage", logicWorld, false, 0, true);
+        
+        scoringVolume_3 = logicRibcage;
+        scoringVolumes.push_back(scoringVolume_3);
+        
         G4cout << "> Modelo bone importado exitosamente" << G4endl;
     }
     if (isRibcage && !Ribcage) {G4cout << "--> Modelo RIBCAGE no importado" << G4endl;}
@@ -235,6 +247,10 @@ void MyDetectorConstruction::ConstructThorax()
         subtractedSolid1 = new G4SubtractionSolid("SoftWithBoneAndToraxHole", subtractedSolid0, Thorax2, originMatrix, samplePosition); // Resta el volumen "TORAX_Real0" del resultado anterior
         logicThorax = new G4LogicalVolume(subtractedSolid1, TissueMix, "Thorax"); // Crear el volumen lógico del sólido resultante
         new G4PVPlacement(Model3DRotation, G4ThreeVector(0,0,0), logicThorax, "Thorax", logicWorld, false, 0, true);
+       
+        scoringVolume_4 = logicThorax;
+        scoringVolumes.push_back(scoringVolume_4);
+       
         G4cout << "> Modelo de tórax creado exitosamente" << G4endl;
     }
     if (isThorax && (!Thorax1 || !Thorax2) ) {G4cout << "--> Error al crear el modelo de TÓRAX" << G4endl;}
@@ -247,22 +263,14 @@ void MyDetectorConstruction::ConstructThorax()
         subtractedSolid4 = new G4SubtractionSolid("Inner2", subtractedSolid3, Ribcage, originMatrix, samplePosition);
         logicFiller = new G4LogicalVolume(subtractedSolid4, Fat, "Filler");
         new G4PVPlacement(Model3DRotation, G4ThreeVector(0, 0, 0), logicFiller, "Filler", logicWorld, false, 0, true);
+        
+        scoringVolume_5 = logicFiller;
+        scoringVolumes.push_back(scoringVolume_5);
+        
         G4cout << "> Modelo FILLER creado exitosamente" << G4endl; G4cout << G4endl; 
     }
     if (isFiller && (!Heart || !Lungs || !Ribcage || !Thorax1 || !Thorax2) ) {G4cout << "--> Error al crear el modelo de FILLER" << G4endl;}
     G4cout << "==========================================" << G4endl; G4cout << G4endl;
-
-    scoringVolume_1 = logicHeart;
-    scoringVolume_2 = logicLungs;
-    scoringVolume_3 = logicRibcage;
-    scoringVolume_4 = logicThorax;
-    scoringVolume_5 = logicFiller;
-    
-    scoringVolumes.push_back(scoringVolume_1);
-    scoringVolumes.push_back(scoringVolume_2);
-    scoringVolumes.push_back(scoringVolume_3);
-    scoringVolumes.push_back(scoringVolume_4);
-    scoringVolumes.push_back(scoringVolume_5);
 }
 
 void MyDetectorConstruction::DefineMaterials()

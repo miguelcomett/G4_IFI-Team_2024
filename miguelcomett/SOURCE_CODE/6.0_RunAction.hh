@@ -63,6 +63,8 @@ class MyRunAction : public G4UserRunAction
         const G4double microgray = 1.0e-6*gray;
         const G4double nanogray  = 1.0e-9*gray;
         const G4double picogray  = 1.0e-12*gray;
+
+        double numberOfPhotons, initialEnergy, sampleMass, edepValue, radiationDose;  // Variables para almacenar los datos de las columnas
 };
 
 #endif

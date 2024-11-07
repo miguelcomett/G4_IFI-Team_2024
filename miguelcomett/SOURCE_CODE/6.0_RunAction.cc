@@ -206,25 +206,16 @@ void MyRunAction::EndOfRunAction(const G4Run * thisRun)
     analysisManager -> Write();
     analysisManager -> CloseFile();
     
-    // if (isMaster) {MergeRootFiles();}
+    if (isMaster) {MergeRootFiles();}
 
-    /*std::string currentPath = std::filesystem::current_path().string();
-    G4cout << "Current working directory: " << currentPath << G4endl;*/
+    std::string currentPath = std::filesystem::current_path().string();
+    G4cout << "Current working directory: " << currentPath << G4endl;
 }
 
 void MyRunAction::MergeRootFiles()
 {
     TFileMerger merger;
     merger.SetFastMethod(true);
-
-    if (arguments == 1 || arguments == 2)
-        fileName = "/Sim_" + std::to_string(runID);
-    else if (arguments == 3)
-        fileName = "/AttCoeff_" + std::to_string(runID);
-    else if (arguments == 4)
-        fileName = "/Rad_" + std::to_string(runID);
-    else if (arguments == 5)
-        fileName = "/CT_" + std::to_string(runID);
 
     // Obtener el directorio actual (donde está el ejecutable, probablemente en "build/Release")
     std::string currentPath = std::filesystem::current_path().string();
@@ -234,124 +225,118 @@ void MyRunAction::MergeRootFiles()
 
     // Crear la subcarpeta "Output" dentro de ROOT si no existe
     std::string outputDirectory = rootDirectory + "Output\\";
-    if (!std::filesystem::exists(outputDirectory)) {
+    if (!std::filesystem::exists(outputDirectory)) 
+    {
         std::filesystem::create_directory(outputDirectory);
         G4cout << "Output folder created at: " << outputDirectory << G4endl;
     }
 
     // Iterar sobre los archivos en el directorio ROOT y agregar archivos .root al merger
-    for (const auto& entry : std::filesystem::directory_iterator(rootDirectory)) {
-        if (entry.is_regular_file() && entry.path().extension() == ".root") {
+    for (const auto & entry : std::filesystem::directory_iterator(rootDirectory)) 
+    {
+        if (entry.is_regular_file() && entry.path().extension() == ".root") 
+        {
             std::string filePath = entry.path().string();
             merger.AddFile(filePath.c_str());
             G4cout << "Added file: " << filePath << G4endl;
 
-            // Eliminar el archivo despu�s de agregarlo al merger
-            std::filesystem::remove(entry.path());
+            std::filesystem::remove(entry.path()); // Eliminar el archivo despues de agregarlo al merger
             G4cout << "Deleted file: " << filePath << G4endl;
         }
     }
 
-    // Nombre del archivo final fusionado en la subcarpeta Output
-    std::string mergedFileName = outputDirectory + "merged_output.root";
+    std::string mergedFileName = outputDirectory + "merged_output.root"; // Nombre del archivo final fusionado en la subcarpeta Output
     merger.OutputFile(mergedFileName.c_str());
 
-    if (merger.Merge()) {
+    if (merger.Merge()) 
+    {
         G4cout << "Successfully merged ROOT files into: " << mergedFileName << G4endl;
         SingleData(mergedFileName);
     }
-    else {
-        G4cout << "Error during ROOT file merging!" << G4endl;
-    }
+    else { G4cout << "Error during ROOT file merging!" << G4endl; }
 }
 
 void MyRunAction::SingleData(const std::string & mergedFileName)
 {
-    TFile* mergedFile = TFile::Open(mergedFileName.c_str(), "UPDATE");
-    if (!mergedFile || mergedFile->IsZombie()) {
+    TFile * mergedFile = TFile::Open(mergedFileName.c_str(), "UPDATE");
+    if (!mergedFile || mergedFile -> IsZombie()) 
+    {
         G4cout << "Error: Unable to open the merged file: " << mergedFileName << G4endl;
         return;
     }
 
-    // Obtener el �rbol del archivo
-    TTree* tree = dynamic_cast<TTree*>(mergedFile->Get("Run Summary"));
-    if (!tree) {
+    TTree * tree = dynamic_cast<TTree*>(mergedFile -> Get("Run Summary")); // Obtener el arrbol del archivo
+    if (!tree) 
+    {
         G4cout << "Error: Tree 'Run Summary' not found in the merged file." << G4endl;
-        mergedFile->Close();
+        mergedFile -> Close();
         return;
     }
 
-    // Variables para almacenar los datos de las columnas
-    double numberOfPhotons, initialEnergy, sampleMass, edepValue, radiationDose;
-
     // Configura las ramas
-    tree->SetBranchAddress("Number_of_Photons", &numberOfPhotons);
-    tree->SetBranchAddress("Initial_Energy_keV", &initialEnergy);
-    tree->SetBranchAddress("Sample_Mass_g", &sampleMass);
-    tree->SetBranchAddress("EDep_Value_PeV", &edepValue);
-    tree->SetBranchAddress("Radiation_Dose_mSv", &radiationDose);
+    tree -> SetBranchAddress("Number_of_Photons",  & numberOfPhotons);
+    tree -> SetBranchAddress("Initial_Energy_keV", & initialEnergy);
+    tree -> SetBranchAddress("Sample_Mass_g",      & sampleMass);
+    tree -> SetBranchAddress("EDep_Value_PeV",     & edepValue);
+    tree -> SetBranchAddress("Radiation_Dose_mSv", & radiationDose);
 
-    // Inicializa las variables para los valores m�ximos
+    // Inicializa las variables para los valores maximos
     double maxNumberOfPhotons = -DBL_MAX;
     double maxInitialEnergy = -DBL_MAX;
     double maxSampleMass = -DBL_MAX;
     double maxEdepValue = -DBL_MAX;
     double maxRadiationDose = -DBL_MAX;
 
-    Long64_t maxEntryIndex = -1; // Para almacenar el �ndice de la entrada con el valor m�ximo
+    Long64_t maxEntryIndex = -1; // Para almacenar el indice de la entrada con el valor maximo
 
-    // Creamos un nuevo �rbol vac�o para almacenar las entradas v�lidas
-    TTree* newTree = tree->CloneTree(0);
+    TTree * newTree = tree -> CloneTree(0); // Creamos un nuevo arbol vacio para almacenar las entradas validas
 
-    // Itera sobre todas las entradas del �rbol
-    for (Long64_t i = 0; i < tree->GetEntries(); ++i) {
-        tree->GetEntry(i); // Leer la entrada
+    for (Long64_t i = 0; i < tree->GetEntries(); ++i) // Itera sobre todas las entradas del arbol
+    {
+        tree -> GetEntry(i); // Leer la entrada
 
-        // Comprobar si alguno de los valores es cero y, si es as�, no agregarlo
-        if (numberOfPhotons == 0 || initialEnergy == 0 || sampleMass == 0 || edepValue == 0 || radiationDose == 0) {
+        // Comprobar si alguno de los valores es cero y, si es asi, no agregarlo
+        if (numberOfPhotons == 0 || initialEnergy == 0 || sampleMass == 0 || edepValue == 0 || radiationDose == 0) 
+        {
             continue; // Si alguno de los valores es cero, pasar a la siguiente entrada
         }
-
-        // Comparar y actualizar los valores m�ximos
-        if (numberOfPhotons > maxNumberOfPhotons) {
+        
+        if (numberOfPhotons > maxNumberOfPhotons) // Comparar y actualizar los valores maximos
+        {
             maxNumberOfPhotons = numberOfPhotons;
             maxInitialEnergy = initialEnergy;
             maxSampleMass = sampleMass;
             maxEdepValue = edepValue;
             maxRadiationDose = radiationDose;
-            maxEntryIndex = i; // Guardamos el �ndice de la entrada con los valores m�ximos
+            maxEntryIndex = i; // Guardamos el indice de la entrada con los valores maximos
         }
 
-        // Rellenar el nuevo �rbol con las entradas v�lidas
-        newTree->Fill();
+        newTree -> Fill(); // Rellenar el nuevo arbol con las entradas validas
     }
 
-    if (maxEntryIndex == -1) {
+    if (maxEntryIndex == -1) 
+    {
         G4cout << "Error: No valid entries found in the tree." << G4endl;
-        mergedFile->Close();
+        mergedFile -> Close();
         return;
     }
+    
+    TTree * maxTree = tree -> CloneTree(0); // Crear un nuevo arbol vacio con la misma estructura
 
-    // Crear un nuevo �rbol vac�o con la misma estructura
-    TTree* maxTree = tree->CloneTree(0);
+    tree -> GetEntry(maxEntryIndex); // Obtener la entrada con el valor maximo
 
-    // Obtener la entrada con el valor m�ximo
-    tree->GetEntry(maxEntryIndex);
+    // Establecer las ramas del nuevo arbol con los valores maximos
+    maxTree -> SetBranchAddress("Number_of_Photons",  & maxNumberOfPhotons);
+    maxTree -> SetBranchAddress("Initial_Energy_keV", & maxInitialEnergy);
+    maxTree -> SetBranchAddress("Sample_Mass_g",      & maxSampleMass);
+    maxTree -> SetBranchAddress("EDep_Value_PeV",     & maxEdepValue);
+    maxTree -> SetBranchAddress("Radiation_Dose_mSv", & maxRadiationDose);
 
-    // Establecer las ramas del nuevo �rbol con los valores m�ximos
-    maxTree->SetBranchAddress("Number_of_Photons", &maxNumberOfPhotons);
-    maxTree->SetBranchAddress("Initial_Energy_keV", &maxInitialEnergy);
-    maxTree->SetBranchAddress("Sample_Mass_g", &maxSampleMass);
-    maxTree->SetBranchAddress("EDep_Value_PeV", &maxEdepValue);
-    maxTree->SetBranchAddress("Radiation_Dose_mSv", &maxRadiationDose);
+    // Llenar el nuevo arbol con solo la entrada maxima
+    maxTree -> Fill();
+    
+    maxTree -> Write("Run Summary", TObject::kOverwrite); // Sobrescribir el arbol original con el nuevo arbol que solo tiene la entrada maxima
 
-    // Llenar el nuevo �rbol con solo la entrada m�xima
-    maxTree->Fill();
-
-    // Sobrescribir el �rbol original con el nuevo �rbol que solo tiene la entrada m�xima
-    maxTree->Write("Run Summary", TObject::kOverwrite);
-
-    // Cerrar el archivo
-    mergedFile->Close();
+    mergedFile -> Close();
     G4cout << "Zero entries have been removed, and only the maximum entry has been kept in the merged ROOT file: " << mergedFileName << G4endl;
 }

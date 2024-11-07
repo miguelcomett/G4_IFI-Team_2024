@@ -90,7 +90,7 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
         G4VPhysicalVolume * physicalWorld, * physicalRadiator, * physicalDetector, * physBone, * physArm, 
                           * physMuscle, * physGrasa, * physSkin, * physOs, * physHealthy;
                         
-        G4ThreeVector armPosition, DetectorPosition, porePosition, osteo_position, healthy_position, Radiator_Position;
+        G4ThreeVector samplePosition, DetectorPosition, porePosition, osteo_position, healthy_position, Radiator_Position;
         G4RotationMatrix * armRotation, * Model3DRotation, * originMatrix; 
 
         G4Element  * C, * Al, * N, * O, * Ca, * Mg, * V, * Cd, * Te, * W;

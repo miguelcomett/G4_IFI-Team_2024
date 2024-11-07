@@ -215,7 +215,7 @@ void MyRunAction::EndOfRunAction(const G4Run * thisRun)
 void MyRunAction::MergeRootFiles()
 {
     G4cout << G4endl;
-    G4cout << "============ Merging Process ============" << G4endl;
+    G4cout << "============= Merging Process ============" << G4endl;
 
     TFileMerger merger;
     merger.SetFastMethod(true);
@@ -265,7 +265,7 @@ void MyRunAction::MergeRootFiles()
     }
     else { G4cout << "Error during ROOT file merging!" << G4endl; }
 
-    G4cout << "==================================" << G4endl;
+    G4cout << "==========================================" << G4endl;
     G4cout << G4endl;
 }
 

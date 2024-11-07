@@ -1,6 +1,6 @@
 #include "5.0_PrimaryGenerator.hh"
 
-MyPrimaryGenerator::MyPrimaryGenerator(): fGunMode(1), fPgun(-40.0*cm), fGunAngle(0.0), energy(80*keV), radius(20.0), spectrumFileName("fSpectrum.txt"), GeneratorMessenger(new PrimaryGeneratorMessenger(this))
+MyPrimaryGenerator::MyPrimaryGenerator(): fGunMode(1), fPgun(-45.0*cm), fGunAngle(0.0), energy(80*keV), radius(20.0), spectrumFileName("fSpectrum.txt"), GeneratorMessenger(new PrimaryGeneratorMessenger(this))
 {
     particleGun = new G4ParticleGun(1);
     particleTable = G4ParticleTable::GetParticleTable();
@@ -54,14 +54,21 @@ void MyPrimaryGenerator::SetGunZpos(G4double zpos)
 {
     G4cout << "Setting source position to: " << zpos << G4endl;
     if (zpos != fPgun) { fPgun = zpos; G4cout << "Source Position changed to: " << fPgun << G4endl;}
-    else { G4cout << "Source Position Changed." << G4endl;}
+    else { G4cout << "Same Position Selected." << G4endl;}
+}
+
+void MyPrimaryGenerator::SetGunRadius(G4double radius)
+{
+    G4cout << "Setting source radius to: " << radius << G4endl;
+    if(radius != fGunRadius) { fGunRadius = radius; G4cout << "Source radius changed to: " << fGunRadius << G4endl;}
+    else { G4cout << "Same Radius selected." << G4endl; }
 }
 
 void MyPrimaryGenerator::SetGunAngle(G4double angle)
 {
     G4cout << "Setting source angle to: " << angle << G4endl;
-    if(angle != fGunAngle){ fGunAngle = angle; G4cout << "Source Angle changed to: " << fGunAngle << G4endl;}
-    else { G4cout << "Source Angle Changed." << G4endl; }
+    if(angle != fGunAngle) { fGunAngle = angle; G4cout << "Source Angle changed to: " << fGunAngle << G4endl;}
+    else { G4cout << "Same Angle selected." << G4endl; }
 }
 
 void MyPrimaryGenerator::SetGunMode(G4int mode)

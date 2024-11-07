@@ -27,6 +27,7 @@ class MyPrimaryGenerator : public G4VUserPrimaryGeneratorAction
 
         virtual void GeneratePrimaries(G4Event *);
         void SetGunZpos(G4double zpos);
+        void SetGunRadius(G4double radius); 
         void SetGunAngle(G4double angle); 
         void SetGunMode(G4int mode); 
 	
@@ -49,10 +50,11 @@ class MyPrimaryGenerator : public G4VUserPrimaryGeneratorAction
         G4double radius, theta, phi, angle, angleInRadians, angleInCarts, x0, y0, z0;
         const G4double pi = 3.14159265358979323846;
         
-        // Variables for real spectrum
+        // Real spectrum
+        void InitFunction(); 
+        
         G4double energy;
         
-        // REAL SPECTRUM FEATURE 
         G4String spectrumFileName; 	       
         G4int                  fNPoints = 0; //nb of points
         std::vector<G4double>  fX;           //abscisses X
@@ -61,12 +63,9 @@ class MyPrimaryGenerator : public G4VUserPrimaryGeneratorAction
         std::vector<G4double>  fYC;          //cumulative function of Y
         G4double               fYmax = 0.;   //max(Y)
         
-        void InitFunction(); 
-        
-        G4int fGunMode; //Mode for messenger
-        G4double fPgun; //Messenger for z pos
-        G4double fGunAngle; //Messenger for angle
-        G4double realEnergy; // G4double intensity;
+        // Messangers   
+        G4int fGunMode;
+        G4double fPgun, fGunAngle, fGunRadius, realEnergy;
 };
 
 #endif

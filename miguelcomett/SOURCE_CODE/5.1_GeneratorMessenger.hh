@@ -27,6 +27,7 @@ class PrimaryGeneratorMessenger : public G4UImessenger
 		
 		G4UIcmdWithADoubleAndUnit * fPgunCmd; 
 		G4UIcmdWithADouble * fPgunAngleCmd;
+		G4UIcmdWithADouble * fPgunRadiusCmd;
 		G4UIcmdWithAnInteger * fParticleModeCmd; 
     
 };

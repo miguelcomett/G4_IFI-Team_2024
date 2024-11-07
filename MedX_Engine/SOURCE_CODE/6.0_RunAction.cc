@@ -362,18 +362,114 @@ void MyRunAction::MergeRootFiles()
 //    G4cout << "Zero entries have been removed, and only the maximum entry has been kept in the merged ROOT file: " << mergedFileName << G4endl;
 //}
 
+//void MyRunAction::SingleData(const std::string& mergedFileName)
+//{
+//    G4cout << "Opening merged file: " << mergedFileName << G4endl;
+//    TFile* mergedFile = TFile::Open(mergedFileName.c_str(), "UPDATE");
+//    if (!mergedFile || mergedFile -> IsZombie())
+//    {
+//        G4cout << "Error: Unable to open the merged file: " << mergedFileName << G4endl;
+//        return;
+//    }
+//
+//    G4cout << "Attempting to retrieve 'Run Summary' tree from merged file..." << G4endl;
+//    TTree* tree = dynamic_cast<TTree*>(mergedFile->Get("Run Summary")); // Obtener el arbol del archivo
+//    if (!tree)
+//    {
+//        G4cout << "Error: Tree 'Run Summary' not found in the merged file." << G4endl;
+//        mergedFile->Close();
+//        return;
+//    }
+//
+//    G4cout << "Setting branch addresses..." << G4endl;
+//    double numberOfPhotons, initialEnergy, sampleMass, edepValue, radiationDose;
+//    tree->SetBranchAddress("Number_of_Photons", &numberOfPhotons);
+//    tree->SetBranchAddress("Initial_Energy_keV", &initialEnergy);
+//    tree->SetBranchAddress("Sample_Mass_g", &sampleMass);
+//    tree->SetBranchAddress("EDep_Value_PeV", &edepValue);
+//    tree->SetBranchAddress("Radiation_Dose_mSv", &radiationDose);
+//
+//    G4cout << "Branch addresses set. Initializing maximum values..." << G4endl;
+//    double maxNumberOfPhotons = -DBL_MAX;
+//    double maxInitialEnergy   = -DBL_MAX;
+//    double maxSampleMass      = -DBL_MAX;
+//    double maxEdepValue       = -DBL_MAX;
+//    double maxRadiationDose   = -DBL_MAX;
+//
+//    Long64_t maxEntryIndex = -1;
+//    TTree * newTree = tree -> CloneTree(0);
+//
+//    G4cout << "Starting to iterate over entries..." << G4endl;
+//    for (Long64_t i = 0; i < tree -> GetEntries(); ++i)
+//    {
+//        tree -> GetEntry(i);
+//
+//        // Debugging: Print entry values
+//        G4cout << "Entry " << i << " - Photons: " << numberOfPhotons
+//            << ", Initial Energy: " << initialEnergy
+//            << ", Sample Mass: " << sampleMass
+//            << ", Edep Value: " << edepValue
+//            << ", Radiation Dose: " << radiationDose << G4endl;
+//
+//        if (numberOfPhotons == 0 || initialEnergy == 0 || sampleMass == 0 || edepValue == 0 || radiationDose == 0)
+//        {
+//            G4cout << "Skipping entry " << i << " due to zero value(s)." << G4endl;
+//            continue;
+//        }
+//
+//        if (numberOfPhotons > maxNumberOfPhotons)
+//        {
+//            G4cout << "New maximum found at entry " << i << G4endl;
+//            maxNumberOfPhotons = numberOfPhotons;
+//            maxInitialEnergy = initialEnergy;
+//            maxSampleMass = sampleMass;
+//            maxEdepValue = edepValue;
+//            maxRadiationDose = radiationDose;
+//            maxEntryIndex = i;
+//        }
+//
+//        newTree -> Fill();
+//    }
+//
+//    if (maxEntryIndex == -1)
+//    {
+//        G4cout << G4endl;
+//        G4cout << "Error: No valid entries found in the tree." << G4endl;
+//        mergedFile->Close();
+//        return;
+//    }
+//
+//    G4cout << "Creating tree for maximum entry only..." << G4endl;
+//    TTree* maxTree = tree -> CloneTree(0);
+//    tree -> GetEntry(maxEntryIndex);
+//
+//    maxTree -> SetBranchAddress("Number_of_Photons", & maxNumberOfPhotons);
+//    maxTree -> SetBranchAddress("Initial_Energy_keV", & maxInitialEnergy);
+//    maxTree -> SetBranchAddress("Sample_Mass_g", & maxSampleMass);
+//    maxTree -> SetBranchAddress("EDep_Value_PeV", & maxEdepValue);
+//    maxTree -> SetBranchAddress("Radiation_Dose_mSv", & maxRadiationDose);
+//
+//    maxTree -> Fill();
+//    maxTree -> Write("Run Summary", TObject::kOverwrite);
+//
+//    mergedFile -> Close();
+//    G4cout << "Process completed successfully. Zero entries removed, maximum entry retained in: " << mergedFileName << G4endl;
+//}
+#include <cmath>  // Para std::isnan
+
 void MyRunAction::SingleData(const std::string& mergedFileName)
 {
     G4cout << "Opening merged file: " << mergedFileName << G4endl;
+
     TFile* mergedFile = TFile::Open(mergedFileName.c_str(), "UPDATE");
-    if (!mergedFile || mergedFile -> IsZombie())
+    if (!mergedFile || mergedFile->IsZombie())
     {
         G4cout << "Error: Unable to open the merged file: " << mergedFileName << G4endl;
         return;
     }
 
     G4cout << "Attempting to retrieve 'Run Summary' tree from merged file..." << G4endl;
-    TTree* tree = dynamic_cast<TTree*>(mergedFile->Get("Run Summary")); // Obtener el arbol del archivo
+    TTree* tree = dynamic_cast<TTree*>(mergedFile->Get("Run Summary")); // Obtener el árbol del archivo
     if (!tree)
     {
         G4cout << "Error: Tree 'Run Summary' not found in the merged file." << G4endl;
@@ -381,77 +477,80 @@ void MyRunAction::SingleData(const std::string& mergedFileName)
         return;
     }
 
+    double numberOfPhotons, initialEnergy, sampleMass, edepValue, radiationDose;  // Variables para almacenar los datos de las columnas
+
+    // Configura las ramas
     G4cout << "Setting branch addresses..." << G4endl;
-    double numberOfPhotons, initialEnergy, sampleMass, edepValue, radiationDose;
     tree->SetBranchAddress("Number_of_Photons", &numberOfPhotons);
     tree->SetBranchAddress("Initial_Energy_keV", &initialEnergy);
     tree->SetBranchAddress("Sample_Mass_g", &sampleMass);
     tree->SetBranchAddress("EDep_Value_PeV", &edepValue);
     tree->SetBranchAddress("Radiation_Dose_mSv", &radiationDose);
 
+    // Inicializa las variables para los valores máximos
     G4cout << "Branch addresses set. Initializing maximum values..." << G4endl;
     double maxNumberOfPhotons = -DBL_MAX;
-    double maxInitialEnergy   = -DBL_MAX;
-    double maxSampleMass      = -DBL_MAX;
-    double maxEdepValue       = -DBL_MAX;
-    double maxRadiationDose   = -DBL_MAX;
+    double maxInitialEnergy = -DBL_MAX;
+    double maxSampleMass = -DBL_MAX;
+    double maxEdepValue = -DBL_MAX;
+    double maxRadiationDose = -DBL_MAX;
 
-    Long64_t maxEntryIndex = -1;
-    TTree * newTree = tree -> CloneTree(0);
+    Long64_t maxEntryIndex = -1; // Para almacenar el índice de la entrada con el valor máximo
+    TTree* newTree = tree->CloneTree(0); // Creamos un nuevo árbol vacío para almacenar las entradas válidas
 
     G4cout << "Starting to iterate over entries..." << G4endl;
-    for (Long64_t i = 0; i < tree -> GetEntries(); ++i)
+    for (Long64_t i = 0; i < tree->GetEntries(); ++i) // Itera sobre todas las entradas del árbol
     {
-        tree -> GetEntry(i);
+        tree->GetEntry(i); // Leer la entrada
 
-        // Debugging: Print entry values
-        G4cout << "Entry " << i << " - Photons: " << numberOfPhotons
-            << ", Initial Energy: " << initialEnergy
-            << ", Sample Mass: " << sampleMass
-            << ", Edep Value: " << edepValue
-            << ", Radiation Dose: " << radiationDose << G4endl;
+        G4cout << "Entry " << i << " - Photons: " << numberOfPhotons << ", Initial Energy: "
+            << initialEnergy << ", Sample Mass: " << sampleMass << ", Edep Value: "
+            << edepValue << ", Radiation Dose: " << radiationDose << G4endl;
 
-        if (numberOfPhotons == 0 || initialEnergy == 0 || sampleMass == 0 || edepValue == 0 || radiationDose == 0)
+        // Comprobar si alguno de los valores es cero o NaN y, si es así, no agregarlo
+        if (numberOfPhotons == 0 || initialEnergy == 0 || sampleMass == 0 || edepValue == 0 || std::isnan(radiationDose))
         {
-            G4cout << "Skipping entry " << i << " due to zero value(s)." << G4endl;
-            continue;
+            G4cout << "Skipping entry " << i << " due to zero or NaN value(s)." << G4endl;
+            continue; // Si alguno de los valores es cero o NaN, pasar a la siguiente entrada
         }
 
-        if (numberOfPhotons > maxNumberOfPhotons)
+        if (numberOfPhotons > maxNumberOfPhotons) // Comparar y actualizar los valores máximos
         {
-            G4cout << "New maximum found at entry " << i << G4endl;
             maxNumberOfPhotons = numberOfPhotons;
             maxInitialEnergy = initialEnergy;
             maxSampleMass = sampleMass;
             maxEdepValue = edepValue;
             maxRadiationDose = radiationDose;
-            maxEntryIndex = i;
+            maxEntryIndex = i; // Guardamos el índice de la entrada con los valores máximos
         }
 
-        newTree -> Fill();
+        newTree->Fill(); // Rellenar el nuevo árbol con las entradas válidas
     }
 
     if (maxEntryIndex == -1)
     {
-        G4cout << G4endl;
         G4cout << "Error: No valid entries found in the tree." << G4endl;
         mergedFile->Close();
         return;
     }
 
-    G4cout << "Creating tree for maximum entry only..." << G4endl;
-    TTree* maxTree = tree -> CloneTree(0);
-    tree -> GetEntry(maxEntryIndex);
+    G4cout << "Max entry found at index " << maxEntryIndex << ". Preparing to save max entry..." << G4endl;
+    TTree* maxTree = tree->CloneTree(0); // Crear un nuevo árbol vacío con la misma estructura
 
-    maxTree -> SetBranchAddress("Number_of_Photons", & maxNumberOfPhotons);
-    maxTree -> SetBranchAddress("Initial_Energy_keV", & maxInitialEnergy);
-    maxTree -> SetBranchAddress("Sample_Mass_g", & maxSampleMass);
-    maxTree -> SetBranchAddress("EDep_Value_PeV", & maxEdepValue);
-    maxTree -> SetBranchAddress("Radiation_Dose_mSv", & maxRadiationDose);
+    tree->GetEntry(maxEntryIndex); // Obtener la entrada con el valor máximo
 
-    maxTree -> Fill();
-    maxTree -> Write("Run Summary", TObject::kOverwrite);
+    // Establecer las ramas del nuevo árbol con los valores máximos
+    maxTree->SetBranchAddress("Number_of_Photons", &maxNumberOfPhotons);
+    maxTree->SetBranchAddress("Initial_Energy_keV", &maxInitialEnergy);
+    maxTree->SetBranchAddress("Sample_Mass_g", &maxSampleMass);
+    maxTree->SetBranchAddress("EDep_Value_PeV", &maxEdepValue);
+    maxTree->SetBranchAddress("Radiation_Dose_mSv", &maxRadiationDose);
 
-    mergedFile -> Close();
-    G4cout << "Process completed successfully. Zero entries removed, maximum entry retained in: " << mergedFileName << G4endl;
+    // Llenar el nuevo árbol con solo la entrada máxima
+    maxTree->Fill();
+
+    maxTree->Write("Run Summary", TObject::kOverwrite); // Sobrescribir el árbol original con el nuevo árbol que solo tiene la entrada máxima
+
+    mergedFile->Close();
+    G4cout << "Zero entries have been removed, and only the maximum entry has been kept in the merged ROOT file: " << mergedFileName << G4endl;
 }

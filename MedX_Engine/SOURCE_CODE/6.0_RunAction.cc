@@ -97,8 +97,13 @@ void MyRunAction::BeginOfRunAction(const G4Run * thisRun)
     // Obtener la ruta actual
     std::string currentPath = std::filesystem::current_path().string();
 
-    // Definir la ruta de la carpeta ROOT al mismo nivel que el directorio principal
-    std::string rootDirectory = std::filesystem::path(currentPath).parent_path().string() + "/ROOT_files/";
+
+    // Modificado: La carpeta Output se moverá al mismo nivel que ROOT
+    #ifdef __APPLE__
+        std::string rootDirectory = std::filesystem::path(currentPath).string() + "/ROOT_files/";
+    #else
+        std::string rootDirectory = std::filesystem::path(currentPath).parent_path().string() + "/ROOT_files/";
+    #endif
 
     // Comprobar si la carpeta ROOT existe, si no, crearla
     if (!std::filesystem::exists(rootDirectory))

@@ -27,6 +27,7 @@ MyDetectorConstruction::MyDetectorConstruction()
         isRibcage = true;
         isThorax = true;
         isFiller = true;
+        isTumor = true;
 }
 
 MyDetectorConstruction::~MyDetectorConstruction()
@@ -44,6 +45,7 @@ G4VPhysicalVolume * MyDetectorConstruction::Construct()
 
     if (arguments == 3) {ConstructTarget();} else 
     if (isArm) ConstructArm(); else if (is3DModel) ConstructThorax();
+    if (isTumor) ConstructTumor();
 
     solidDetector = new G4Box("solidDetector", xWorld/DetRowNum, yWorld/DetColumnNum, 0.01*m);
     logicDetector = new G4LogicalVolume(solidDetector, Silicon, "logicalDetector");
@@ -303,6 +305,28 @@ void MyDetectorConstruction::ConstructThorax()
         std::exit(EXIT_FAILURE);
     }
 
+    G4cout << "==========================================" << G4endl; G4cout << G4endl; 
+}
+
+void MyDetectorConstruction::ConstructTumor()
+{
+    std::random_device rd; // Crear un objeto aleatorio
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> posDist(-50.0*mm, 50.0*mm); // Distribución de posición en el tórax
+    std::uniform_real_distribution<> sizeDist(5.0*mm, 20.0*mm);  // Distribución de tamaño para el tumor
+
+    tumorRadius = sizeDist(gen); // Definir tamaño aleatorio para el tumor
+
+    tumorSphere = new G4Sphere("Tumor", 0, tumorRadius, 0*deg, 360*deg, 0*deg, 180*deg);
+    logicTumor = new G4LogicalVolume(tumorSphere, Muscle, "Tumor");
+    G4ThreeVector tumorPosition(posDist(gen), posDist(gen), posDist(gen)); // Generar posición aleatoria dentro del tórax
+    new G4PVPlacement(Model3DRotation, tumorPosition, logicTumor, "Tumor", logicWorld, false, 0, true); // Colocar el tumor en el modelo de tórax
+    
+    scoringVolume_6 = logicFiller;
+    scoringVolumes.push_back(scoringVolume_6);
+
+    G4cout << "> Tumor (esfera) creado en una posición aleatoria dentro del tórax" << G4endl;
+    G4cout << "Con radio: " << tumorRadius/mm << " mm" << G4endl;
     G4cout << "==========================================" << G4endl; G4cout << G4endl; G4cout << G4endl;
 }
 

@@ -196,8 +196,8 @@ void MyDetectorConstruction::ConstructThorax()
     Model3DRotation = new G4RotationMatrix(0*deg, -90*deg, (thoraxAngle+180)*deg);
     originMatrix = new G4RotationMatrix(0, 0, 0);
         
-    G4cout << G4endl; 
-    G4cout << "================ MODELOS =================" << G4endl; 
+    G4cout << G4endl; G4cout << G4endl;
+    G4cout << "=============== 3D MODELS ================" << G4endl; 
 
     Heart = stl.Read(modelPath + "HEART.stl");
     if (Heart && isHeart) 
@@ -208,9 +208,15 @@ void MyDetectorConstruction::ConstructThorax()
         scoringVolume_1 = logicHeart;
         scoringVolumes.push_back(scoringVolume_1);
         
-        G4cout << "> Modelo HEART importado exitosamente" << G4endl;
+        G4cout << "> HEART model imported succesfully" << G4endl;
     }
-    if (isHeart && !Heart)  {G4cout << G4endl; G4cout << "--> Modelo HEART no importado" << G4endl;}
+    if (isHeart && !Heart)  
+    {
+        G4cout << "--> HEART model not found" << G4endl; 
+        G4cout << "Critical error: Stopping the Simulation" << G4endl;
+        G4cout << "==========================================" << G4endl; G4cout << G4endl;
+        std::exit(EXIT_FAILURE);
+    }
 
 
     Lungs = stl.Read(modelPath + "LUNGS.stl");
@@ -222,9 +228,15 @@ void MyDetectorConstruction::ConstructThorax()
         scoringVolume_2 = logicLungs;
         scoringVolumes.push_back(scoringVolume_2);
        
-        G4cout << "> Modelo LUNGS importado exitosamente" << G4endl;
+        G4cout << "> LUNGS model imported succesfully" << G4endl;
     }
-    if (isLungs && !Lungs) {G4cout << "--> Modelo LUNGS no importado" << G4endl;}
+    if (isLungs && !Lungs) 
+    {
+        G4cout << "--> LUNGS model not found" << G4endl;
+        G4cout << "Critical error: Stopping the Simulation" << G4endl;
+        G4cout << "==========================================" << G4endl; G4cout << G4endl;
+        std::exit(EXIT_FAILURE);
+    }
 
 
     Ribcage = stl.Read(modelPath + "RIBCAGE_Real.stl");
@@ -236,9 +248,15 @@ void MyDetectorConstruction::ConstructThorax()
         scoringVolume_3 = logicRibcage;
         scoringVolumes.push_back(scoringVolume_3);
         
-        G4cout << "> Modelo bone importado exitosamente" << G4endl;
+        G4cout << "> RIBCAGE model imported succesfully" << G4endl;
     }
-    if (isRibcage && !Ribcage) {G4cout << "--> Modelo RIBCAGE no importado" << G4endl;}
+    if (isRibcage && !Ribcage) 
+    {
+        G4cout << "--> RIBCAGE model not found" << G4endl;
+        G4cout << "Critical error: Stopping the Simulation" << G4endl;
+        G4cout << "==========================================" << G4endl; G4cout << G4endl;
+        std::exit(EXIT_FAILURE);
+    }
 
 
     Thorax1 = stl.Read(modelPath + "TORAX_Real.stl");
@@ -253,9 +271,15 @@ void MyDetectorConstruction::ConstructThorax()
         scoringVolume_4 = logicThorax;
         scoringVolumes.push_back(scoringVolume_4);
        
-        G4cout << "> Modelo de tórax creado exitosamente" << G4endl;
+        G4cout << "> THORAX model imported succesfully" << G4endl;
     }
-    if (isThorax && (!Thorax1 || !Thorax2) ) {G4cout << "--> Error al crear el modelo de TÓRAX" << G4endl;}
+    if (isThorax && (!Thorax1 || !Thorax2) ) 
+    {
+        G4cout << "--> THORAX model not found" << G4endl;
+        G4cout << "Critical error: Stopping the Simulation" << G4endl;
+        G4cout << "==========================================" << G4endl; G4cout << G4endl;
+        std::exit(EXIT_FAILURE);
+    }
 
 
     if (Heart && Lungs && Ribcage && Thorax1 && Thorax2 && isFiller)
@@ -269,10 +293,17 @@ void MyDetectorConstruction::ConstructThorax()
         scoringVolume_5 = logicFiller;
         scoringVolumes.push_back(scoringVolume_5);
         
-        G4cout << "> Modelo FILLER creado exitosamente" << G4endl; G4cout << G4endl; 
+        G4cout << "> FILLER model imported succesfully" << G4endl;
     }
-    if (isFiller && (!Heart || !Lungs || !Ribcage || !Thorax1 || !Thorax2) ) {G4cout << "--> Error al crear el modelo de FILLER" << G4endl;}
-    G4cout << "==========================================" << G4endl; G4cout << G4endl;
+    if (isFiller && (!Heart || !Lungs || !Ribcage || !Thorax1 || !Thorax2) ) 
+    {
+        G4cout << "--> FILLER model not found" << G4endl;
+        G4cout << "Critical error: Stopping the Simulation" << G4endl;
+        G4cout << "==========================================" << G4endl; 
+        std::exit(EXIT_FAILURE);
+    }
+
+    G4cout << "==========================================" << G4endl; G4cout << G4endl; G4cout << G4endl;
 }
 
 void MyDetectorConstruction::DefineMaterials()

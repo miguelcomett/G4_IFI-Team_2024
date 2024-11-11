@@ -31,6 +31,8 @@
 
 #include <filesystem>
 #include <iostream>
+#include <random>
+
 
 extern int arguments;
 
@@ -55,7 +57,7 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
 
         G4bool  isArm, isHealthyBone, isOsteoBone, isBoneDivided, 
                 is3DModel, isHeart, isLungs, isRibcage, isFiller, isThorax,
-                checkOverlaps;
+                checkOverlaps, isTumor;
     
     private:
 
@@ -66,6 +68,7 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
         void ConstructTissue();
         void ConstructBoneDivided();
         void ConstructThorax();
+        void ConstructTumor();
 
         G4GenericMessenger * DetectorMessenger;
 
@@ -75,22 +78,22 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
         G4double innerBoneRadius, outerBoneRadius, boneHeight, poreRadius, xWorld, yWorld, zWorld, 
                  regionMinZ, regionMaxZ, regionMinRadius, regionMaxRadius, r, theta, z, x, y,
                  innerMuscleRadius, outerMuscleRadius, innerGrasaRadius, outerGrasaRadius, innerSkinRadius, outerSkinRadius,
-                 fractionMass_VO2, fractionMass_SiO2, fTargetAngle;
+                 fractionMass_VO2, fractionMass_SiO2, fTargetAngle, tumorRadius;
         G4double thoraxAngle = 0.0, targetThickness = 10 * mm;
 
         G4Box    * solidWorld, * solidDetector, * solidRadiator;
         G4Tubs   * solidBone, * solidMuscle, * solidGrasa, * solidSkin, * solidBone2, * osteoBone, * healthyBone; 
-        G4Sphere * pore;  
+        G4Sphere * pore,  * tumorSphere;
         G4VSolid * porousBone; 
 
         G4LogicalVolume   * logicWorld, * logicRadiator, * logicDetector, * logicHealthyBone, * logicOsteoBone, * logicMuscle, 
                           * logicGrasa, * logicSkin, * logicOs, * logicHealthy, 
                           * logicLungs, * logicHeart, * logicThorax, * logicRibcage, * logicFiller,
-                          * scoringVolume_0, * scoringVolume_1, * scoringVolume_2, * scoringVolume_3, * scoringVolume_4, * scoringVolume_5; 
+                          * scoringVolume_0, * scoringVolume_1, * scoringVolume_2, * scoringVolume_3, * scoringVolume_4, * scoringVolume_5, * logicTumor; 
         G4VPhysicalVolume * physicalWorld, * physicalRadiator, * physicalDetector, * physBone, * physArm, 
                           * physMuscle, * physGrasa, * physSkin, * physOs, * physHealthy;
                         
-        G4ThreeVector samplePosition, DetectorPosition, porePosition, osteo_position, healthy_position, Radiator_Position;
+        G4ThreeVector armPosition, DetectorPosition, porePosition, osteo_position, healthy_position, Radiator_Position, tumorPosition;
         G4RotationMatrix * armRotation, * Model3DRotation, * originMatrix; 
 
         G4Element  * C, * Al, * N, * O, * Ca, * Mg, * V, * Cd, * Te, * W;
@@ -101,7 +104,7 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
         STLGeometryReader * stlReader;
         G4TessellatedSolid * Ribcage, * Lungs, * Heart;
         G4VSolid * Thorax1, * Thorax2;
-        G4SubtractionSolid * subtractedSolid0, * subtractedSolid1, * subtractedSolid2, * subtractedSolid3, * subtractedSolid4;
+        G4SubtractionSolid * subtractedSolid0, * subtractedSolid1, * subtractedSolid2, * subtractedSolid3, * subtractedSolid4, * subtractedLung;
 };
 
 #endif 

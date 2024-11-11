@@ -15,7 +15,7 @@ MyDetectorConstruction::MyDetectorConstruction()
     innerBoneRadius = 0.0;
     outerBoneRadius = 22.5 * mm;
     armRotation = new G4RotationMatrix(0, 90*deg, 0);
-    armPosition = G4ThreeVector(0.0, 0.0, 0.0);
+    samplePosition = G4ThreeVector(0.0, 0.0, 0.0);
 
     isArm = false;
         isBoneDivided = false;
@@ -27,7 +27,7 @@ MyDetectorConstruction::MyDetectorConstruction()
         isRibcage = true;
         isThorax = true;
         isFiller = true;
-        isTumor = true;
+        isTumor = false;
 }
 
 MyDetectorConstruction::~MyDetectorConstruction()
@@ -99,9 +99,9 @@ void MyDetectorConstruction::ConstructArm()
     logicGrasa = new G4LogicalVolume(solidGrasa, Fat, "LogicGrasa");
     logicSkin = new G4LogicalVolume(solidSkin, Skin, "LogicSkin");
 
-    physMuscle = new G4PVPlacement(armRotation, armPosition, logicMuscle, "physMuscle", logicWorld, false, 0, true);
-    physGrasa = new G4PVPlacement(armRotation, armPosition, logicGrasa, "physGrasa", logicWorld, false, 0, true);
-    physSkin = new G4PVPlacement(armRotation, armPosition, logicSkin, "physSkin", logicWorld, false, 0, true);
+    physMuscle = new G4PVPlacement(armRotation, samplePosition, logicMuscle, "physMuscle", logicWorld, false, 0, true);
+    physGrasa = new G4PVPlacement(armRotation, samplePosition, logicGrasa, "physGrasa", logicWorld, false, 0, true);
+    physSkin = new G4PVPlacement(armRotation, samplePosition, logicSkin, "physSkin", logicWorld, false, 0, true);
 
     scoringVolume_3 = logicMuscle;
     scoringVolume_4 = logicSkin;
@@ -116,7 +116,7 @@ void MyDetectorConstruction::ConstructHealthyBone()
 {
     solidBone = new G4Tubs("Bone", innerBoneRadius, outerBoneRadius, boneHeight/2, 0.0, 360.0*deg);
     logicHealthyBone = new G4LogicalVolume(solidBone, Bone, "LogicBone");
-    physBone = new G4PVPlacement(armRotation, armPosition, logicHealthyBone, "physBone", logicWorld, false, 0, true);
+    physBone = new G4PVPlacement(armRotation, samplePosition, logicHealthyBone, "physBone", logicWorld, false, 0, true);
 
     scoringVolume_1 = logicHealthyBone;
     scoringVolumes.push_back(scoringVolume_1);
@@ -151,7 +151,7 @@ void MyDetectorConstruction::ConstructOsteoporoticBone()
     }
 
     logicOsteoBone = new G4LogicalVolume(porousBone, Bone, "PorousBoneLogical");
-    physBone = new G4PVPlacement(armRotation, armPosition, logicOsteoBone, "physBone", logicWorld, false, 0);
+    physBone = new G4PVPlacement(armRotation, samplePosition, logicOsteoBone, "physBone", logicWorld, false, 0);
 
     scoringVolume_1 = logicOsteoBone;
     scoringVolumes.push_back(scoringVolume_1);
@@ -177,6 +177,7 @@ void MyDetectorConstruction::ConstructBoneDivided()
 }
 
 // Load 3D Models ===============================================================================================================================
+
 void MyDetectorConstruction::ConstructTumor()
 {
 // Crear un objeto aleatorio
@@ -195,9 +196,8 @@ void MyDetectorConstruction::ConstructTumor()
 // Colocar el tumor en el modelo de tórax
     new G4PVPlacement(Model3DRotation, tumorPosition, logicTumor, "Tumor", logicWorld, false, 0, true);
     G4cout << "> Tumor (esfera) creado en una posición aleatoria dentro del tórax con radio: " << tumorRadius / mm << " mm" << G4endl;
- 
-        
 }
+
 void MyDetectorConstruction::ConstructThorax()
 {
     G4STL stl; 
@@ -284,8 +284,8 @@ void MyDetectorConstruction::ConstructThorax()
     Thorax2 = stl.Read(modelPath + "TORAX_Real0.stl");
     if (Thorax1 && Thorax2 && isThorax) 
     {
-        subtractedSolid0 = new G4SubtractionSolid("SoftWithBoneHole", Thorax1, Ribcage, originMatrix, armPosition); // Resta el volumen "bone" del volumen "tissue"
-        subtractedSolid1 = new G4SubtractionSolid("SoftWithBoneAndToraxHole", subtractedSolid0, Thorax2, originMatrix, armPosition); // Resta el volumen "TORAX_Real0" del resultado anterior
+        subtractedSolid0 = new G4SubtractionSolid("SoftWithBoneHole", Thorax1, Ribcage, originMatrix, samplePosition); // Resta el volumen "bone" del volumen "tissue"
+        subtractedSolid1 = new G4SubtractionSolid("SoftWithBoneAndToraxHole", subtractedSolid0, Thorax2, originMatrix, samplePosition); // Resta el volumen "TORAX_Real0" del resultado anterior
         logicThorax = new G4LogicalVolume(subtractedSolid1, TissueMix, "Thorax"); // Crear el volumen lógico del sólido resultante
         new G4PVPlacement(Model3DRotation, G4ThreeVector(0,0,0), logicThorax, "Thorax", logicWorld, false, 0, true);
        
@@ -305,9 +305,9 @@ void MyDetectorConstruction::ConstructThorax()
 
     if (isFiller)
     {
-        subtractedSolid2 = new G4SubtractionSolid("Inner0", Thorax2, Lungs, originMatrix, armPosition);
-        subtractedSolid3 = new G4SubtractionSolid("Inner1", subtractedSolid2, Heart, originMatrix, armPosition);
-        subtractedSolid4 = new G4SubtractionSolid("Inner2", subtractedSolid3, Ribcage, originMatrix, armPosition);
+        subtractedSolid2 = new G4SubtractionSolid("Inner0", Thorax2, Lungs, originMatrix, samplePosition);
+        subtractedSolid3 = new G4SubtractionSolid("Inner1", subtractedSolid2, Heart, originMatrix, samplePosition);
+        subtractedSolid4 = new G4SubtractionSolid("Inner2", subtractedSolid3, Ribcage, originMatrix, samplePosition);
         logicFiller = new G4LogicalVolume(subtractedSolid4, Fat, "Filler");
         new G4PVPlacement(Model3DRotation, G4ThreeVector(0, 0, 0), logicFiller, "Filler", logicWorld, false, 0, true);
         
@@ -327,27 +327,27 @@ void MyDetectorConstruction::ConstructThorax()
     G4cout << "==========================================" << G4endl; G4cout << G4endl; 
 }
 
-void MyDetectorConstruction::ConstructTumor()
-{
-    std::random_device rd; // Crear un objeto aleatorio
-    std::mt19937 gen(rd());
-    std::uniform_real_distribution<> posDist(-50.0*mm, 50.0*mm); // Distribución de posición en el tórax
-    std::uniform_real_distribution<> sizeDist(5.0*mm, 20.0*mm);  // Distribución de tamaño para el tumor
+// void MyDetectorConstruction::ConstructTumor()
+// {
+//     std::random_device rd; // Crear un objeto aleatorio
+//     std::mt19937 gen(rd());
+//     std::uniform_real_distribution<> posDist(-50.0*mm, 50.0*mm); // Distribución de posición en el tórax
+//     std::uniform_real_distribution<> sizeDist(5.0*mm, 20.0*mm);  // Distribución de tamaño para el tumor
 
-    tumorRadius = sizeDist(gen); // Definir tamaño aleatorio para el tumor
+//     tumorRadius = sizeDist(gen); // Definir tamaño aleatorio para el tumor
 
-    tumorSphere = new G4Sphere("Tumor", 0, tumorRadius, 0*deg, 360*deg, 0*deg, 180*deg);
-    logicTumor = new G4LogicalVolume(tumorSphere, Muscle, "Tumor");
-    G4ThreeVector tumorPosition(posDist(gen), posDist(gen), posDist(gen)); // Generar posición aleatoria dentro del tórax
-    new G4PVPlacement(Model3DRotation, tumorPosition, logicTumor, "Tumor", logicWorld, false, 0, true); // Colocar el tumor en el modelo de tórax
+//     tumorSphere = new G4Sphere("Tumor", 0, tumorRadius, 0*deg, 360*deg, 0*deg, 180*deg);
+//     logicTumor = new G4LogicalVolume(tumorSphere, Muscle, "Tumor");
+//     G4ThreeVector tumorPosition(posDist(gen), posDist(gen), posDist(gen)); // Generar posición aleatoria dentro del tórax
+//     new G4PVPlacement(Model3DRotation, tumorPosition, logicTumor, "Tumor", logicWorld, false, 0, true); // Colocar el tumor en el modelo de tórax
     
-    scoringVolume_6 = logicFiller;
-    scoringVolumes.push_back(scoringVolume_6);
+//     scoringVolume_6 = logicFiller;
+//     scoringVolumes.push_back(scoringVolume_6);
 
-    G4cout << "> Tumor (esfera) creado en una posición aleatoria dentro del tórax" << G4endl;
-    G4cout << "Con radio: " << tumorRadius/mm << " mm" << G4endl;
-    G4cout << "==========================================" << G4endl; G4cout << G4endl; G4cout << G4endl;
-}
+//     G4cout << "> Tumor (esfera) creado en una posición aleatoria dentro del tórax" << G4endl;
+//     G4cout << "Con radio: " << tumorRadius/mm << " mm" << G4endl;
+//     G4cout << "==========================================" << G4endl; G4cout << G4endl; G4cout << G4endl;
+// }
 
 void MyDetectorConstruction::DefineMaterials()
 {

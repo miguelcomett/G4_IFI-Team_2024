@@ -92,11 +92,12 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
         G4LogicalVolume   * logicWorld, * logicRadiator, * logicDetector, * logicHealthyBone, * logicOsteoBone, * logicMuscle, 
                           * logicGrasa, * logicSkin, * logicOs, * logicHealthy, 
                           * logicLungs, * logicHeart, * logicThorax, * logicRibcage, * logicFiller,
-                          * scoringVolume_0, * scoringVolume_1, * scoringVolume_2, * scoringVolume_3, * scoringVolume_4, * scoringVolume_5, * logicTumor; 
+                          * scoringVolume_0, * scoringVolume_1, * scoringVolume_2, * scoringVolume_3, 
+                          * scoringVolume_4, * scoringVolume_5, * scoringVolume_6, * logicTumor; 
         G4VPhysicalVolume * physicalWorld, * physicalRadiator, * physicalDetector, * physBone, * physArm, 
                           * physMuscle, * physGrasa, * physSkin, * physOs, * physHealthy;
                         
-        G4ThreeVector armPosition, DetectorPosition, porePosition, osteo_position, healthy_position, Radiator_Position, tumorPosition;
+        G4ThreeVector samplePosition, DetectorPosition, porePosition, osteo_position, healthy_position, Radiator_Position, tumorPosition;
         G4RotationMatrix * armRotation, * Model3DRotation, * originMatrix; 
 
         G4Element  * C, * Al, * N, * O, * Ca, * Mg, * V, * Cd, * Te, * W;

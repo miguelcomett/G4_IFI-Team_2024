@@ -185,7 +185,7 @@ void MyRunAction::EndOfRunAction(const G4Run * thisRun)
         auto duration = std::chrono::duration_cast<std::chrono::seconds>(simulationEndTime - simulationStartTime);
         durationInSeconds = duration.count() * second;
 
-        G4cout << G4endl;
+        G4cout << G4endl; G4cout << G4endl; G4cout << G4endl;
         G4cout << "============== Run Summary ===============" << G4endl;
         G4cout << "The run is: " << numberOfEvents << " " << particleName << " of "<< G4BestUnit(primaryEnergy, "Energy") << G4endl;
         G4cout << "--> Total mass of sample: " << G4BestUnit(totalMass, "Mass") << G4endl;
@@ -201,7 +201,7 @@ void MyRunAction::EndOfRunAction(const G4Run * thisRun)
         
         G4cout << "Total simulation time: " << G4BestUnit(durationInSeconds, "Time") << G4endl;
         G4cout << "==========================================" << G4endl;
-        G4cout << G4endl;
+        G4cout << G4endl; G4cout << G4endl; G4cout << G4endl;
     }
     
     if (arguments == 4 || arguments == 5) 

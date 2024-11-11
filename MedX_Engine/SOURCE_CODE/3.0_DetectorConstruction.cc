@@ -15,7 +15,7 @@ MyDetectorConstruction::MyDetectorConstruction()
     innerBoneRadius = 0.0;
     outerBoneRadius = 22.5 * mm;
     armRotation = new G4RotationMatrix(0, 90*deg, 0);
-    samplePosition = G4ThreeVector(0.0, 0.0, 0.0);
+    armPosition = G4ThreeVector(0.0, 0.0, 0.0);
 
     isArm = false;
         isBoneDivided = false;
@@ -99,9 +99,9 @@ void MyDetectorConstruction::ConstructArm()
     logicGrasa = new G4LogicalVolume(solidGrasa, Fat, "LogicGrasa");
     logicSkin = new G4LogicalVolume(solidSkin, Skin, "LogicSkin");
 
-    physMuscle = new G4PVPlacement(armRotation, samplePosition, logicMuscle, "physMuscle", logicWorld, false, 0, true);
-    physGrasa = new G4PVPlacement(armRotation, samplePosition, logicGrasa, "physGrasa", logicWorld, false, 0, true);
-    physSkin = new G4PVPlacement(armRotation, samplePosition, logicSkin, "physSkin", logicWorld, false, 0, true);
+    physMuscle = new G4PVPlacement(armRotation, armPosition, logicMuscle, "physMuscle", logicWorld, false, 0, true);
+    physGrasa = new G4PVPlacement(armRotation, armPosition, logicGrasa, "physGrasa", logicWorld, false, 0, true);
+    physSkin = new G4PVPlacement(armRotation, armPosition, logicSkin, "physSkin", logicWorld, false, 0, true);
 
     scoringVolume_3 = logicMuscle;
     scoringVolume_4 = logicSkin;
@@ -116,7 +116,7 @@ void MyDetectorConstruction::ConstructHealthyBone()
 {
     solidBone = new G4Tubs("Bone", innerBoneRadius, outerBoneRadius, boneHeight/2, 0.0, 360.0*deg);
     logicHealthyBone = new G4LogicalVolume(solidBone, Bone, "LogicBone");
-    physBone = new G4PVPlacement(armRotation, samplePosition, logicHealthyBone, "physBone", logicWorld, false, 0, true);
+    physBone = new G4PVPlacement(armRotation, armPosition, logicHealthyBone, "physBone", logicWorld, false, 0, true);
 
     scoringVolume_1 = logicHealthyBone;
     scoringVolumes.push_back(scoringVolume_1);
@@ -151,7 +151,7 @@ void MyDetectorConstruction::ConstructOsteoporoticBone()
     }
 
     logicOsteoBone = new G4LogicalVolume(porousBone, Bone, "PorousBoneLogical");
-    physBone = new G4PVPlacement(armRotation, samplePosition, logicOsteoBone, "physBone", logicWorld, false, 0);
+    physBone = new G4PVPlacement(armRotation, armPosition, logicOsteoBone, "physBone", logicWorld, false, 0);
 
     scoringVolume_1 = logicOsteoBone;
     scoringVolumes.push_back(scoringVolume_1);
@@ -177,23 +177,42 @@ void MyDetectorConstruction::ConstructBoneDivided()
 }
 
 // Load 3D Models ===============================================================================================================================
+void MyDetectorConstruction::ConstructTumor()
+{
+// Crear un objeto aleatorio
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> posDist(50.0*mm, 100.0*mm); // Distribución de posición en el tórax
+    std::uniform_real_distribution<> sizeDist(19.0*mm, 20.0*mm);  // Distribución de tamaño para el tumor
 
+// Definir tamaño aleatorio para el tumor
+    tumorRadius = sizeDist(gen);
+    tumorSphere = new G4Sphere("Tumor", 0, tumorRadius, 0*deg, 360*deg, 0*deg, 180*deg);
+
+    logicTumor = new G4LogicalVolume(tumorSphere, Muscle, "Tumor");
+// Generar posición aleatoria dentro del tórax
+    G4ThreeVector tumorPosition(posDist(gen), posDist(gen), 10.0*mm);
+// Colocar el tumor en el modelo de tórax
+    new G4PVPlacement(Model3DRotation, tumorPosition, logicTumor, "Tumor", logicWorld, false, 0, true);
+    G4cout << "> Tumor (esfera) creado en una posición aleatoria dentro del tórax con radio: " << tumorRadius / mm << " mm" << G4endl;
+ 
+        
+}
 void MyDetectorConstruction::ConstructThorax()
 {
     G4STL stl; 
-
-    // Obtener el directorio actual (donde está el ejecutable, probablemente en "build/Release")
-    std::string currentPath = (std::filesystem::current_path().string());
-    //G4cout << "##########  Current DETECTOR   ############### directory: " << currentPath << G4endl;
     
     #ifdef __APPLE__
-        std::string modelPath = (std::filesystem::current_path().parent_path().string())+"/3D_Models/";
+        std::string modelPath = "/Users/miguelcomett/geant4-v11.2.2_2/ESTANCIA/IFI.03.Radiography/miguelcomett/3D_Models/";
     #else
+        // Obtener el directorio actual (donde está el ejecutable, probablemente en "build/Release")
+        std::string currentPath = std::filesystem::current_path().string();
 
         // Navegar al directorio superior y luego a "ROOT"
-        std::string modelPath = std::filesystem::path(currentPath).parent_path().parent_path().string() + "/3D_Models/";
+        std::string modelPath = std::filesystem::path(currentPath).parent_path().parent_path().string() + "\\3D_Models\\";
         //std::string modelPath = "C:\\Users\\conej\\Documents\\Universidad\\Geant4\\Projects\\Models2\\"; // Define el directorio de los modelos 3D
     #endif
+   
 
     Model3DRotation = new G4RotationMatrix(0*deg, -90*deg, (thoraxAngle+180)*deg);
     originMatrix = new G4RotationMatrix(0, 0, 0);
@@ -265,8 +284,8 @@ void MyDetectorConstruction::ConstructThorax()
     Thorax2 = stl.Read(modelPath + "TORAX_Real0.stl");
     if (Thorax1 && Thorax2 && isThorax) 
     {
-        subtractedSolid0 = new G4SubtractionSolid("SoftWithBoneHole", Thorax1, Ribcage, originMatrix, samplePosition); // Resta el volumen "bone" del volumen "tissue"
-        subtractedSolid1 = new G4SubtractionSolid("SoftWithBoneAndToraxHole", subtractedSolid0, Thorax2, originMatrix, samplePosition); // Resta el volumen "TORAX_Real0" del resultado anterior
+        subtractedSolid0 = new G4SubtractionSolid("SoftWithBoneHole", Thorax1, Ribcage, originMatrix, armPosition); // Resta el volumen "bone" del volumen "tissue"
+        subtractedSolid1 = new G4SubtractionSolid("SoftWithBoneAndToraxHole", subtractedSolid0, Thorax2, originMatrix, armPosition); // Resta el volumen "TORAX_Real0" del resultado anterior
         logicThorax = new G4LogicalVolume(subtractedSolid1, TissueMix, "Thorax"); // Crear el volumen lógico del sólido resultante
         new G4PVPlacement(Model3DRotation, G4ThreeVector(0,0,0), logicThorax, "Thorax", logicWorld, false, 0, true);
        
@@ -284,11 +303,11 @@ void MyDetectorConstruction::ConstructThorax()
     }
 
 
-    if (Heart && Lungs && Ribcage && Thorax1 && Thorax2 && isFiller)
+    if (isFiller)
     {
-        subtractedSolid2 = new G4SubtractionSolid("Inner0", Thorax2, Lungs, originMatrix, samplePosition);
-        subtractedSolid3 = new G4SubtractionSolid("Inner1", subtractedSolid2, Heart, originMatrix, samplePosition);
-        subtractedSolid4 = new G4SubtractionSolid("Inner2", subtractedSolid3, Ribcage, originMatrix, samplePosition);
+        subtractedSolid2 = new G4SubtractionSolid("Inner0", Thorax2, Lungs, originMatrix, armPosition);
+        subtractedSolid3 = new G4SubtractionSolid("Inner1", subtractedSolid2, Heart, originMatrix, armPosition);
+        subtractedSolid4 = new G4SubtractionSolid("Inner2", subtractedSolid3, Ribcage, originMatrix, armPosition);
         logicFiller = new G4LogicalVolume(subtractedSolid4, Fat, "Filler");
         new G4PVPlacement(Model3DRotation, G4ThreeVector(0, 0, 0), logicFiller, "Filler", logicWorld, false, 0, true);
         
@@ -417,6 +436,9 @@ void MyDetectorConstruction::DefineMaterials()
     OsBone -> AddMaterial(nist -> FindOrBuildMaterial("G4_P"),  07.0 * perCent);
     OsBone -> AddMaterial(nist -> FindOrBuildMaterial("G4_S"),  00.2 * perCent);
     OsBone -> AddMaterial(nist -> FindOrBuildMaterial("G4_Ca"), 14.7 * perCent);
+    
+    //tumor
+    
 
     // Aerogel and Material Proporties =================================================================================
 

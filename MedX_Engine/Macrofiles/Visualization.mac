@@ -29,7 +29,7 @@
 #/vis/geometry/set/colour Filler  -1 1 1 1 0.1
 
 #/vis/geometry/set/visibility Heart 0 false
-/vis/geometry/set/visibility Lungs 0 false
+#/vis/geometry/set/visibility Lungs 0 false
 /vis/geometry/set/visibility Ribcage 0 false
 /vis/geometry/set/visibility Thorax 0 false
 /vis/geometry/set/visibility Filler 0 false

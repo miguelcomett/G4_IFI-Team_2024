@@ -91,28 +91,22 @@ void MyRunAction::AddEdep(G4double edep) { fEdep += edep; }
 
 void MyRunAction::BeginOfRunAction(const G4Run * thisRun)
 {
-    // Imprimir el ID del thread actual
-    G4int threadID = G4Threading::G4GetThreadId();
-    //G4cout << "Running BeginOfRunAction in thread ID: " << threadID << G4endl;
+    threadID = G4Threading::G4GetThreadId();
 
     G4AccumulableManager * accumulableManager = G4AccumulableManager::Instance();
     accumulableManager -> Reset();
 
-    // Obtener la ruta actual
-    std::string currentPath = std::filesystem::current_path().string();
+    std::string currentPath = std::filesystem::current_path().string(); // Obtener la ruta actual
 
-    // Modificado: La carpeta Output se moverá al mismo nivel que ROOT
-    #ifdef __APPLE__
+    #ifdef __APPLE__ // Modificado: La carpeta Output se moverá al mismo nivel que ROOT
         std::string rootDirectory = std::filesystem::path(currentPath).string() + "/ROOT_temp/";
     #else
         std::string rootDirectory = std::filesystem::path(currentPath).parent_path().string() + "/ROOT_temp/";
     #endif
 
-    // Comprobar si la carpeta ROOT existe, si no, crearla
-    if (!std::filesystem::exists(rootDirectory))
+    if (!std::filesystem::exists(rootDirectory)) // Comprobar si la carpeta ROOT existe, si no, crearla
     {
-        std::filesystem::create_directory(rootDirectory);
-        // G4cout << "Created ROOT directory at: " << rootDirectory << G4endl;
+        std::filesystem::create_directory(rootDirectory); // G4cout << "Created ROOT directory at: " << rootDirectory << G4endl;   
     }
 
     primaryGenerator = static_cast < const MyPrimaryGenerator *> (G4RunManager::GetRunManager() -> GetUserPrimaryGeneratorAction()); 

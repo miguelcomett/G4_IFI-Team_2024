@@ -29,11 +29,10 @@ int main(int argc, char** argv)
     std::time_t now_c = std::chrono::system_clock::to_time_t(simulationStartTime);
     std::tm * now_tm = std::localtime(&now_c);
     
-    // Print formatted time of day
-    G4cout << G4endl; 
-    G4cout << ".........................................." << G4endl;
-    G4cout << "Start time: " << std::put_time(now_tm, "%H:%M:%S") << "    Date: " << std::put_time(now_tm, "%d-%m-%Y") << G4endl;
-    G4cout << ".........................................." << G4endl;
+    // G4cout << G4endl; 
+    // G4cout << ".........................................." << G4endl;
+    // G4cout << "Start time: " << std::put_time(now_tm, "%H:%M:%S") << "    Date: " << std::put_time(now_tm, "%d-%m-%Y") << G4endl;
+    // G4cout << ".........................................." << G4endl;
 
     #ifdef __APPLE__
 

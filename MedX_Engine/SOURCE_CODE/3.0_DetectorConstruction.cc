@@ -218,7 +218,7 @@ void MyDetectorConstruction::ConstructThorax()
     originMatrix = new G4RotationMatrix(0, 0, 0);
         
     if (arguments == 1) { G4cout << G4endl; }
-    G4cout << "=============== 3D MODELS ================" << G4endl; 
+    G4cout << "=============== 3D MODELS ===============" << G4endl; 
 
     Heart = stl.Read(modelPath + "HEART.stl");
     if (Heart && isHeart) 

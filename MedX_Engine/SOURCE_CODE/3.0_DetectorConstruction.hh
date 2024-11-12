@@ -5,7 +5,7 @@
 #include <string>
 #include <filesystem>
 #include <iostream>
-#import <random>
+#include <random>
 
 #include "G4SystemOfUnits.hh"
 #include "G4VPhysicalVolume.hh"

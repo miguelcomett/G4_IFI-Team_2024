@@ -1,5 +1,5 @@
 /run/initialize
-/vis/open OGL
+/vis/open OGLSWin32
 
 /vis/drawVolume
 /vis/viewer/set/viewpointVector 0 0 -1

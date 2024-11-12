@@ -72,7 +72,7 @@ int main(int argc, char** argv)
     
     if(argc == 1)
     {
-        G4VisManager * visManager = new G4VisExecutive();
+        G4VisManager * visManager = new G4VisExecutive("quiet");
         visManager -> Initialize();
 
         G4UIExecutive * UI = nullptr;

@@ -164,8 +164,10 @@ void MyRunAction::EndOfRunAction(const G4Run * thisRun)
     { 
         detectorConstruction = static_cast < const MyDetectorConstruction *> (G4RunManager::GetRunManager() -> GetUserDetectorConstruction());   
         std::vector <G4LogicalVolume*> scoringVolumes = detectorConstruction -> GetAllScoringVolumes();
-        
+
+        totalMass = 0;
         index = 1;
+
         for (G4LogicalVolume * volume : scoringVolumes) 
         { 
             if (volume)

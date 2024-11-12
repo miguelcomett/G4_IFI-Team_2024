@@ -272,7 +272,7 @@ void MyRunAction::MergeRootFiles()
     std::string mergedFileName;
     do
     {
-        mergedFileName = outputDirectory + fileName + "_" + std::to_string(fileIndex) + std::to_string(runID) + ".root";
+        mergedFileName = outputDirectory + fileName + std::to_string(fileIndex) + "_" + std::to_string(runID) + ".root";
         fileIndex++;
     } 
     while (std::filesystem::exists(mergedFileName));

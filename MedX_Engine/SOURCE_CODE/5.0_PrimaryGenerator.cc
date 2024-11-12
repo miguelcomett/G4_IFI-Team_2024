@@ -16,7 +16,6 @@ MyPrimaryGenerator::~MyPrimaryGenerator() {delete particleGun; delete GeneratorM
 void MyPrimaryGenerator::GeneratePrimaries(G4Event * anEvent)
 { 
     if (fGunMode == 0) { } // Energia monocromatica  particleGun->SetParticleEnergy(energy); No definir energia si se quiere cambio dimaico
-	// else	
     if (fGunMode == 1) // Espectro real
     {
 	    realEnergy = InverseCumul(); 

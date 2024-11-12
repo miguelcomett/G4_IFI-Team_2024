@@ -203,7 +203,7 @@ void MyDetectorConstruction::ConstructThorax()
     G4STL stl; 
     
     #ifdef __APPLE__
-        std::string modelPath = "/Users/miguelcomett/geant4-v11.2.2_2/ESTANCIA/IFI.03.Radiography/miguelcomett/3D_Models/";
+        std::string modelPath = "/Users/miguelcomett/geant4-v11.2.2_2/ESTANCIA/IFI.03.Radiography/MedX_Engine/3D_Models/";
     #else
         // Obtener el directorio actual (donde está el ejecutable, probablemente en "build/Release")
         std::string currentPath = std::filesystem::current_path().string();

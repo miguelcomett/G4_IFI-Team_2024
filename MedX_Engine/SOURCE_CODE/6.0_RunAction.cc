@@ -91,12 +91,15 @@ void MyRunAction::AddEdep(G4double edep) { fEdep += edep; }
 
 void MyRunAction::BeginOfRunAction(const G4Run * thisRun)
 {
+    // Imprimir el ID del thread actual
+    G4int threadID = G4Threading::G4GetThreadId();
+    //G4cout << "Running BeginOfRunAction in thread ID: " << threadID << G4endl;
+
     G4AccumulableManager * accumulableManager = G4AccumulableManager::Instance();
     accumulableManager -> Reset();
 
     // Obtener la ruta actual
     std::string currentPath = std::filesystem::current_path().string();
-
 
     // Modificado: La carpeta Output se moverá al mismo nivel que ROOT
     #ifdef __APPLE__
@@ -136,7 +139,20 @@ void MyRunAction::BeginOfRunAction(const G4Run * thisRun)
     analysisManager -> SetFileName(directory + fileName);
     analysisManager -> OpenFile();
 
-    if (isMaster){ simulationStartTime = std::chrono::system_clock::now(); }
+    if (isMaster){ simulationStartTime = std::chrono::system_clock::now();}
+
+    const Run * currentRun = static_cast<const Run *>(thisRun);
+    particleName = currentRun -> GetPrimaryParticleName();
+    totalNumberOfEvents = currentRun -> GetNumberOfEventToBeProcessed();
+    primaryEnergy = currentRun -> GetPrimaryEnergy();   
+    RunNumber = thisRun -> GetRunID();
+
+    if (!isMaster && threadID == 0)
+    {
+        std::cout << std::endl;
+        std::cout << "============ Run " << RunNumber + 1 << " Beginning =============" << std::endl;
+        std::cout << "    The run is: " << totalNumberOfEvents << " " << particleName << " of " << G4BestUnit(primaryEnergy, "Energy") << std::endl;
+    }
 }
 
 void MyRunAction::EndOfRunAction(const G4Run * thisRun)
@@ -148,7 +164,6 @@ void MyRunAction::EndOfRunAction(const G4Run * thisRun)
     
     if (isMaster && arguments != 3) 
     { 
-
         detectorConstruction = static_cast < const MyDetectorConstruction *> (G4RunManager::GetRunManager() -> GetUserDetectorConstruction());   
         std::vector <G4LogicalVolume*> scoringVolumes = detectorConstruction -> GetAllScoringVolumes();
         
@@ -185,9 +200,9 @@ void MyRunAction::EndOfRunAction(const G4Run * thisRun)
         auto duration = std::chrono::duration_cast<std::chrono::seconds>(simulationEndTime - simulationStartTime);
         durationInSeconds = duration.count() * second;
 
-        G4cout << G4endl; G4cout << G4endl; G4cout << G4endl;
-        G4cout << "============== Run Summary ===============" << G4endl;
-        G4cout << "The run is: " << numberOfEvents << " " << particleName << " of "<< G4BestUnit(primaryEnergy, "Energy") << G4endl;
+        G4cout << G4endl; 
+        G4cout << "-------------- Run Summary ---------------" << G4endl;
+        // G4cout << "The run is: " << numberOfEvents << " " << particleName << " of "<< G4BestUnit(primaryEnergy, "Energy") << G4endl;
         G4cout << "--> Total mass of sample: " << G4BestUnit(totalMass, "Mass") << G4endl;
         G4cout << "--> Total energy deposition: " << G4BestUnit(TotalEnergyDeposit, "Energy") << G4endl;
         G4cout << "--> Radiation dose : " << G4BestUnit(radiationDose, "Dose") << G4endl;
@@ -201,7 +216,7 @@ void MyRunAction::EndOfRunAction(const G4Run * thisRun)
         
         G4cout << "Total simulation time: " << G4BestUnit(durationInSeconds, "Time") << G4endl;
         G4cout << "==========================================" << G4endl;
-        G4cout << G4endl; G4cout << G4endl; G4cout << G4endl;
+        G4cout << G4endl;
     }
     
     if (arguments == 4 || arguments == 5) 
@@ -317,9 +332,6 @@ void MyRunAction::MergeRootFiles()
     // G4cout << G4endl;
 }
 
-
-
-
 void MyRunAction::SingleData(const std::string & mergedFileName)
 {
     TFile * mergedFile = TFile::Open(mergedFileName.c_str(), "UPDATE");
@@ -357,7 +369,7 @@ void MyRunAction::SingleData(const std::string & mergedFileName)
 
     TTree * newTree = tree -> CloneTree(0); // Creamos un nuevo arbol vacio para almacenar las entradas validas
 
-    for (Long64_t i = 0; i < tree->GetEntries(); ++i) // Itera sobre todas las entradas del arbol
+    for (Long64_t i = 0; i < tree -> GetEntries(); ++i) // Itera sobre todas las entradas del arbol
     {
         tree -> GetEntry(i); // Leer la entrada
 

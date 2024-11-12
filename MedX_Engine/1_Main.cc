@@ -21,30 +21,14 @@ int main(int argc, char** argv)
 {
     arguments = (argc);
 
-    std::chrono::system_clock::time_point simulationStartTime;
-    simulationStartTime = std::chrono::system_clock::now();
-
-    // Get current time
-    auto now = std::chrono::system_clock::now();
-    std::time_t now_c = std::chrono::system_clock::to_time_t(simulationStartTime);
-    std::tm * now_tm = std::localtime(&now_c);
-    
-    // G4cout << G4endl; 
-    // G4cout << ".........................................." << G4endl;
-    // G4cout << "Start time: " << std::put_time(now_tm, "%H:%M:%S") << "    Date: " << std::put_time(now_tm, "%d-%m-%Y") << G4endl;
-    // G4cout << ".........................................." << G4endl;
-
     #ifdef __APPLE__
 
-        // G4cout << G4endl;
-        // G4cout << "~~~~~~~~~~~~ Running on macOS ~~~~~~~~~~~~" << G4endl;
-        
         G4RunManager * runManager;
+        // G4cout << G4endl; G4cout << "~~~~~~~~~~~~ Running on macOS ~~~~~~~~~~~~" << G4endl;
 
         if (argc == 1) 
         {
-            // G4cout << "===== Running in Single-threaded mode ====" << G4endl;
-            // G4cout << G4endl;
+            // G4cout << "===== Running in Single-threaded mode ====" << G4endl; G4cout << G4endl;
             runManager = new G4RunManager();
         } 
         else 
@@ -55,11 +39,9 @@ int main(int argc, char** argv)
     #endif
 
     #ifdef _WIN32
-        std::cout << std::endl;
-        std::cout << "~~~~~~~~~~~~ Running on Windows ~~~~~~~~~~~" << std::endl;
+        // std::cout << std::endl; std::cout << "~~~~~~~~~~~~ Running on Windows ~~~~~~~~~~~" << std::endl;
         auto * runManager =G4RunManagerFactory::CreateRunManager(G4RunManagerType::Default);
     #endif
-
 
     long seed = std::time(nullptr);
     CLHEP::HepRandom::setTheSeed(seed);
@@ -79,6 +61,7 @@ int main(int argc, char** argv)
         UI = new G4UIExecutive(argc, argv);
         UImanager -> ApplyCommand("/control/execute Visualization.mac");
         UI -> SessionStart();
+        
         delete UI;
         delete visManager;
     }
@@ -91,3 +74,13 @@ int main(int argc, char** argv)
 
     delete runManager;
 }
+
+// std::chrono::system_clock::time_point simulationStartTime;
+// simulationStartTime = std::chrono::system_clock::now();
+// auto now = std::chrono::system_clock::now();
+// std::time_t now_c = std::chrono::system_clock::to_time_t(simulationStartTime);
+// std::tm * now_tm = std::localtime(&now_c);
+// G4cout << G4endl; 
+// G4cout << ".........................................." << G4endl;
+// G4cout << "Start time: " << std::put_time(now_tm, "%H:%M:%S") << "    Date: " << std::put_time(now_tm, "%d-%m-%Y") << G4endl;
+// G4cout << ".........................................." << G4endl;

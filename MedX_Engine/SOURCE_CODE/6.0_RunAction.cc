@@ -137,7 +137,6 @@ void MyRunAction::BeginOfRunAction(const G4Run * thisRun)
     particleName = currentRun -> GetPrimaryParticleName();
     totalNumberOfEvents = currentRun -> GetNumberOfEventToBeProcessed();
     primaryEnergy = currentRun -> GetPrimaryEnergy();   
-    RunNumber = thisRun -> GetRunID();
 
     simulationStartTime = std::chrono::system_clock::now();
     std::time_t now_start = std::chrono::system_clock::to_time_t(simulationStartTime);
@@ -146,7 +145,7 @@ void MyRunAction::BeginOfRunAction(const G4Run * thisRun)
     if (!isMaster && threadID == 0)
     {
         std::cout << std::endl;
-        std::cout << "================= RUN " << RunNumber + 1 << " ==================" << std::endl;
+        std::cout << "================= RUN " << runID + 1 << " ==================" << std::endl;
         std::cout << "    The run is: " << totalNumberOfEvents << " " << particleName << " of " << G4BestUnit(primaryEnergy, "Energy") << std::endl;
         std::cout << "Start time: " << std::put_time(now_tm_0, "%H:%M:%S") << "    Date: " << std::put_time(now_tm_0, "%d-%m-%Y") << std::endl;
         std::cout << std::endl;
@@ -247,7 +246,8 @@ void MyRunAction::MergeRootFiles()
     #endif
 
     // Nueva ruta para Output/ fuera de ROOT/
-    std::string outputDirectory = std::filesystem::path(currentPath).parent_path().string() + "/ROOT/";
+    // std::string outputDirectory = std::filesystem::path(currentPath).parent_path().string() + "/ROOT/";
+    std::string outputDirectory = std::filesystem::path(currentPath).string() + "/ROOT/";
 
     // Crear la carpeta Output si no existe
     if (!std::filesystem::exists(outputDirectory))
@@ -274,7 +274,8 @@ void MyRunAction::MergeRootFiles()
     {
         mergedFileName = outputDirectory + fileName + "_" + std::to_string(fileIndex) + std::to_string(runID) + ".root";
         fileIndex++;
-    } while (std::filesystem::exists(mergedFileName));
+    } 
+    while (std::filesystem::exists(mergedFileName));
 
     // Iterar sobre los archivos en el directorio ROOT y agregar archivos .root al merger
     for (const auto& entry : std::filesystem::directory_iterator(rootDirectory))

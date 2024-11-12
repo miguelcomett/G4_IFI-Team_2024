@@ -100,9 +100,7 @@ def MergeRoots_Parallel(directory, starts_with, output_name, max_workers = 9):
 
 def ModifyRoot(directory, root_name, tree_name, branch_names, output_name, new_tree_name, new_branch_names):
 
-    import uproot
-    import uproot.writing
-    import os
+    import uproot; import uproot.writing; import os
 
     input_file = directory + root_name + '.root'
     with uproot.open(input_file) as file:       

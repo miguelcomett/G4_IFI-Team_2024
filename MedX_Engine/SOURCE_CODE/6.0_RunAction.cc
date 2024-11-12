@@ -91,25 +91,22 @@ void MyRunAction::AddEdep(G4double edep) { fEdep += edep; }
 
 void MyRunAction::BeginOfRunAction(const G4Run * thisRun)
 {
+    threadID = G4Threading::G4GetThreadId();
+
     G4AccumulableManager * accumulableManager = G4AccumulableManager::Instance();
     accumulableManager -> Reset();
 
-    // Obtener la ruta actual
-    std::string currentPath = std::filesystem::current_path().string();
+    std::string currentPath = std::filesystem::current_path().string(); // Obtener la ruta actual
 
-
-    // Modificado: La carpeta Output se moverá al mismo nivel que ROOT
-    #ifdef __APPLE__
+    #ifdef __APPLE__ // Modificado: La carpeta Output se moverá al mismo nivel que ROOT
         std::string rootDirectory = std::filesystem::path(currentPath).string() + "/ROOT_temp/";
     #else
         std::string rootDirectory = std::filesystem::path(currentPath).parent_path().string() + "/ROOT_temp/";
     #endif
 
-    // Comprobar si la carpeta ROOT existe, si no, crearla
-    if (!std::filesystem::exists(rootDirectory))
+    if (!std::filesystem::exists(rootDirectory)) // Comprobar si la carpeta ROOT existe, si no, crearla
     {
-        std::filesystem::create_directory(rootDirectory);
-        // G4cout << "Created ROOT directory at: " << rootDirectory << G4endl;
+        std::filesystem::create_directory(rootDirectory); // G4cout << "Created ROOT directory at: " << rootDirectory << G4endl;   
     }
 
     primaryGenerator = static_cast < const MyPrimaryGenerator *> (G4RunManager::GetRunManager() -> GetUserPrimaryGeneratorAction()); 
@@ -136,7 +133,24 @@ void MyRunAction::BeginOfRunAction(const G4Run * thisRun)
     analysisManager -> SetFileName(directory + fileName);
     analysisManager -> OpenFile();
 
-    if (isMaster){ simulationStartTime = std::chrono::system_clock::now(); }
+    const Run * currentRun = static_cast<const Run *>(thisRun);
+    particleName = currentRun -> GetPrimaryParticleName();
+    totalNumberOfEvents = currentRun -> GetNumberOfEventToBeProcessed();
+    primaryEnergy = currentRun -> GetPrimaryEnergy();   
+    RunNumber = thisRun -> GetRunID();
+
+    simulationStartTime = std::chrono::system_clock::now();
+    std::time_t now_start = std::chrono::system_clock::to_time_t(simulationStartTime);
+    std::tm * now_tm_0 = std::localtime(&now_start);
+    
+    if (!isMaster && threadID == 0)
+    {
+        std::cout << std::endl;
+        std::cout << "================= RUN " << RunNumber + 1 << " ==================" << std::endl;
+        std::cout << "    The run is: " << totalNumberOfEvents << " " << particleName << " of " << G4BestUnit(primaryEnergy, "Energy") << std::endl;
+        std::cout << "Start time: " << std::put_time(now_tm_0, "%H:%M:%S") << "    Date: " << std::put_time(now_tm_0, "%d-%m-%Y") << std::endl;
+        std::cout << std::endl;
+    }
 }
 
 void MyRunAction::EndOfRunAction(const G4Run * thisRun)
@@ -148,26 +162,19 @@ void MyRunAction::EndOfRunAction(const G4Run * thisRun)
     
     if (isMaster && arguments != 3) 
     { 
-
         detectorConstruction = static_cast < const MyDetectorConstruction *> (G4RunManager::GetRunManager() -> GetUserDetectorConstruction());   
         std::vector <G4LogicalVolume*> scoringVolumes = detectorConstruction -> GetAllScoringVolumes();
-        
-        totalMass = 0.0;
+
+        totalMass = 0;
         index = 1;
 
-        // G4cout << G4endl;
-        // G4cout << "-----------------" << G4endl;
         for (G4LogicalVolume * volume : scoringVolumes) 
-        {
-            if (volume) 
-            {
-                sampleMass = volume -> GetMass();
+        { 
+            if (volume)
+                sampleMass = volume -> GetMass(); totalMass = totalMass + sampleMass;
                 // G4cout << "Mass " << index << ": " << G4BestUnit(sampleMass, "Mass") << G4endl;
-                totalMass = totalMass + sampleMass;
-            }
             index = index + 1;
         }
-        // G4cout << "-----------------" << G4endl;
         
         const Run * currentRun = static_cast<const Run *>(thisRun);
         particleName = currentRun -> GetPrimaryParticleName();
@@ -177,31 +184,23 @@ void MyRunAction::EndOfRunAction(const G4Run * thisRun)
         TotalEnergyDeposit = fEdep.GetValue();
         radiationDose = TotalEnergyDeposit / totalMass;
 
-        std::time_t now_start = std::chrono::system_clock::to_time_t(simulationStartTime);
-
         simulationEndTime = std::chrono::system_clock::now();
         std::time_t now_end = std::chrono::system_clock::to_time_t(simulationEndTime);
+        std::tm * now_tm_1 = std::localtime(&now_end);
         
         auto duration = std::chrono::duration_cast<std::chrono::seconds>(simulationEndTime - simulationStartTime);
         durationInSeconds = duration.count() * second;
 
-        G4cout << G4endl; G4cout << G4endl; G4cout << G4endl;
-        G4cout << "============== Run Summary ===============" << G4endl;
-        G4cout << "The run is: " << numberOfEvents << " " << particleName << " of "<< G4BestUnit(primaryEnergy, "Energy") << G4endl;
+        G4cout << G4endl; 
+        G4cout << "Run Summary:" << G4endl;
         G4cout << "--> Total mass of sample: " << G4BestUnit(totalMass, "Mass") << G4endl;
         G4cout << "--> Total energy deposition: " << G4BestUnit(TotalEnergyDeposit, "Energy") << G4endl;
         G4cout << "--> Radiation dose : " << G4BestUnit(radiationDose, "Dose") << G4endl;
         G4cout << G4endl;
-
-        std::tm * now_tm_0 = std::localtime(&now_start);
-        G4cout << "Start time: " << std::put_time(now_tm_0, "%H:%M:%S") << "    Date: " << std::put_time(now_tm_0, "%d-%m-%Y") << G4endl;
-        
-        std::tm * now_tm_1 = std::localtime(&now_end);
         G4cout << "Ending time: " << std::put_time(now_tm_1, "%H:%M:%S") << "   Date: " << std::put_time(now_tm_1, "%d-%m-%Y") << G4endl;
-        
         G4cout << "Total simulation time: " << G4BestUnit(durationInSeconds, "Time") << G4endl;
         G4cout << "==========================================" << G4endl;
-        G4cout << G4endl; G4cout << G4endl; G4cout << G4endl;
+        G4cout << G4endl;
     }
     
     if (arguments == 4 || arguments == 5) 
@@ -312,9 +311,6 @@ void MyRunAction::MergeRootFiles()
     // G4cout << G4endl;
 }
 
-
-
-
 void MyRunAction::SingleData(const std::string & mergedFileName)
 {
     TFile * mergedFile = TFile::Open(mergedFileName.c_str(), "UPDATE");
@@ -352,7 +348,7 @@ void MyRunAction::SingleData(const std::string & mergedFileName)
 
     TTree * newTree = tree -> CloneTree(0); // Creamos un nuevo arbol vacio para almacenar las entradas validas
 
-    for (Long64_t i = 0; i < tree->GetEntries(); ++i) // Itera sobre todas las entradas del arbol
+    for (Long64_t i = 0; i < tree -> GetEntries(); ++i) // Itera sobre todas las entradas del arbol
     {
         tree -> GetEntry(i); // Leer la entrada
 

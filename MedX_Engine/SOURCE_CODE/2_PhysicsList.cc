@@ -2,8 +2,8 @@
 
 MyPhysicsList::MyPhysicsList()
 {
-    RegisterPhysics(new G4EmStandardPhysics());
-    RegisterPhysics(new G4OpticalPhysics());
+    RegisterPhysics(new G4EmStandardPhysics(0));
+    RegisterPhysics(new G4OpticalPhysics(0));
 }
 
 MyPhysicsList::~MyPhysicsList(){}

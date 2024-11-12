@@ -8,6 +8,7 @@
 #include <vector> 
 #include <filesystem>
 #include <string>
+#include <regex>
 
 #include "Randomize.hh"
 #include "G4UIManager.hh"
@@ -19,12 +20,10 @@
 #include "TFileMerger.h"
 #include <TFile.h>
 #include <TTree.h>
-
+#include "G4Threading.hh"
 #include "3.0_DetectorConstruction.hh"
 #include "5.0_PrimaryGenerator.hh"
 #include "6.1_Run.hh"
-
-#include <regex>
 
 extern int arguments;
 
@@ -58,7 +57,7 @@ class MyRunAction : public G4UserRunAction
         G4ParticleDefinition * particle;
 
         G4String particleName, directory, fileName;
-        G4int numberOfEvents, runID, index;
+        G4int numberOfEvents, runID, index, totalNumberOfEvents, RunNumber, threadID;
         G4double energy, sampleMass, primaryEnergy, totalMass, durationInSeconds, TotalEnergyDeposit, radiationDose;
 
         const G4double milligray = 1.0e-3*gray;

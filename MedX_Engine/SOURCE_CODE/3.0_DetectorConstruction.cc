@@ -212,7 +212,6 @@ void MyDetectorConstruction::ConstructThorax()
         std::string modelPath = std::filesystem::path(currentPath).parent_path().parent_path().string() + "\\3D_Models\\";
         //std::string modelPath = "C:\\Users\\conej\\Documents\\Universidad\\Geant4\\Projects\\Models2\\"; // Define el directorio de los modelos 3D
     #endif
-   
 
     Model3DRotation = new G4RotationMatrix(0*deg, -90*deg, (thoraxAngle+180)*deg);
     originMatrix = new G4RotationMatrix(0, 0, 0);
@@ -239,7 +238,6 @@ void MyDetectorConstruction::ConstructThorax()
         std::exit(EXIT_FAILURE);
     }
 
-
     Lungs = stl.Read(modelPath + "LUNGS.stl");
     if (Lungs && isLungs)
     {
@@ -259,7 +257,6 @@ void MyDetectorConstruction::ConstructThorax()
         std::exit(EXIT_FAILURE);
     }
 
-
     Ribcage = stl.Read(modelPath + "RIBCAGE_Real.stl");
     if (Ribcage && isRibcage) 
     {
@@ -278,7 +275,6 @@ void MyDetectorConstruction::ConstructThorax()
         G4cout << "==========================================" << G4endl; G4cout << G4endl;
         std::exit(EXIT_FAILURE);
     }
-
 
     Thorax1 = stl.Read(modelPath + "TORAX_Real.stl");
     Thorax2 = stl.Read(modelPath + "TORAX_Real0.stl");
@@ -301,7 +297,6 @@ void MyDetectorConstruction::ConstructThorax()
         G4cout << "==========================================" << G4endl; G4cout << G4endl;
         std::exit(EXIT_FAILURE);
     }
-
 
     if (isFiller)
     {

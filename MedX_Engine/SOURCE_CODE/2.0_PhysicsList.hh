@@ -10,6 +10,8 @@
 #include "G4EmStandardPhysics_option4.hh"
 #include "G4EmStandardPhysics.hh"
 
+extern int arguments; 
+
 class MyPhysicsList : public G4VModularPhysicsList
 {
     public:

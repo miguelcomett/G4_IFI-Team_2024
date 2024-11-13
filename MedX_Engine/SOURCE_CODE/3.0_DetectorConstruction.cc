@@ -96,7 +96,7 @@ void MyDetectorConstruction::ConstructArm()
     solidSkin   = new G4Tubs("Skin",    innerSkinRadius, outerSkinRadius,     boneHeight/2, 0.0, 360.0*deg);
 
     logicMuscle = new G4LogicalVolume(solidMuscle, Muscle, "LogicMuscle");
-    logicGrasa = new G4LogicalVolume(solidGrasa, Fat, "LogicGrasa");
+    logicGrasa = new G4LogicalVolume(solidGrasa, Adipose, "LogicGrasa");
     logicSkin = new G4LogicalVolume(solidSkin, Skin, "LogicSkin");
 
     physMuscle = new G4PVPlacement(armRotation, samplePosition, logicMuscle, "physMuscle", logicWorld, false, 0, true);
@@ -308,7 +308,7 @@ void MyDetectorConstruction::ConstructThorax()
         subtractedSolid2 = new G4SubtractionSolid("Inner0", Thorax2, Lungs, originMatrix, samplePosition);
         subtractedSolid3 = new G4SubtractionSolid("Inner1", subtractedSolid2, Heart, originMatrix, samplePosition);
         subtractedSolid4 = new G4SubtractionSolid("Inner2", subtractedSolid3, Ribcage, originMatrix, samplePosition);
-        logicFiller = new G4LogicalVolume(subtractedSolid4, Fat, "Filler");
+        logicFiller = new G4LogicalVolume(subtractedSolid4, Adipose, "Filler");
         new G4PVPlacement(Model3DRotation, G4ThreeVector(0, 0, 0), logicFiller, "Filler", logicWorld, false, 0, true);
         
         scoringVolume_5 = logicFiller;
@@ -419,18 +419,16 @@ void MyDetectorConstruction::DefineMaterials()
     Bone = nist -> FindOrBuildMaterial("G4_B-100_BONE"); 
     compactBone = nist->FindOrBuildMaterial("G4_BONE_COMPACT_ICRU");
     Muscle = nist -> FindOrBuildMaterial("G4_MUSCLE_SKELETAL_ICRP");
-    Fat = nist -> FindOrBuildMaterial("G4_ADIPOSE_TISSUE_ICRP");
+    Adipose = nist -> FindOrBuildMaterial("G4_ADIPOSE_TISSUE_ICRP");
     Skin = nist -> FindOrBuildMaterial("G4_SKIN_ICRP");
 
-    TissueMix = new G4Material("TissueMix", 1.036 * g/cm3, 3); 
-    TissueMix -> AddMaterial(Muscle, 79.36 * perCent); 
-    TissueMix -> AddMaterial(Fat,    15.87 * perCent); 
-    TissueMix -> AddMaterial(Skin,   04.77 * perCent);
+    TissueMix = new G4Material("TissueMix", 1.036*g/cm3, 3); 
+    TissueMix -> AddMaterial(Muscle, 79.36*perCent); 
+    TissueMix -> AddMaterial(Adipose, 15.87*perCent); 
+    TissueMix -> AddMaterial(Skin, 04.77*perCent);
 
-    TissueFAT = new G4Material("TissueFAT", 0.4 * g / cm3, 1);
-    TissueFAT->AddMaterial(Fat, 100 * perCent);
-
-
+    Light_Adipose = new G4Material("Light_Adipose", 0.4 * g / cm3, 1);
+    Light_Adipose -> AddMaterial(Adipose, 100*perCent);
 
     OsBone  =  new G4Material("OsteoporoticBone", 0.80 *g/cm3, 8);
     OsBone -> AddMaterial(nist -> FindOrBuildMaterial("G4_H"),  06.4 * perCent);
@@ -441,9 +439,6 @@ void MyDetectorConstruction::DefineMaterials()
     OsBone -> AddMaterial(nist -> FindOrBuildMaterial("G4_P"),  07.0 * perCent);
     OsBone -> AddMaterial(nist -> FindOrBuildMaterial("G4_S"),  00.2 * perCent);
     OsBone -> AddMaterial(nist -> FindOrBuildMaterial("G4_Ca"), 14.7 * perCent);
-    
-    //tumor
-    
 
     // Aerogel and Material Proporties =================================================================================
 

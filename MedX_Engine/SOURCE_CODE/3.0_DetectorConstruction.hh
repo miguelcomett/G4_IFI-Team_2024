@@ -98,7 +98,7 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
         G4Element  * C, * Al, * N, * O, * Ca, * Mg, * V, * Cd, * Te, * W;
         G4Material * SiO2, * H2O, * Aerogel, * worldMaterial, * Calcium, * Magnesium, * Aluminum, * Air, * Silicon, * materialTarget, 
                    * CadTel, * vanadiumGlassMix, * amorphousGlass, * Wolframium, * V2O5, 
-                   * Fat, * Skin, * Muscle, * Bone, * OsBone, * compactBone, * TissueMix, * TissueFAT;
+                   * Adipose, * Skin, * Muscle, * Bone, * OsBone, * compactBone, * TissueMix, * Light_Adipose;
         
         STLGeometryReader * stlReader;
         G4TessellatedSolid * Ribcage, * Lungs, * Heart;

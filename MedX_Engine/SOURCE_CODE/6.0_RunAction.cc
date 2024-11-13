@@ -334,9 +334,9 @@ void MyRunAction::SingleData(const std::string & mergedFileName)
     // Configura las ramas
     tree -> SetBranchAddress("Number_of_Photons",  & numberOfPhotons);
     tree -> SetBranchAddress("Initial_Energy_keV", & initialEnergy);
-    tree -> SetBranchAddress("Sample_Mass_g",      & sampleMass);
-    tree -> SetBranchAddress("EDep_Value_PeV",     & edepValue);
-    tree -> SetBranchAddress("Radiation_Dose_mSv", & radiationDose);
+    tree -> SetBranchAddress("Sample_Mass_kg",      & sampleMass);
+    tree -> SetBranchAddress("EDep_Value_TeV",     & edepValue);
+    tree -> SetBranchAddress("Radiation_Dose_uSv", & radiationDose);
 
     // Inicializa las variables para los valores maximos
     double maxNumberOfPhotons = -DBL_MAX;
@@ -386,9 +386,9 @@ void MyRunAction::SingleData(const std::string & mergedFileName)
     // Establecer las ramas del nuevo arbol con los valores maximos
     maxTree -> SetBranchAddress("Number_of_Photons",  & maxNumberOfPhotons);
     maxTree -> SetBranchAddress("Initial_Energy_keV", & maxInitialEnergy);
-    maxTree -> SetBranchAddress("Sample_Mass_g",      & maxSampleMass);
-    maxTree -> SetBranchAddress("EDep_Value_PeV",     & maxEdepValue);
-    maxTree -> SetBranchAddress("Radiation_Dose_mSv", & maxRadiationDose);
+    maxTree -> SetBranchAddress("Sample_Mass_kg",      & maxSampleMass);
+    maxTree -> SetBranchAddress("EDep_Value_TeV",     & maxEdepValue);
+    maxTree -> SetBranchAddress("Radiation_Dose_uSv", & maxRadiationDose);
 
     // Llenar el nuevo arbol con solo la entrada maxima
     maxTree -> Fill();

@@ -259,9 +259,9 @@ def IsolateTissues(low_energy_img, high_energy_img, sigma1, sigma2, wn, save_in,
     # plt.subplot(2, 4, 8); plt.imshow(ACNR_SSH_Bone,     cmap='gray'); plt.axis('off');  plt.title("Bone [ACNR + SSH]")
     plt.subplot(2, 4, 8); plt.imshow(ACNR_Tissue,       cmap='gray'); plt.axis('off');  plt.title("Tissue [ACNR]")
    
-    return SLS_Bone, SSH_Bone, ACNR_Bone, ACNR_SSH_Bone
+    return SLS_Bone, SLS_Tissue, SSH_Bone, SSH_Tissue, ACNR_Bone, ACNR_Tissue
 
-def BMO(SLS_Bone, SLS_Tissue):
+def BMO(SLS_Bone, SLS_Tissue, save_as):
 
     import matplotlib.pyplot as plt
 
@@ -281,6 +281,7 @@ def BMO(SLS_Bone, SLS_Tissue):
     plt.subplot(1, 3, 1); plt.imshow(thickness_bone); plt.colorbar()
     plt.subplot(1, 3, 2); plt.plot(thickness_bone[120,:])
     plt.subplot(1, 3, 3); plt.plot(thickness_bone[:,120])
+    if save_as != '': plt.savefig(save_as, bbox_inches = 'tight', dpi = 600); 
     plt.show()
 
     return thickness_bone
@@ -534,7 +535,7 @@ def Denoise(array, isHann, alpha, save_as, isCrossSection):
 
 # 7.0 ========================================================================================================================================================
 
-def Plotly_Heatmap(array, xlim, ylim, title, x_label, y_label, annotation, width, height, save_as):
+def Plotly_Heatmap(array, xlim, ylim, title, x_label, y_label, annotation, width, height, save_in, save_as):
 
     import plotly.io as pio; import plotly.graph_objects as go
 
@@ -562,7 +563,7 @@ def Plotly_Heatmap(array, xlim, ylim, title, x_label, y_label, annotation, width
                                         text = annotation)]
     )
    
-    if save_as != '': pio.write_image(fig, 'Results/' + save_as + '.png', width = width, height = height, scale = 5)
+    if save_as != '': pio.write_image(fig, save_in + save_as + '.png', width = width, height = height, scale = 5)
     fig.show()
 
 # 8.0 ========================================================================================================================================================

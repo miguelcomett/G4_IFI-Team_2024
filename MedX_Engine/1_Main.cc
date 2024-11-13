@@ -54,8 +54,8 @@ int main(int argc, char** argv)
     
     if(argc == 1)
     {
-        G4VisManager* visManager = new G4VisExecutive(); // "quiet"
-        visManager->Initialize();
+        G4VisManager* visManager = new G4VisExecutive("quiet"); 
+        visManager -> Initialize();
 
         G4UIQt * UI = new G4UIQt(argc, argv); // Usando G4UIQt en lugar de G4UIExecutive
         //G4UIExecutive * UI = nullptr;

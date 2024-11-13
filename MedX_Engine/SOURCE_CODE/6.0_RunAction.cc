@@ -47,17 +47,17 @@ MyRunAction::MyRunAction()
 
     if (arguments == 4)
     {
-        analysisManager -> CreateNtuple("Photons", "Photons");
-        analysisManager -> CreateNtupleDColumn("X_axis");
-        analysisManager -> CreateNtupleDColumn("Y_axis");
+        analysisManager -> CreateNtuple("Hits", "Hits");
+        analysisManager -> CreateNtupleDColumn("x_ax");
+        analysisManager -> CreateNtupleDColumn("y_ax");
         analysisManager -> CreateNtupleDColumn("Detected_Energy_keV");
         analysisManager -> FinishNtuple(0);
 
         analysisManager -> CreateNtuple("Run Summary", "Run Summary");
         analysisManager -> CreateNtupleDColumn("Number_of_Photons");
         analysisManager -> CreateNtupleDColumn("Initial_Energy_keV");
-        analysisManager -> CreateNtupleDColumn("Sample_Mass_g");
-        analysisManager -> CreateNtupleDColumn("EDep_Value_PeV");
+        analysisManager -> CreateNtupleDColumn("Sample_Mass_kg");
+        analysisManager -> CreateNtupleDColumn("EDep_Value_TeV");
         analysisManager -> CreateNtupleDColumn("Radiation_Dose_mSv");
         analysisManager -> FinishNtuple(1);
 
@@ -76,8 +76,8 @@ MyRunAction::MyRunAction()
         analysisManager -> CreateNtuple("Run Summary", "Run Summary");
         analysisManager -> CreateNtupleDColumn("Number_of_Photons");
         analysisManager -> CreateNtupleDColumn("Initial_Energy_keV");
-        analysisManager -> CreateNtupleDColumn("Sample_Mass_g");
-        analysisManager -> CreateNtupleDColumn("EDep_Value_PeV");
+        analysisManager -> CreateNtupleDColumn("Sample_Mass_kg");
+        analysisManager -> CreateNtupleDColumn("EDep_Value_TeV");
         analysisManager -> CreateNtupleDColumn("Radiation_Dose_mSv");
         analysisManager -> FinishNtuple(1);
     }
@@ -206,8 +206,8 @@ void MyRunAction::EndOfRunAction(const G4Run * thisRun)
     {   
         primaryEnergy = primaryEnergy / keV;
         totalMass = totalMass / kg;
-        TotalEnergyDeposit = TotalEnergyDeposit / MeV;
-        radiationDose = radiationDose / microgray;
+        TotalEnergyDeposit = TotalEnergyDeposit / TeV;
+        radiationDose = radiationDose / miligray;
 
         analysisManager -> FillNtupleDColumn(1, 0, numberOfEvents);
         analysisManager -> FillNtupleDColumn(1, 1, primaryEnergy);

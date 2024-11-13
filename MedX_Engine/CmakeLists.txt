@@ -36,6 +36,10 @@ elseif(WIN32)
       COPYONLY
     )
   endforeach()
+
+  # Add ROOT_DIR variable here
+  #set(ROOT_DIR "C:/root_v6.32.06/cmake")
+
   find_package(ROOT REQUIRED)
   include(${ROOT_USE_FILE})
 
@@ -51,6 +55,8 @@ endif()
 
 # Option to build with Geant4 UI and Visualization
 option(WITH_GEANT4_UIVIS "Build example with Geant4 UI and Vis drivers" ON)
+
+#set(Geant4_DIR "D:/Geant4/Geant4-11.2/lib/cmake/Geant4")
 
 # Find Geant4 libraries
 if(WITH_GEANT4_UIVIS)

@@ -427,6 +427,11 @@ void MyDetectorConstruction::DefineMaterials()
     TissueMix -> AddMaterial(Fat,    15.87 * perCent); 
     TissueMix -> AddMaterial(Skin,   04.77 * perCent);
 
+    TissueFAT = new G4Material("TissueFAT", 0.4 * g / cm3, 1);
+    TissueFAT->AddMaterial(Fat, 100 * perCent);
+
+
+
     OsBone  =  new G4Material("OsteoporoticBone", 0.80 *g/cm3, 8);
     OsBone -> AddMaterial(nist -> FindOrBuildMaterial("G4_H"),  06.4 * perCent);
     OsBone -> AddMaterial(nist -> FindOrBuildMaterial("G4_C"),  27.8 * perCent);

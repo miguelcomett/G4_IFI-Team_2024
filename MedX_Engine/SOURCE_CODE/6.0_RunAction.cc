@@ -47,18 +47,18 @@ MyRunAction::MyRunAction()
 
     if (arguments == 4)
     {
-        analysisManager -> CreateNtuple("Photons", "Photons");
-        analysisManager -> CreateNtupleDColumn("X_axis");
-        analysisManager -> CreateNtupleDColumn("Y_axis");
+        analysisManager -> CreateNtuple("Hits", "Hits");
+        analysisManager -> CreateNtupleDColumn("x_ax");
+        analysisManager -> CreateNtupleDColumn("y_ax");
         analysisManager -> CreateNtupleDColumn("Detected_Energy_keV");
         analysisManager -> FinishNtuple(0);
 
         analysisManager -> CreateNtuple("Run Summary", "Run Summary");
         analysisManager -> CreateNtupleDColumn("Number_of_Photons");
         analysisManager -> CreateNtupleDColumn("Initial_Energy_keV");
-        analysisManager -> CreateNtupleDColumn("Sample_Mass_g");
-        analysisManager -> CreateNtupleDColumn("EDep_Value_PeV");
-        analysisManager -> CreateNtupleDColumn("Radiation_Dose_mSv");
+        analysisManager -> CreateNtupleDColumn("Sample_Mass_kg");
+        analysisManager -> CreateNtupleDColumn("EDep_Value_TeV");
+        analysisManager -> CreateNtupleDColumn("Radiation_Dose_uSv");
         analysisManager -> FinishNtuple(1);
 
         analysisManager -> CreateNtuple("EDep Sample", "EDep Sample");
@@ -76,9 +76,9 @@ MyRunAction::MyRunAction()
         analysisManager -> CreateNtuple("Run Summary", "Run Summary");
         analysisManager -> CreateNtupleDColumn("Number_of_Photons");
         analysisManager -> CreateNtupleDColumn("Initial_Energy_keV");
-        analysisManager -> CreateNtupleDColumn("Sample_Mass_g");
-        analysisManager -> CreateNtupleDColumn("EDep_Value_PeV");
-        analysisManager -> CreateNtupleDColumn("Radiation_Dose_mSv");
+        analysisManager -> CreateNtupleDColumn("Sample_Mass_kg");
+        analysisManager -> CreateNtupleDColumn("EDep_Value_TeV");
+        analysisManager -> CreateNtupleDColumn("Radiation_Dose_uSv");
         analysisManager -> FinishNtuple(1);
     }
 }
@@ -137,7 +137,6 @@ void MyRunAction::BeginOfRunAction(const G4Run * thisRun)
     particleName = currentRun -> GetPrimaryParticleName();
     totalNumberOfEvents = currentRun -> GetNumberOfEventToBeProcessed();
     primaryEnergy = currentRun -> GetPrimaryEnergy();   
-    RunNumber = thisRun -> GetRunID();
 
     simulationStartTime = std::chrono::system_clock::now();
     std::time_t now_start = std::chrono::system_clock::to_time_t(simulationStartTime);
@@ -146,7 +145,7 @@ void MyRunAction::BeginOfRunAction(const G4Run * thisRun)
     if (!isMaster && threadID == 0)
     {
         std::cout << std::endl;
-        std::cout << "================= RUN " << RunNumber + 1 << " ==================" << std::endl;
+        std::cout << "================= RUN " << runID + 1 << " ==================" << std::endl;
         std::cout << "    The run is: " << totalNumberOfEvents << " " << particleName << " of " << G4BestUnit(primaryEnergy, "Energy") << std::endl;
         std::cout << "Start time: " << std::put_time(now_tm_0, "%H:%M:%S") << "    Date: " << std::put_time(now_tm_0, "%d-%m-%Y") << std::endl;
         std::cout << std::endl;
@@ -207,7 +206,7 @@ void MyRunAction::EndOfRunAction(const G4Run * thisRun)
     {   
         primaryEnergy = primaryEnergy / keV;
         totalMass = totalMass / kg;
-        TotalEnergyDeposit = TotalEnergyDeposit / MeV;
+        TotalEnergyDeposit = TotalEnergyDeposit / TeV;
         radiationDose = radiationDose / microgray;
 
         analysisManager -> FillNtupleDColumn(1, 0, numberOfEvents);
@@ -247,7 +246,8 @@ void MyRunAction::MergeRootFiles()
     #endif
 
     // Nueva ruta para Output/ fuera de ROOT/
-    std::string outputDirectory = std::filesystem::path(currentPath).parent_path().string() + "/ROOT/";
+    // std::string outputDirectory = std::filesystem::path(currentPath).parent_path().string() + "/ROOT/";
+    std::string outputDirectory = std::filesystem::path(currentPath).string() + "/ROOT/";
 
     // Crear la carpeta Output si no existe
     if (!std::filesystem::exists(outputDirectory))
@@ -272,9 +272,10 @@ void MyRunAction::MergeRootFiles()
     std::string mergedFileName;
     do
     {
-        mergedFileName = outputDirectory + fileName + "_" + std::to_string(fileIndex) + std::to_string(runID) + ".root";
+        mergedFileName = outputDirectory + fileName + std::to_string(fileIndex) + "_" + std::to_string(runID) + ".root";
         fileIndex++;
-    } while (std::filesystem::exists(mergedFileName));
+    } 
+    while (std::filesystem::exists(mergedFileName));
 
     // Iterar sobre los archivos en el directorio ROOT y agregar archivos .root al merger
     for (const auto& entry : std::filesystem::directory_iterator(rootDirectory))
@@ -333,9 +334,9 @@ void MyRunAction::SingleData(const std::string & mergedFileName)
     // Configura las ramas
     tree -> SetBranchAddress("Number_of_Photons",  & numberOfPhotons);
     tree -> SetBranchAddress("Initial_Energy_keV", & initialEnergy);
-    tree -> SetBranchAddress("Sample_Mass_g",      & sampleMass);
-    tree -> SetBranchAddress("EDep_Value_PeV",     & edepValue);
-    tree -> SetBranchAddress("Radiation_Dose_mSv", & radiationDose);
+    tree -> SetBranchAddress("Sample_Mass_kg",      & sampleMass);
+    tree -> SetBranchAddress("EDep_Value_TeV",     & edepValue);
+    tree -> SetBranchAddress("Radiation_Dose_uSv", & radiationDose);
 
     // Inicializa las variables para los valores maximos
     double maxNumberOfPhotons = -DBL_MAX;
@@ -385,9 +386,9 @@ void MyRunAction::SingleData(const std::string & mergedFileName)
     // Establecer las ramas del nuevo arbol con los valores maximos
     maxTree -> SetBranchAddress("Number_of_Photons",  & maxNumberOfPhotons);
     maxTree -> SetBranchAddress("Initial_Energy_keV", & maxInitialEnergy);
-    maxTree -> SetBranchAddress("Sample_Mass_g",      & maxSampleMass);
-    maxTree -> SetBranchAddress("EDep_Value_PeV",     & maxEdepValue);
-    maxTree -> SetBranchAddress("Radiation_Dose_mSv", & maxRadiationDose);
+    maxTree -> SetBranchAddress("Sample_Mass_kg",      & maxSampleMass);
+    maxTree -> SetBranchAddress("EDep_Value_TeV",     & maxEdepValue);
+    maxTree -> SetBranchAddress("Radiation_Dose_uSv", & maxRadiationDose);
 
     // Llenar el nuevo arbol con solo la entrada maxima
     maxTree -> Fill();

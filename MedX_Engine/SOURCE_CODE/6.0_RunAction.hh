@@ -57,7 +57,7 @@ class MyRunAction : public G4UserRunAction
         G4ParticleDefinition * particle;
 
         G4String particleName, directory, fileName;
-        G4int numberOfEvents, runID, index, totalNumberOfEvents, RunNumber, threadID;
+        G4int numberOfEvents, runID, index, totalNumberOfEvents, threadID;
         G4double energy, sampleMass, primaryEnergy, totalMass, durationInSeconds, TotalEnergyDeposit, radiationDose;
 
         const G4double milligray = 1.0e-3*gray;

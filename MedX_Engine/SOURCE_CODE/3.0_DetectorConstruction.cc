@@ -303,7 +303,7 @@ void MyDetectorConstruction::ConstructThorax()
         subtractedSolid2 = new G4SubtractionSolid("Inner0", Thorax2, Lungs, originMatrix, samplePosition);
         subtractedSolid3 = new G4SubtractionSolid("Inner1", subtractedSolid2, Heart, originMatrix, samplePosition);
         subtractedSolid4 = new G4SubtractionSolid("Inner2", subtractedSolid3, Ribcage, originMatrix, samplePosition);
-        logicFiller = new G4LogicalVolume(subtractedSolid4, Adipose, "Filler");
+        logicFiller = new G4LogicalVolume(subtractedSolid4, Light_Adipose, "Filler");
         new G4PVPlacement(Model3DRotation, G4ThreeVector(0, 0, 0), logicFiller, "Filler", logicWorld, false, 0, true);
         
         scoringVolume_5 = logicFiller;
@@ -422,7 +422,7 @@ void MyDetectorConstruction::DefineMaterials()
     TissueMix -> AddMaterial(Adipose, 15.87*perCent); 
     TissueMix -> AddMaterial(Skin, 04.77*perCent);
 
-    Light_Adipose = new G4Material("Light_Adipose", 0.4 * g / cm3, 1);
+    Light_Adipose = new G4Material("Light_Adipose", 0.6 * g / cm3, 1);
     Light_Adipose -> AddMaterial(Adipose, 100*perCent);
 
     OsBone  =  new G4Material("OsteoporoticBone", 0.80 *g/cm3, 8);

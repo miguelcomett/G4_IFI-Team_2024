@@ -58,7 +58,7 @@ MyRunAction::MyRunAction()
         analysisManager -> CreateNtupleDColumn("Initial_Energy_keV");
         analysisManager -> CreateNtupleDColumn("Sample_Mass_kg");
         analysisManager -> CreateNtupleDColumn("EDep_Value_TeV");
-        analysisManager -> CreateNtupleDColumn("Radiation_Dose_mSv");
+        analysisManager -> CreateNtupleDColumn("Radiation_Dose_uSv");
         analysisManager -> FinishNtuple(1);
 
         analysisManager -> CreateNtuple("EDep Sample", "EDep Sample");
@@ -78,7 +78,7 @@ MyRunAction::MyRunAction()
         analysisManager -> CreateNtupleDColumn("Initial_Energy_keV");
         analysisManager -> CreateNtupleDColumn("Sample_Mass_kg");
         analysisManager -> CreateNtupleDColumn("EDep_Value_TeV");
-        analysisManager -> CreateNtupleDColumn("Radiation_Dose_mSv");
+        analysisManager -> CreateNtupleDColumn("Radiation_Dose_uSv");
         analysisManager -> FinishNtuple(1);
     }
 }
@@ -207,7 +207,7 @@ void MyRunAction::EndOfRunAction(const G4Run * thisRun)
         primaryEnergy = primaryEnergy / keV;
         totalMass = totalMass / kg;
         TotalEnergyDeposit = TotalEnergyDeposit / TeV;
-        radiationDose = radiationDose / miligray;
+        radiationDose = radiationDose / microgray;
 
         analysisManager -> FillNtupleDColumn(1, 0, numberOfEvents);
         analysisManager -> FillNtupleDColumn(1, 1, primaryEnergy);

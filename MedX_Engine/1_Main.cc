@@ -8,7 +8,7 @@
 #include "G4UIManager.hh"
 #include "G4VisManager.hh"
 #include "G4VisExecutive.hh"
-#include "G4UIExecutive.hh"
+#include "G4UIQt.hh"
 #include "G4RunManagerFactory.hh"
 
 #include "2.0_PhysicsList.hh"
@@ -57,28 +57,27 @@ int main(int argc, char** argv)
     #ifdef _WIN32
         std::cout << std::endl;
         std::cout << "~~~~~~~~~~~~ Running on Windows ~~~~~~~~~~~" << std::endl;
-        auto * runManager =G4RunManagerFactory::CreateRunManager(G4RunManagerType::Default);
+        auto * runManager = G4RunManagerFactory::CreateRunManager(G4RunManagerType::Default);
     #endif
-
 
     long seed = std::time(nullptr);
     CLHEP::HepRandom::setTheSeed(seed);
 
-    runManager -> SetUserInitialization(new MyDetectorConstruction);
-    runManager -> SetUserInitialization(new MyPhysicsList);
-    runManager -> SetUserInitialization(new MyActionInitialization); 
+    runManager->SetUserInitialization(new MyDetectorConstruction);
+    runManager->SetUserInitialization(new MyPhysicsList);
+    runManager->SetUserInitialization(new MyActionInitialization); 
 
-    G4UImanager * UImanager = G4UImanager::GetUIpointer();
+    G4UImanager* UImanager = G4UImanager::GetUIpointer();
     
     if(argc == 1)
     {
-        G4VisManager * visManager = new G4VisExecutive("quiet");
-        visManager -> Initialize();
+        G4VisManager* visManager = new G4VisExecutive(); // "quiet"
+        visManager->Initialize();
 
-        G4UIExecutive * UI = nullptr;
-        UI = new G4UIExecutive(argc, argv);
-        UImanager -> ApplyCommand("/control/execute Visualization.mac");
-        UI -> SessionStart();
+        // Cambiando a G4UIQt en lugar de G4UIExecutive
+        G4UIQt* UI = new G4UIQt(argc, argv); // Usando G4UIQt en lugar de G4UIExecutive
+        UImanager->ApplyCommand("/control/execute vis.mac"); //Visualization.mac
+        UI->SessionStart();
         delete UI;
         delete visManager;
     }
@@ -86,7 +85,7 @@ int main(int argc, char** argv)
     {
         G4String command = "/control/execute ";
         G4String fileName = argv[1];
-        UImanager -> ApplyCommand(command + fileName);
+        UImanager->ApplyCommand(command + fileName);
     }
 
     delete runManager;

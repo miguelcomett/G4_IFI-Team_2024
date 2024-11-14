@@ -4,7 +4,7 @@ namespace G4_PCM
 {
     // Constructor
     DetectorConstruction::DetectorConstruction()
-        : fTargetThickness(10 * mm), // Valor predeterminado de grosor del objetivo 10k joya
+        : fTargetThickness(30 * mm), // Valor predeterminado de grosor del objetivo 10k joya
         fMessenger(new DetectorConstructionMessenger(this)) // Crear el mensajero
     {
         // Crear una instancia de STLGeometryReader
@@ -37,7 +37,7 @@ namespace G4_PCM
         targetRotation = new G4RotationMatrix(0, -90 * deg, 0);
 
         // Tamaño del detector
-        detectorSizeXY = 35 * cm;
+        detectorSizeXY = 40 * cm;
         detectorSizeZ = 5 * cm;
 
         // Parámetros del filtro
@@ -326,9 +326,9 @@ namespace G4_PCM
     void DetectorConstruction::ConstructTungstenPlate()
     {
         // Dimensiones de la placa (ancho, alto, grosor)
-        G4double plateWidth = 10.0 * cm;
+        G4double plateWidth = 15.0 * cm;
         G4double plateHeight = fTargetThickness;
-        G4double plateThickness = 10.0 * cm;
+        G4double plateThickness = 20.0 * cm;
 
         // Crear la geometría de la placa (una caja)
         G4Box* solidTungstenPlate = new G4Box("TungstenPlate", plateWidth / 2.0, plateHeight / 2.0, plateThickness / 2.0);
@@ -336,8 +336,8 @@ namespace G4_PCM
         // Definir el volumen lógico de la placa usando el material tungsteno
         G4LogicalVolume* logicTungstenPlate = new G4LogicalVolume(solidTungstenPlate, tungsten, "LogicTungstenPlate");
 
-        // Crear rotación en una línea (45 grados en X, 30 en Y, 60 en Z)
-        plateRotation = new G4RotationMatrix(0, -17 * deg, 0);
+        // Crear rotación en una línea (45 grados en X, 30 en Y, 60 en Z) 17
+        plateRotation = new G4RotationMatrix(0, -13 * deg, 0);
 
         // Posición de la placa
         G4ThreeVector platePosition(0, 0, 0); // Posición de la placa
@@ -433,7 +433,7 @@ namespace G4_PCM
             silicon,
             "Detector");
 
-        G4ThreeVector detectorPos = G4ThreeVector(0, 0, 100 * cm); // Era 20
+        G4ThreeVector detectorPos = G4ThreeVector(0, 0, 60 * cm); // Era 20
         G4RotationMatrix* detRotation = new G4RotationMatrix();
 
         // Colocar el detector

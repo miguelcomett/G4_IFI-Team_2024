@@ -186,7 +186,7 @@ def Heatmap_from_Dask(x_data, y_data, size, log_factor, x_shift, y_shift, save_a
 
     plt.figure(figsize = (14, 4))
     plt.subplot(1, 3, 1); plt.imshow(normal_map, cmap = 'gray', extent = [x_edges[0], x_edges[-1], y_edges[0], y_edges[-1]]); plt.axis('off')
-    if save_as != '': plt.savefig('Results/' + save_as + '.png', bbox_inches = 'tight', dpi = 900)
+    if save_as != '': plt.savefig(save_as + '.png', bbox_inches = 'tight', dpi = 900)
     plt.subplot(1, 3, 2); plt.plot(normal_map[2*rows//3,:])
     plt.subplot(1, 3, 3); plt.plot(normal_map[:,rows//2])
 

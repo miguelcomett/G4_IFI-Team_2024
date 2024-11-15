@@ -121,12 +121,12 @@ def ModifyRoot(directory, root_name, tree_name, branch_names, output_name, new_t
 
 # 2.0. ========================================================================================================================================================
 
-def Root_to_Dask(directory, root_name_starts, tree_name, x_branch, y_branch):
+def Root_to_Dask(directory, root_name, tree_name, x_branch, y_branch):
     
     import uproot; import numpy as np
     import dask.array as da; import dask.dataframe as dd
 
-    file_name = directory + root_name_starts + ".root"
+    file_name = directory + root_name 
 
     with uproot.open(file_name) as root_file:
         tree = root_file[tree_name]

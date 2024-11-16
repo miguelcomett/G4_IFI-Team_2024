@@ -76,11 +76,14 @@ def MergeRoots_Parallel(directory, starts_with, output_name, max_workers = 9):
                 file_list.append(os.path.join(directory, file))
 
     # Crear el nombre de archivo de salida con numeración si ya existe
-    merged_file = os.path.join(directory, output_name)
-    counter = 0
-    while os.path.exists(f"{merged_file}_{counter}.root"):
-        counter += 1
-    merged_file = f"{merged_file}_{counter}.root"
+    merged_file = directory + output_name 
+    if not os.path.exists(merged_file + ".root"):
+        merged_file = merged_file + ".root"
+    if os.path.exists(merged_file + ".root"):
+        counter = 0
+        while os.path.exists(f"{merged_file}_{counter}.root"):
+            counter += 1
+        merged_file = f"{merged_file}_{counter}.root"
 
     # Crear un lock para el acceso a f_out
     lock = threading.Lock()

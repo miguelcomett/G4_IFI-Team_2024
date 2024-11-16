@@ -24,15 +24,15 @@ MyRunAction::MyRunAction()
         analysisManager -> CreateNtupleDColumn("Photons'_Wavelengths_nm");
         analysisManager -> FinishNtuple(0);
 
-        analysisManager -> CreateNtuple("Energy", "Energy");
-        analysisManager -> CreateNtupleDColumn("Energy_Deposition_keV");
-        analysisManager -> FinishNtuple(1);
-
         analysisManager -> CreateNtuple("Hits", "Hits");
         analysisManager -> CreateNtupleIColumn("Event_Count");
         analysisManager -> CreateNtupleDColumn("X_Detectors");
         analysisManager -> CreateNtupleDColumn("Y_Detectors");
         analysisManager -> CreateNtupleDColumn("Z_Detectors");
+        analysisManager -> FinishNtuple(2);
+
+        analysisManager -> CreateNtuple("Energy", "Energy");
+        analysisManager -> CreateNtupleDColumn("Energy_Deposition_keV");
         analysisManager -> FinishNtuple(2);
     }
 
@@ -63,7 +63,7 @@ MyRunAction::MyRunAction()
 
         analysisManager -> CreateNtuple("EDep Sample", "EDep Sample");
         analysisManager -> CreateNtupleDColumn("EDep_Spectra");
-        analysisManager -> FinishNtuple(2);
+        analysisManager -> FinishNtuple(1);
     }
 
     if (arguments == 5)

@@ -73,6 +73,10 @@ int main(int argc, char** argv)
         UImanager->ApplyCommand(command + fileName);
     }
 
+    UImanager -> ApplyCommand("/control/verbose 0");
+    UImanager -> ApplyCommand("/run/verbose 0");
+    UImanager -> ApplyCommand("/tracking/verbose 0");
+
     delete runManager;
 }
 

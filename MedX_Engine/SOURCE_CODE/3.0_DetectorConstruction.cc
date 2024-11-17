@@ -2,6 +2,8 @@
 
 MyDetectorConstruction::MyDetectorConstruction()
 {
+    G4GeometryManager::GetInstance()->SetWorldMaximumExtent(100.0 * cm);
+
     DefineMaterials();
     stlReader = new STLGeometryReader();
 
@@ -30,9 +32,6 @@ MyDetectorConstruction::MyDetectorConstruction()
         isThorax = true;
         isFiller = true;
         isTumor = false;
-
-    G4GeometryManager::GetInstance()->SetWorldMaximumExtent(100.0 * cm);
-    // G4GeometryTolerance::GetInstance()->SetSurfaceTolerance(0.001 * mm);
 }
 
 MyDetectorConstruction::~MyDetectorConstruction()

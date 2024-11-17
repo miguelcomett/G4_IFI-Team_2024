@@ -28,6 +28,9 @@
 #include "G4PhysicalVolumeStore.hh"
 #include "G4SubtractionSolid.hh"
 
+#include "G4GeometryManager.hh"
+#include "G4GeometryTolerance.hh"
+
 #include "3.1_DetectorAction.hh"
 #include "3.2_Geometry3D.hh"
 #include "3.3_GeometryReader.hh"

@@ -15,7 +15,6 @@ MyPrimaryGenerator::~MyPrimaryGenerator() {delete particleGun; delete GeneratorM
 
 void MyPrimaryGenerator::GeneratePrimaries(G4Event * anEvent)
 { 
-    if (fGunMode == 0) { } // Energia monocromatica  particleGun->SetParticleEnergy(energy); No definir energia si se quiere cambio dimaico
     if (fGunMode == 1) // Espectro real
     {
 	    realEnergy = InverseCumul(); 
@@ -35,8 +34,7 @@ void MyPrimaryGenerator::GeneratePrimaries(G4Event * anEvent)
     G4ThreeVector photonPosition(x0, y0, z0);
     particleGun -> SetParticlePosition(photonPosition);
 
-    fullAngle = true;
-    if (fullAngle == true) {angle = 2.0;} else {angle = 1.0;}
+    fullAngle = true; if (fullAngle == true) {angle = 2.0;} else {angle = 1.0;}
 
     angleInRadians = fGunAngle * (2*pi / 360.0);
     angleInCarts = std::tan(angleInRadians);
@@ -44,8 +42,6 @@ void MyPrimaryGenerator::GeneratePrimaries(G4Event * anEvent)
     phi   = angleInCarts * (G4UniformRand() - 0.5) * angle;
     G4ThreeVector photonMomentum(theta, phi, 1.0);
     particleGun -> SetParticleMomentumDirection(photonMomentum);
-
-    // G4double energy = particleGun -> GetParticleEnergy();
 
     particleGun -> GeneratePrimaryVertex(anEvent);
 }
@@ -98,7 +94,7 @@ void MyPrimaryGenerator::InitFunction()
 	// Mostrar los datos leídos y la cantidad de puntos
     G4cout << "Número de puntos leídos: " << fNPoints << G4endl;
     for (size_t i = 0; i < xx.size(); ++i) 
-    { 
+    {
         G4cout << "Energía: " << xx[i] / keV << " keV, Intensidad: " << yy[i] << G4endl; 
     }
 

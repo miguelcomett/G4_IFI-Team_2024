@@ -29,7 +29,7 @@ MyRunAction::MyRunAction()
         analysisManager -> CreateNtupleDColumn("X_Detectors");
         analysisManager -> CreateNtupleDColumn("Y_Detectors");
         analysisManager -> CreateNtupleDColumn("Z_Detectors");
-        analysisManager -> FinishNtuple(2);
+        analysisManager -> FinishNtuple(1);
 
         analysisManager -> CreateNtuple("Energy", "Energy");
         analysisManager -> CreateNtupleDColumn("Energy_Deposition_keV");

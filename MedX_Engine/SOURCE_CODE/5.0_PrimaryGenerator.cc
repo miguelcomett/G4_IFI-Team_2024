@@ -1,6 +1,6 @@
 #include "5.0_PrimaryGenerator.hh"
 
-MyPrimaryGenerator::MyPrimaryGenerator(): fGunMode(0), fPgun(-45.0*cm), fGunAngle(0.0), energy(80*keV), fGunRadius(10.0), spectrumFileName("fSpectrum.txt"), GeneratorMessenger(new PrimaryGeneratorMessenger(this))
+MyPrimaryGenerator::MyPrimaryGenerator(): fGunMode(0), fPgun(-45.0*cm), fGunAngle(0.0), energy(80*keV), fGunRadius(10.0), spectrumFileName("fSpectrum140.txt"), GeneratorMessenger(new PrimaryGeneratorMessenger(this))
 {
     particleGun = new G4ParticleGun(1);
     particleTable = G4ParticleTable::GetParticleTable();

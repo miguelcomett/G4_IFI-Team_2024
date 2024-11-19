@@ -140,7 +140,7 @@ def Root_to_Dask(directory, root_name, tree_name, x_branch, y_branch):
         x_values = tree[x_branch].array(library="np") if x_branch in tree else print('error_x')
         y_values = tree[y_branch].array(library="np") if y_branch in tree else print('error_y')
 
-        decimal_places = 3
+        decimal_places = 1
 
         if x_values is not None:
             x_values = np.round(x_values, decimal_places)
@@ -167,12 +167,13 @@ def Heatmap_from_Dask(x_data, y_data, size, log_factor, x_shift, y_shift, save_a
 
     import matplotlib.pyplot as plt; import numpy as np
     import dask.array as da; import dask.dataframe as dd
-
+    
     x_data_shifted = x_data - x_shift
     y_data_shifted = y_data - y_shift
 
     pixel_size = 0.5 # mm
     set_bins = np.arange(-size, size + pixel_size, pixel_size)
+
     heatmap, x_edges, y_edges = da.histogram2d(x_data_shifted, y_data_shifted, bins = [set_bins, set_bins])
     heatmap = heatmap.T
     heatmap = np.rot90(heatmap, 2)

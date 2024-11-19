@@ -21,7 +21,7 @@ MyDetectorConstruction::MyDetectorConstruction()
     armRotation = new G4RotationMatrix(0, 90*deg, 0);
     samplePosition = G4ThreeVector(0.0, 0.0, 0.0);
 
-    targetThickness = 10 * mm;
+    targetThickness = 12 * mm;
 
     isArm = false;
         isBoneDivided = false;

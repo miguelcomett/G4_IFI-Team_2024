@@ -7,10 +7,10 @@
 /myDetector/Rotation 0
 
 /Pgun/X 0 cm
-/Pgun/Y 10 cm
+/Pgun/Y 0 cm
 /Pgun/SpanX 220 mm
 /Pgun/SpanY 0.05 mm
 
 /gun/energy 80 keV
-/run/printProgress 
-/run/beamOn 1000
+/run/printProgress 10000
+/run/beamOn 50000

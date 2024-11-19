@@ -17,8 +17,10 @@
 #include "6.1_Run.hh"
 #include "5.1_GeneratorMessenger.hh"
 
-class PrimaryGeneratorMessenger; 
-class MyPrimaryGenerator:public G4VUserPrimaryGeneratorAction
+class PrimaryGeneratorMessenger;
+class MyDetectorConstruction;
+
+class MyPrimaryGenerator : public G4VUserPrimaryGeneratorAction
 {
     public:
 
@@ -69,6 +71,12 @@ class MyPrimaryGenerator:public G4VUserPrimaryGeneratorAction
         std::vector<G4double>  fSlp;         //slopes
         std::vector<G4double>  fYC;          //cumulative function of Y
         G4double               fYmax = 0.;   //max(Y)
+        
+        // Messangers   
+        G4int GunMode;
+        G4double GunXpos, GunYpos, GunZpos, GunSpanX, GunSpanY, GunAngle, realEnergy;
+
+        const MyDetectorConstruction* fDetectorConstruction;
 };
 
 #endif

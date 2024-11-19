@@ -460,3 +460,7 @@ void MyDetectorConstruction::DefineMaterials()
     worldMaterialProperties -> AddProperty("RINDEX", PhotonEnergy, RindexWorld, 2);
     worldMaterial -> SetMaterialPropertiesTable(worldMaterialProperties);
 }
+
+double MyDetectorConstruction::GetThoraxAngle() const {
+    return thoraxAngle;
+}

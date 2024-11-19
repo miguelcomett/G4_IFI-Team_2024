@@ -6,6 +6,8 @@ MyDetectorConstruction::MyDetectorConstruction() : gen(rd()),                   
                                                     posDist(-1.0 * mm, 1.0 * mm),
                                                     posYDist(-40 * mm, 40 * mm)
 {
+    G4GeometryManager::GetInstance()->SetWorldMaximumExtent(100.0 * cm);
+
     DefineMaterials();
     stlReader = new STLGeometryReader();
 
@@ -15,11 +17,15 @@ MyDetectorConstruction::MyDetectorConstruction() : gen(rd()),                   
     DetectorMessenger -> DeclareProperty("ThicknessTarget", targetThickness, "Thickness of the target");
     DetectorMessenger -> DeclareProperty("Rotation", thoraxAngle, "Rotate the 3D model");
 
+    thoraxAngle = 90;
+
     boneHeight = 60 * mm;
     innerBoneRadius = 0.0;
     outerBoneRadius = 22.5 * mm;
     armRotation = new G4RotationMatrix(0, 90*deg, 0);
     samplePosition = G4ThreeVector(0.0, 0.0, 0.0);
+
+    targetThickness = 12 * mm;
 
     isArm = false;
         isBoneDivided = false;
@@ -544,4 +550,8 @@ void MyDetectorConstruction::DefineMaterials()
     G4MaterialPropertiesTable * worldMaterialProperties = new G4MaterialPropertiesTable();
     worldMaterialProperties -> AddProperty("RINDEX", PhotonEnergy, RindexWorld, 2);
     worldMaterial -> SetMaterialPropertiesTable(worldMaterialProperties);
+}
+
+double MyDetectorConstruction::GetThoraxAngle() const {
+    return thoraxAngle;
 }

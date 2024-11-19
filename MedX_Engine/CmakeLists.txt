@@ -105,6 +105,11 @@ set(ROOT "${PROJECT_BINARY_DIR}/ROOT_temp")
 add_definitions(-DROOT_OUTPUT_DIR="${ROOT}")
 file(MAKE_DIRECTORY ${ROOT})
 
+
+#find_package(Qt5 REQUIRED Widgets)
+#target_link_libraries(your_target_name Qt5::Widgets)
+
+
 # Custom target for building the main executable
 add_custom_target(IFI.03.Radiography DEPENDS Sim)
 

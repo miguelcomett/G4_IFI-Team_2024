@@ -30,6 +30,9 @@
 #include "G4Ellipsoid.hh"
 #include "G4MultiUnion.hh"
 
+#include "G4GeometryManager.hh"
+#include "G4GeometryTolerance.hh"
+
 #include "3.1_DetectorAction.hh"
 #include "3.2_Geometry3D.hh"
 #include "3.3_GeometryReader.hh"
@@ -55,6 +58,8 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
         G4Material * GetMaterial() const {return materialTarget;}
 	    G4double GetThickness() const {return targetThickness;}
 
+        double GetThoraxAngle() const;
+
         G4bool  isArm, isHealthyBone, isOsteoBone, isBoneDivided, 
                 is3DModel, isHeart, isLungs, isRibcage, isFiller, isThorax,
                 checkOverlaps, isTumor, isTestParametrization;
@@ -77,13 +82,13 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
         G4GenericMessenger * DetectorMessenger;
 
         G4int numPores;
-        G4int DetColumnNum = 2, DetRowNum = 2; 
+        G4int DetColumnNum = 10, DetRowNum = 10; 
         
         G4double innerBoneRadius, outerBoneRadius, boneHeight, poreRadius, xWorld, yWorld, zWorld, 
                  regionMinZ, regionMaxZ, regionMinRadius, regionMaxRadius, r, theta, z, x, y,
                  innerMuscleRadius, outerMuscleRadius, innerGrasaRadius, outerGrasaRadius, innerSkinRadius, outerSkinRadius,
                  fractionMass_VO2, fractionMass_SiO2, fTargetAngle, tumorRadius;
-        G4double thoraxAngle = 0.0, targetThickness = 10 * mm;
+        G4double thoraxAngle, targetThickness;
 
         G4Box    * solidWorld, * solidDetector, * solidRadiator;
         G4Tubs   * solidBone, * solidMuscle, * solidGrasa, * solidSkin, * solidBone2, * osteoBone, * healthyBone; 
@@ -108,20 +113,8 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
         
         STLGeometryReader * stlReader;
         G4TessellatedSolid * Ribcage, * Lungs, * Heart;
-        G4VSolid * Thorax1, * Thorax2, * AccumulatedLungs;
+        G4VSolid * Thorax1, * Thorax2;
         G4SubtractionSolid * subtractedSolid0, * subtractedSolid1, * subtractedSolid2, * subtractedSolid3, * subtractedSolid4, * subtractedLung;
-        G4MultiUnion * Tumors; 
-
-        //Ellipsoid parameters
-        G4double a, b, c;
-        // Miembros para generación de números aleatorios
-        std::random_device rd;
-        std::mt19937 gen; // Motor de generación de números aleatorios
-        std::uniform_real_distribution<> randomDist; // Distribución uniforme [0.0, 1.0]
-        std::uniform_real_distribution<> radiusDist; // Distribución para radios [5.0 mm, 15.0 mm]
-        std::uniform_real_distribution<> posDist; // Distribucion para posiciones XZ
-        std::uniform_real_distribution<> posYDist; //Distribucion para unicamente la coordenada Y
-
 };
 
 #endif 

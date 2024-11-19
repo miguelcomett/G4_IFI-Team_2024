@@ -1,6 +1,8 @@
 #include "5.0_PrimaryGenerator.hh"
 
-MyPrimaryGenerator::MyPrimaryGenerator(): fGunMode(0), fPgun(-45.0*cm), fGunAngle(0.0), energy(80*keV), fGunRadius(10.0), spectrumFileName("fSpectrum.txt"), GeneratorMessenger(new PrimaryGeneratorMessenger(this))
+MyPrimaryGenerator::MyPrimaryGenerator(): 
+GunMode(0), GunXpos(0), GunYpos(0), GunZpos(-450*mm), GunAngle(0.0), GunSpanX(100*mm), GunSpanY(100*mm), 
+spectrumFile("fSpectrum140.txt"), GeneratorMessenger(new PrimaryGeneratorMessenger(this))
 {
     particleGun = new G4ParticleGun(1);
     particleTable = G4ParticleTable::GetParticleTable();
@@ -8,83 +10,106 @@ MyPrimaryGenerator::MyPrimaryGenerator(): fGunMode(0), fPgun(-45.0*cm), fGunAngl
     particle = particleTable -> FindParticle(particleName);
     particleGun -> SetParticleDefinition(particle);   
 
-   if (fGunMode == 1) { InitFunction(); }
+   if (GunMode == 1) { SpectraFunction(); }
 }
 
 MyPrimaryGenerator::~MyPrimaryGenerator() {delete particleGun; delete GeneratorMessenger;}
 
 void MyPrimaryGenerator::GeneratePrimaries(G4Event * anEvent)
 { 
-    if (fGunMode == 0) { } // Energia monocromatica  particleGun->SetParticleEnergy(energy); No definir energia si se quiere cambio dimaico
-    if (fGunMode == 1) // Espectro real
+    if (GunMode == 1) // Espectro real
     {
 	    realEnergy = InverseCumul(); 
 	    particleGun -> SetParticleEnergy(realEnergy);
     }
 	
-    x0 = 2 * (G4UniformRand() - 0.5);
+    double algo = fDetectorConstruction->GetThoraxAngle();
+
+    // x0 = 2 * (G4UniformRand() - 0.5);
+    // x0 = x0 * GunSpanX;
+    x0 = G4RandGauss::shoot(0, GunSpanX / 1.5);
+    // x0 = x0 * std::cos(algo/2);
+
     y0 = 2 * (G4UniformRand() - 0.5);
+    y0 = y0 * GunSpanY;
 
-    x0 = x0 * fGunRadius * cm;
-    y0 = y0 * fGunRadius * cm;
-    z0 = fPgun; // Messenger used
-    
-    x0 = x0 - 1;
-    y0 = y0 - 1;
+    x0 = x0 + GunXpos; 
+    y0 = y0 + GunYpos;
+    z0 = GunZpos; 
 
-    G4ThreeVector photonPosition(x0, y0, z0);
+    photonPosition = G4ThreeVector(x0, y0, z0);
     particleGun -> SetParticlePosition(photonPosition);
 
-    fullAngle = true;
-    if (fullAngle == true) {angle = 2.0;} else {angle = 1.0;}
+    fullAngle = true; if (fullAngle == true) {angle = 2.0;} else {angle = 1.0;}
 
-    angleInRadians = fGunAngle * (2*pi / 360.0);
+    angleInRadians = GunAngle * (2*pi / 360.0);
     angleInCarts = std::tan(angleInRadians);
+    
     theta = angleInCarts * (G4UniformRand() - 0.5) * angle;
     phi   = angleInCarts * (G4UniformRand() - 0.5) * angle;
-    G4ThreeVector photonMomentum(theta, phi, 1.0);
+    
+    photonMomentum = G4ThreeVector(theta, phi, 1.0);
     particleGun -> SetParticleMomentumDirection(photonMomentum);
-
-    // G4double energy = particleGun -> GetParticleEnergy();
 
     particleGun -> GeneratePrimaryVertex(anEvent);
 }
 
 // MESSENGERS ===================================================================================================
 
-void MyPrimaryGenerator::SetGunZpos(G4double zpos)
+void MyPrimaryGenerator::SetGunXpos(G4double GunXpos)
 {
-    G4cout << "Setting source position to: " << zpos << G4endl;
-    if (zpos != fPgun) { fPgun = zpos; G4cout << "Source Position changed to: " << fPgun << G4endl;}
+    G4cout << "Setting source position to: " << GunXpos << G4endl;
+    if (this -> GunXpos != GunXpos) {this -> GunXpos = GunXpos; G4cout << "Source Position changed to: " << GunXpos << G4endl;}
     else { G4cout << "Same Position Selected." << G4endl;}
 }
 
-void MyPrimaryGenerator::SetGunRadius(G4double radius)
+void MyPrimaryGenerator::SetGunYpos(G4double GunYpos)
 {
-    G4cout << "Setting source radius to: " << radius << G4endl;
-    if(radius != fGunRadius) { fGunRadius = radius; G4cout << "Source radius changed to: " << fGunRadius << G4endl;}
-    else { G4cout << "Same Radius selected." << G4endl; }
+    G4cout << "Setting source position to: " << GunYpos << G4endl;
+    if (this -> GunYpos != GunYpos) {this -> GunYpos = GunYpos; G4cout << "Source Position changed to: " << GunYpos << G4endl;}
+    else { G4cout << "Same Position Selected." << G4endl;}
+}
+
+void MyPrimaryGenerator::SetGunZpos(G4double GunZpos)
+{
+    G4cout << "Setting source position to: " << GunZpos << G4endl;
+    if (this -> GunZpos != GunZpos) {this -> GunZpos = GunZpos; G4cout << "Source Position changed to: " << GunZpos << G4endl;}
+    else { G4cout << "Same Position Selected." << G4endl;}
+}
+
+void MyPrimaryGenerator::SetGunSpanX(G4double SpanX)
+{
+    G4cout << "Setting source Span to: " << SpanX << G4endl;
+    if(SpanX != GunSpanX) { GunSpanX = SpanX; G4cout << "Source Span changed to: " << GunSpanX << G4endl;}
+    else { G4cout << "Same Span selected." << G4endl; }
+}
+
+void MyPrimaryGenerator::SetGunSpanY(G4double SpanY)
+{
+    G4cout << "Setting source Span to: " << SpanY << G4endl;
+    if(SpanY != GunSpanY) { GunSpanY = SpanY; G4cout << "Source Span changed to: " << GunSpanY << G4endl;}
+    else { G4cout << "Same Span selected." << G4endl; }
 }
 
 void MyPrimaryGenerator::SetGunAngle(G4double angle)
 {
     G4cout << "Setting source angle to: " << angle << G4endl;
-    if(angle != fGunAngle) { fGunAngle = angle; G4cout << "Source Angle changed to: " << fGunAngle << G4endl;}
+    if(angle != GunAngle) { GunAngle = angle; G4cout << "Source Angle changed to: " << GunAngle << G4endl;}
     else { G4cout << "Same Angle selected." << G4endl; }
 }
 
 void MyPrimaryGenerator::SetGunMode(G4int mode)
 {
     G4cout << "Setting mode to: " << mode << G4endl; 
-    if(mode == 0) { fGunMode = 0; G4cout << "Monocromatic Mode" << G4endl; }
+    if(mode == 0) { GunMode = 0; G4cout << "Monocromatic Mode" << G4endl; }
     else 
-    if(mode == 1) { fGunMode = 1; G4cout << "Real Spectrum Selected" << G4endl; }
+    if(mode == 1) { GunMode = 1; G4cout << "Real Spectrum Selected" << G4endl; }
     else { G4cout << "No mode selected. Default value applied." << G4endl; }
 }
 
 // CREATE SPECTRUM, DON'T MOVE ===================================================================================
 
-void MyPrimaryGenerator::InitFunction()
+void MyPrimaryGenerator::SpectraFunction()
 {
 	// tabulated function 
 	// Y is assumed positive, linear per segment, continuous
@@ -93,12 +118,12 @@ void MyPrimaryGenerator::InitFunction()
     fNPoints = 0;
 
 	// Leer los datos desde el archivo "datos.txt"
-    ReadSpectrumFromFile(spectrumFileName, xx, yy, fNPoints);
+    ReadSpectrumFromFile(spectrumFile, xx, yy, fNPoints);
 
 	// Mostrar los datos leídos y la cantidad de puntos
     G4cout << "Número de puntos leídos: " << fNPoints << G4endl;
     for (size_t i = 0; i < xx.size(); ++i) 
-    { 
+    {
         G4cout << "Energía: " << xx[i] / keV << " keV, Intensidad: " << yy[i] << G4endl; 
     }
 

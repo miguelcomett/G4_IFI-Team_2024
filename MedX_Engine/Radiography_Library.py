@@ -76,11 +76,14 @@ def MergeRoots_Parallel(directory, starts_with, output_name, max_workers = 9):
                 file_list.append(os.path.join(directory, file))
 
     # Crear el nombre de archivo de salida con numeración si ya existe
-    merged_file = os.path.join(directory, output_name)
-    counter = 0
-    while os.path.exists(f"{merged_file}_{counter}.root"):
-        counter += 1
-    merged_file = f"{merged_file}_{counter}.root"
+    merged_file = directory + output_name 
+    if not os.path.exists(merged_file + ".root"):
+        merged_file = merged_file + ".root"
+    if os.path.exists(merged_file + ".root"):
+        counter = 0
+        while os.path.exists(f"{merged_file}_{counter}.root"):
+            counter += 1
+        merged_file = f"{merged_file}_{counter}.root"
 
     # Crear un lock para el acceso a f_out
     lock = threading.Lock()
@@ -121,12 +124,12 @@ def ModifyRoot(directory, root_name, tree_name, branch_names, output_name, new_t
 
 # 2.0. ========================================================================================================================================================
 
-def Root_to_Dask(directory, root_name_starts, tree_name, x_branch, y_branch):
+def Root_to_Dask(directory, root_name, tree_name, x_branch, y_branch):
     
     import uproot; import numpy as np
     import dask.array as da; import dask.dataframe as dd
 
-    file_name = directory + root_name_starts + ".root"
+    file_name = directory + root_name 
 
     with uproot.open(file_name) as root_file:
         tree = root_file[tree_name]
@@ -137,7 +140,7 @@ def Root_to_Dask(directory, root_name_starts, tree_name, x_branch, y_branch):
         x_values = tree[x_branch].array(library="np") if x_branch in tree else print('error_x')
         y_values = tree[y_branch].array(library="np") if y_branch in tree else print('error_y')
 
-        decimal_places = 3
+        decimal_places = 1
 
         if x_values is not None:
             x_values = np.round(x_values, decimal_places)
@@ -164,12 +167,13 @@ def Heatmap_from_Dask(x_data, y_data, size, log_factor, x_shift, y_shift, save_a
 
     import matplotlib.pyplot as plt; import numpy as np
     import dask.array as da; import dask.dataframe as dd
-
+    
     x_data_shifted = x_data - x_shift
     y_data_shifted = y_data - y_shift
 
     pixel_size = 0.5 # mm
     set_bins = np.arange(-size, size + pixel_size, pixel_size)
+
     heatmap, x_edges, y_edges = da.histogram2d(x_data_shifted, y_data_shifted, bins = [set_bins, set_bins])
     heatmap = heatmap.T
     heatmap = np.rot90(heatmap, 2)
@@ -186,7 +190,7 @@ def Heatmap_from_Dask(x_data, y_data, size, log_factor, x_shift, y_shift, save_a
 
     plt.figure(figsize = (14, 4))
     plt.subplot(1, 3, 1); plt.imshow(normal_map, cmap = 'gray', extent = [x_edges[0], x_edges[-1], y_edges[0], y_edges[-1]]); plt.axis('off')
-    if save_as != '': plt.savefig('Results/' + save_as + '.png', bbox_inches = 'tight', dpi = 900)
+    if save_as != '': plt.savefig(save_as + '.png', bbox_inches = 'tight', dpi = 900)
     plt.subplot(1, 3, 2); plt.plot(normal_map[2*rows//3,:])
     plt.subplot(1, 3, 3); plt.plot(normal_map[:,rows//2])
 
@@ -259,9 +263,9 @@ def IsolateTissues(low_energy_img, high_energy_img, sigma1, sigma2, wn, save_in,
     # plt.subplot(2, 4, 8); plt.imshow(ACNR_SSH_Bone,     cmap='gray'); plt.axis('off');  plt.title("Bone [ACNR + SSH]")
     plt.subplot(2, 4, 8); plt.imshow(ACNR_Tissue,       cmap='gray'); plt.axis('off');  plt.title("Tissue [ACNR]")
    
-    return SLS_Bone, SSH_Bone, ACNR_Bone, ACNR_SSH_Bone
+    return SLS_Bone, SLS_Tissue, SSH_Bone, SSH_Tissue, ACNR_Bone, ACNR_Tissue
 
-def BMO(SLS_Bone, SLS_Tissue):
+def BMO(SLS_Bone, SLS_Tissue, save_as):
 
     import matplotlib.pyplot as plt
 
@@ -281,6 +285,7 @@ def BMO(SLS_Bone, SLS_Tissue):
     plt.subplot(1, 3, 1); plt.imshow(thickness_bone); plt.colorbar()
     plt.subplot(1, 3, 2); plt.plot(thickness_bone[120,:])
     plt.subplot(1, 3, 3); plt.plot(thickness_bone[:,120])
+    if save_as != '': plt.savefig(save_as, bbox_inches = 'tight', dpi = 600); 
     plt.show()
 
     return thickness_bone
@@ -534,7 +539,7 @@ def Denoise(array, isHann, alpha, save_as, isCrossSection):
 
 # 7.0 ========================================================================================================================================================
 
-def Plotly_Heatmap(array, xlim, ylim, title, x_label, y_label, annotation, width, height, save_as):
+def Plotly_Heatmap(array, xlim, ylim, title, x_label, y_label, annotation, width, height, save_in, save_as):
 
     import plotly.io as pio; import plotly.graph_objects as go
 
@@ -562,7 +567,7 @@ def Plotly_Heatmap(array, xlim, ylim, title, x_label, y_label, annotation, width
                                         text = annotation)]
     )
    
-    if save_as != '': pio.write_image(fig, 'Results/' + save_as + '.png', width = width, height = height, scale = 5)
+    if save_as != '': pio.write_image(fig, save_in + save_as + '.png', width = width, height = height, scale = 5)
     fig.show()
 
 # 8.0 ========================================================================================================================================================

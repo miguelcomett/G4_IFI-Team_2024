@@ -24,15 +24,15 @@ MyRunAction::MyRunAction()
         analysisManager -> CreateNtupleDColumn("Photons'_Wavelengths_nm");
         analysisManager -> FinishNtuple(0);
 
-        analysisManager -> CreateNtuple("Energy", "Energy");
-        analysisManager -> CreateNtupleDColumn("Energy_Deposition_keV");
-        analysisManager -> FinishNtuple(1);
-
         analysisManager -> CreateNtuple("Hits", "Hits");
         analysisManager -> CreateNtupleIColumn("Event_Count");
         analysisManager -> CreateNtupleDColumn("X_Detectors");
         analysisManager -> CreateNtupleDColumn("Y_Detectors");
         analysisManager -> CreateNtupleDColumn("Z_Detectors");
+        analysisManager -> FinishNtuple(1);
+
+        analysisManager -> CreateNtuple("Energy", "Energy");
+        analysisManager -> CreateNtupleDColumn("Energy_Deposition_keV");
         analysisManager -> FinishNtuple(2);
     }
 
@@ -63,7 +63,7 @@ MyRunAction::MyRunAction()
 
         analysisManager -> CreateNtuple("EDep Sample", "EDep Sample");
         analysisManager -> CreateNtupleDColumn("EDep_Spectra");
-        analysisManager -> FinishNtuple(2);
+        analysisManager -> FinishNtuple(1);
     }
 
     if (arguments == 5)
@@ -272,7 +272,7 @@ void MyRunAction::MergeRootFiles()
     std::string mergedFileName;
     do
     {
-        mergedFileName = outputDirectory + fileName + std::to_string(fileIndex) + "_" + std::to_string(runID) + ".root";
+        mergedFileName = outputDirectory + fileName + std::to_string(fileIndex) + std::to_string(runID) + ".root";
         fileIndex++;
     } 
     while (std::filesystem::exists(mergedFileName));
@@ -334,7 +334,7 @@ void MyRunAction::SingleData(const std::string & mergedFileName)
     // Configura las ramas
     tree -> SetBranchAddress("Number_of_Photons",  & numberOfPhotons);
     tree -> SetBranchAddress("Initial_Energy_keV", & initialEnergy);
-    tree -> SetBranchAddress("Sample_Mass_kg",      & sampleMass);
+    tree -> SetBranchAddress("Sample_Mass_kg",     & sampleMass);
     tree -> SetBranchAddress("EDep_Value_TeV",     & edepValue);
     tree -> SetBranchAddress("Radiation_Dose_uSv", & radiationDose);
 
@@ -386,7 +386,7 @@ void MyRunAction::SingleData(const std::string & mergedFileName)
     // Establecer las ramas del nuevo arbol con los valores maximos
     maxTree -> SetBranchAddress("Number_of_Photons",  & maxNumberOfPhotons);
     maxTree -> SetBranchAddress("Initial_Energy_keV", & maxInitialEnergy);
-    maxTree -> SetBranchAddress("Sample_Mass_kg",      & maxSampleMass);
+    maxTree -> SetBranchAddress("Sample_Mass_kg",     & maxSampleMass);
     maxTree -> SetBranchAddress("EDep_Value_TeV",     & maxEdepValue);
     maxTree -> SetBranchAddress("Radiation_Dose_uSv", & maxRadiationDose);
 

@@ -26,7 +26,7 @@ void MyPrimaryGenerator::GeneratePrimaries(G4Event * anEvent)
     // x0 = 2 * (G4UniformRand() - 0.5);
     // x0 = x0 * GunSpanX;
     x0 = G4RandGauss::shoot(0, GunSpanX / 1.5);
-    x0 = x0 * sdt::cos(algo/2);
+    // x0 = x0 * std::cos(algo/2);
 
     y0 = 2 * (G4UniformRand() - 0.5);
     y0 = y0 * GunSpanY;

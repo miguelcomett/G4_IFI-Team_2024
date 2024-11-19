@@ -108,7 +108,8 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
         STLGeometryReader * stlReader;
         G4TessellatedSolid * Ribcage, * Lungs, * Heart;
         G4VSolid * Thorax1, * Thorax2;
-        G4SubtractionSolid * subtractedSolid0, * subtractedSolid1, * subtractedSolid2, * subtractedSolid3, * subtractedSolid4, * subtractedLung;
+        G4SubtractionSolid * subtractedSolid0, * subtractedSolid1, * subtractedSolid2, * subtractedSolid3, * subtractedSolid4, 
+                           * subtractedLung;
 };
 
 #endif 

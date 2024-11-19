@@ -26,8 +26,11 @@ class MyPrimaryGenerator : public G4VUserPrimaryGeneratorAction
         ~ MyPrimaryGenerator();
 
         virtual void GeneratePrimaries(G4Event *);
-        void SetGunZpos(G4double zpos);
-        void SetGunRadius(G4double radius); 
+        void SetGunXpos(G4double Xpos);
+        void SetGunYpos(G4double Ypos);
+        void SetGunZpos(G4double Zpos);
+        void SetGunSpanX(G4double SpanX);
+        void SetGunSpanY(G4double SpanY);
         void SetGunAngle(G4double angle); 
         void SetGunMode(G4int mode); 
 	
@@ -45,6 +48,8 @@ class MyPrimaryGenerator : public G4VUserPrimaryGeneratorAction
         G4String particleName;
         G4ParticleTable * particleTable;
         G4ParticleDefinition * particle;
+
+        G4ThreeVector photonPosition, photonMomentum;
         
         G4bool fullAngle;
         G4double radius, theta, phi, angle, angleInRadians, angleInCarts, x0, y0, z0;
@@ -65,7 +70,7 @@ class MyPrimaryGenerator : public G4VUserPrimaryGeneratorAction
         
         // Messangers   
         G4int fGunMode;
-        G4double fPgun, fGunAngle, fGunRadius, realEnergy;
+        G4double Xpos, Ypos, Zpos, fPgunSpanX, fPgunSpanY, fGunAngle, realEnergy;
 };
 
 #endif

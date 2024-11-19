@@ -1,6 +1,8 @@
 #include "5.0_PrimaryGenerator.hh"
 
-MyPrimaryGenerator::MyPrimaryGenerator(): fGunMode(0), fPgun(-45.0*cm), fGunAngle(0.0), energy(80*keV), fGunRadius(10.0), spectrumFileName("fSpectrum140.txt"), GeneratorMessenger(new PrimaryGeneratorMessenger(this))
+MyPrimaryGenerator::MyPrimaryGenerator(): 
+fGunMode(0), Xpos(0), Ypos(0), Zpos(-450*mm), fGunAngle(0.0), fPgunSpanX(100*mm), fPgunSpanY(100*mm), 
+spectrumFileName("fSpectrum140.txt"), GeneratorMessenger(new PrimaryGeneratorMessenger(this))
 {
     particleGun = new G4ParticleGun(1);
     particleTable = G4ParticleTable::GetParticleTable();
@@ -21,17 +23,19 @@ void MyPrimaryGenerator::GeneratePrimaries(G4Event * anEvent)
 	    particleGun -> SetParticleEnergy(realEnergy);
     }
 	
-    x0 = 2 * (G4UniformRand() - 0.5);
+    // x0 = 2 * (G4UniformRand() - 0.5);
+    // x0 = x0 * fPgunSpanX;
+    x0 = G4RandGauss::shoot(0, fPgunSpanX / 1.5);
+    x0 = x0 * sdt::cos(algo/2);
+
     y0 = 2 * (G4UniformRand() - 0.5);
+    y0 = y0 * fPgunSpanY;
 
-    x0 = x0 * fGunRadius * cm;
-    y0 = y0 * fGunRadius * cm;
-    z0 = fPgun; // Messenger used
-    
-    x0 = x0 - 1;
-    y0 = y0 - 1;
+    x0 = x0 + Xpos; 
+    y0 = y0 + Ypos;
+    z0 = Zpos; 
 
-    G4ThreeVector photonPosition(x0, y0, z0);
+    photonPosition = G4ThreeVector(x0, y0, z0);
     particleGun -> SetParticlePosition(photonPosition);
 
     fullAngle = true; if (fullAngle == true) {angle = 2.0;} else {angle = 1.0;}
@@ -40,7 +44,7 @@ void MyPrimaryGenerator::GeneratePrimaries(G4Event * anEvent)
     angleInCarts = std::tan(angleInRadians);
     theta = angleInCarts * (G4UniformRand() - 0.5) * angle;
     phi   = angleInCarts * (G4UniformRand() - 0.5) * angle;
-    G4ThreeVector photonMomentum(theta, phi, 1.0);
+    photonMomentum = G4ThreeVector(theta, phi, 1.0);
     particleGun -> SetParticleMomentumDirection(photonMomentum);
 
     particleGun -> GeneratePrimaryVertex(anEvent);
@@ -48,18 +52,39 @@ void MyPrimaryGenerator::GeneratePrimaries(G4Event * anEvent)
 
 // MESSENGERS ===================================================================================================
 
-void MyPrimaryGenerator::SetGunZpos(G4double zpos)
+void MyPrimaryGenerator::SetGunXpos(G4double Xpos)
 {
-    G4cout << "Setting source position to: " << zpos << G4endl;
-    if (zpos != fPgun) { fPgun = zpos; G4cout << "Source Position changed to: " << fPgun << G4endl;}
+    G4cout << "Setting source position to: " << Xpos << G4endl;
+    if (this -> Xpos != Xpos) {this -> Xpos = Xpos; G4cout << "Source Position changed to: " << Xpos << G4endl;}
     else { G4cout << "Same Position Selected." << G4endl;}
 }
 
-void MyPrimaryGenerator::SetGunRadius(G4double radius)
+void MyPrimaryGenerator::SetGunYpos(G4double Ypos)
 {
-    G4cout << "Setting source radius to: " << radius << G4endl;
-    if(radius != fGunRadius) { fGunRadius = radius; G4cout << "Source radius changed to: " << fGunRadius << G4endl;}
-    else { G4cout << "Same Radius selected." << G4endl; }
+    G4cout << "Setting source position to: " << Ypos << G4endl;
+    if (this -> Ypos != Ypos) {this -> Ypos = Ypos; G4cout << "Source Position changed to: " << Ypos << G4endl;}
+    else { G4cout << "Same Position Selected." << G4endl;}
+}
+
+void MyPrimaryGenerator::SetGunZpos(G4double Zpos)
+{
+    G4cout << "Setting source position to: " << Zpos << G4endl;
+    if (this -> Zpos != Zpos) {this -> Zpos = Zpos; G4cout << "Source Position changed to: " << Zpos << G4endl;}
+    else { G4cout << "Same Position Selected." << G4endl;}
+}
+
+void MyPrimaryGenerator::SetGunSpanX(G4double SpanX)
+{
+    G4cout << "Setting source Span to: " << SpanX << G4endl;
+    if(SpanX != fPgunSpanX) { fPgunSpanX = SpanX; G4cout << "Source Span changed to: " << fPgunSpanX << G4endl;}
+    else { G4cout << "Same Span selected." << G4endl; }
+}
+
+void MyPrimaryGenerator::SetGunSpanY(G4double SpanY)
+{
+    G4cout << "Setting source Span to: " << SpanY << G4endl;
+    if(SpanY != fPgunSpanY) { fPgunSpanY = SpanY; G4cout << "Source Span changed to: " << fPgunSpanY << G4endl;}
+    else { G4cout << "Same Span selected." << G4endl; }
 }
 
 void MyPrimaryGenerator::SetGunAngle(G4double angle)

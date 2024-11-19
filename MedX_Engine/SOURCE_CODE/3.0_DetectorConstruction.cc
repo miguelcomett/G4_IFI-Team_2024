@@ -13,6 +13,8 @@ MyDetectorConstruction::MyDetectorConstruction()
     DetectorMessenger -> DeclareProperty("ThicknessTarget", targetThickness, "Thickness of the target");
     DetectorMessenger -> DeclareProperty("Rotation", thoraxAngle, "Rotate the 3D model");
 
+    thoraxAngle = 90;
+
     boneHeight = 60 * mm;
     innerBoneRadius = 0.0;
     outerBoneRadius = 22.5 * mm;
@@ -27,10 +29,10 @@ MyDetectorConstruction::MyDetectorConstruction()
         isOsteoBone = false;
     is3DModel = true;
         isHeart = true;
-        isLungs = true;
-        isRibcage = true;
+        isLungs = false;
+        isRibcage = false;
         isThorax = true;
-        isFiller = true;
+        isFiller = false;
         isTumor = false;
 }
 

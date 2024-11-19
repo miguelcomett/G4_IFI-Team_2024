@@ -18,12 +18,12 @@
 #include "5.1_GeneratorMessenger.hh"
 
 class PrimaryGeneratorMessenger; 
-class MyPrimaryGenerator : public G4VUserPrimaryGeneratorAction
+class MyPrimaryGenerator:public G4VUserPrimaryGeneratorAction
 {
     public:
 
         MyPrimaryGenerator();
-        ~ MyPrimaryGenerator();
+        ~MyPrimaryGenerator();
 
         virtual void GeneratePrimaries(G4Event *);
         void SetGunXpos(G4double GunXpos);
@@ -55,7 +55,9 @@ class MyPrimaryGenerator : public G4VUserPrimaryGeneratorAction
         G4double radius, theta, phi, angle, angleInRadians, angleInCarts, x0, y0, z0;
         const G4double pi = 3.14159265358979323846;
         
-        // Real spectrum
+        G4int GunMode;
+        G4double GunXpos, GunYpos, GunZpos, GunSpanX, GunSpanY, GunAngle, realEnergy;
+
         void SpectraFunction(); 
         
         G4double energy;
@@ -67,10 +69,6 @@ class MyPrimaryGenerator : public G4VUserPrimaryGeneratorAction
         std::vector<G4double>  fSlp;         //slopes
         std::vector<G4double>  fYC;          //cumulative function of Y
         G4double               fYmax = 0.;   //max(Y)
-        
-        // Messangers   
-        G4int GunMode;
-        G4double GunXpos, GunYpos, GunZpos, GunSpanX, GunSpanY, GunAngle, realEnergy;
 };
 
 #endif

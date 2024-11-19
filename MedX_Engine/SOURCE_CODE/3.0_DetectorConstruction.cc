@@ -29,10 +29,10 @@ MyDetectorConstruction::MyDetectorConstruction()
         isOsteoBone = false;
     is3DModel = true;
         isHeart = true;
-        isLungs = false;
-        isRibcage = false;
+        isLungs = true;
+        isRibcage = true;
         isThorax = true;
-        isFiller = false;
+        isFiller = true;
         isTumor = false;
 }
 

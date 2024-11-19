@@ -17,7 +17,9 @@
 #include "6.1_Run.hh"
 #include "5.1_GeneratorMessenger.hh"
 
-class PrimaryGeneratorMessenger; 
+class PrimaryGeneratorMessenger;
+class MyDetectorConstruction;
+
 class MyPrimaryGenerator : public G4VUserPrimaryGeneratorAction
 {
     public:
@@ -71,6 +73,8 @@ class MyPrimaryGenerator : public G4VUserPrimaryGeneratorAction
         // Messangers   
         G4int GunMode;
         G4double GunXpos, GunYpos, GunZpos, GunSpanX, GunSpanY, GunAngle, realEnergy;
+
+        const MyDetectorConstruction* fDetectorConstruction;
 };
 
 #endif

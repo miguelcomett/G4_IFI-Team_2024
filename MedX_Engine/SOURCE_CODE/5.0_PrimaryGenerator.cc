@@ -23,6 +23,8 @@ void MyPrimaryGenerator::GeneratePrimaries(G4Event * anEvent)
 	    particleGun -> SetParticleEnergy(realEnergy);
     }
 	
+    double algo = fDetectorConstruction->GetThoraxAngle();
+
     // x0 = 2 * (G4UniformRand() - 0.5);
     // x0 = x0 * GunSpanX;
     x0 = G4RandGauss::shoot(0, GunSpanX / 1.5);

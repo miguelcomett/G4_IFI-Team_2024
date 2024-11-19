@@ -26,9 +26,9 @@ class MyPrimaryGenerator : public G4VUserPrimaryGeneratorAction
         ~ MyPrimaryGenerator();
 
         virtual void GeneratePrimaries(G4Event *);
-        void SetGunXpos(G4double Xpos);
-        void SetGunYpos(G4double Ypos);
-        void SetGunZpos(G4double Zpos);
+        void SetGunXpos(G4double GunXpos);
+        void SetGunYpos(G4double GunYpos);
+        void SetGunZpos(G4double GunZpos);
         void SetGunSpanX(G4double SpanX);
         void SetGunSpanY(G4double SpanY);
         void SetGunAngle(G4double angle); 
@@ -56,11 +56,11 @@ class MyPrimaryGenerator : public G4VUserPrimaryGeneratorAction
         const G4double pi = 3.14159265358979323846;
         
         // Real spectrum
-        void InitFunction(); 
+        void SpectraFunction(); 
         
         G4double energy;
         
-        G4String spectrumFileName; 	       
+        G4String spectrumFile; 	       
         G4int                  fNPoints = 0; //nb of points
         std::vector<G4double>  fX;           //abscisses X
         std::vector<G4double>  fY;           //values of Y(X)
@@ -69,8 +69,8 @@ class MyPrimaryGenerator : public G4VUserPrimaryGeneratorAction
         G4double               fYmax = 0.;   //max(Y)
         
         // Messangers   
-        G4int fGunMode;
-        G4double Xpos, Ypos, Zpos, fPgunSpanX, fPgunSpanY, fGunAngle, realEnergy;
+        G4int GunMode;
+        G4double GunXpos, GunYpos, GunZpos, GunSpanX, GunSpanY, GunAngle, realEnergy;
 };
 
 #endif

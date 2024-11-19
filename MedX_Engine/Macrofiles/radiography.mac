@@ -1,11 +1,28 @@
-# /run/numberOfThreads 10
-
 /run/initialize
 
-/gun/energy 40 keV
-/run/printProgress 15000000
-/run/beamOn 150000000
+/myDetector/nColumns 1
+/myDetector/nRows 1
+/Pgun/Radius 22
 
 /gun/energy 80 keV
-/run/printProgress 15000000
-/run/beamOn 150000000
+
+/run/printProgress 40000000
+/run/beamOn 200000000
+/run/printProgress 40000000
+/run/beamOn 200000000
+/run/printProgress 40000000
+/run/beamOn 200000000
+/run/printProgress 40000000
+/run/beamOn 200000000
+/run/printProgress 40000000
+/run/beamOn 200000000
+/run/printProgress 40000000
+/run/beamOn 200000000
+/run/printProgress 40000000
+/run/beamOn 200000000
+/run/printProgress 40000000
+/run/beamOn 200000000
+/run/printProgress 40000000
+/run/beamOn 200000000
+/run/printProgress 40000000
+/run/beamOn 200000000

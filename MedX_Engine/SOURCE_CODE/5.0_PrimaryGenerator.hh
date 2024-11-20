@@ -54,7 +54,7 @@ class PrimaryGenerator:public G4VUserPrimaryGeneratorAction
         G4ThreeVector photonPosition, photonMomentum;
         
         G4bool fullAngle;
-        G4double radius, theta, phi, angle, angleInRadians, angleInCarts, x0, y0, z0;
+        G4double thoraxAngle, radius, theta, phi, angle, angleInRadians, angleInCarts, x0, y0, z0;
         const G4double pi = 3.14159265358979323846;
         
         G4int GunMode;

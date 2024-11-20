@@ -47,12 +47,10 @@ int main(int argc, char** argv)
     long seed = std::time(nullptr);
     CLHEP::HepRandom::setTheSeed(seed);
 
-    auto * myDetector = new DetectorConstruction();
-    runManager->SetUserInitialization(myDetector);
-
     runManager -> SetUserInitialization(new PhysicsList());
-    runManager -> SetUserInitialization(new DetectorConstruction);
-    runManager -> SetUserInitialization(new ActionInitialization(myDetector));
+    DetectorConstruction * MyDetectorConstruction = new DetectorConstruction();
+    runManager -> SetUserInitialization(MyDetectorConstruction);
+    runManager -> SetUserInitialization(new ActionInitialization(MyDetectorConstruction));
 
     G4UImanager * UImanager = G4UImanager::GetUIpointer();
     
@@ -83,13 +81,3 @@ int main(int argc, char** argv)
 
     delete runManager;
 }
-
-// std::chrono::system_clock::time_point simulationStartTime;
-// simulationStartTime = std::chrono::system_clock::now();
-// auto now = std::chrono::system_clock::now();
-// std::time_t now_c = std::chrono::system_clock::to_time_t(simulationStartTime);
-// std::tm * now_tm = std::localtime(&now_c);
-// G4cout << G4endl; 
-// G4cout << ".........................................." << G4endl;
-// G4cout << "Start time: " << std::put_time(now_tm, "%H:%M:%S") << "    Date: " << std::put_time(now_tm, "%d-%m-%Y") << G4endl;
-// G4cout << ".........................................." << G4endl;

@@ -1,7 +1,7 @@
 #include "5.0_PrimaryGenerator.hh"
 
 PrimaryGenerator::PrimaryGenerator(DetectorConstruction * detector):GunMode(0), GunXpos(0), GunYpos(0), GunZpos(-450*mm), 
-GunAngle(0.0), GunSpanX(100*mm), GunSpanY(1*mm), spectrumFile("fSpectrum140.txt"), 
+GunAngle(0.0), GunSpanX(10*mm), GunSpanY(10*mm), spectrumFile("fSpectrum140.txt"), 
 GeneratorMessenger(new PrimaryGeneratorMessenger(this)), G4VUserPrimaryGeneratorAction(), fDetector(detector)
 {
     particleGun = new G4ParticleGun(1);

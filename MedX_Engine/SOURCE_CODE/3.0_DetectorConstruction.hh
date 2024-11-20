@@ -39,12 +39,12 @@
 
 extern int arguments;
 
-class MyDetectorConstruction : public G4VUserDetectorConstruction
+class DetectorConstruction : public G4VUserDetectorConstruction
 {   
     public:
 
-        MyDetectorConstruction();
-        ~MyDetectorConstruction() override;
+        DetectorConstruction();
+        ~DetectorConstruction() override;
 
         void DefineMaterials();
         void ConstructSDandField() override;
@@ -53,12 +53,11 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
         G4LogicalVolume * GetScoringVolume() const {return scoringVolume_0;}
 
         std::vector<G4LogicalVolume*> scoringVolumes;
-        std::vector<G4LogicalVolume*> GetAllScoringVolumes() const { return scoringVolumes; }
+        std::vector<G4LogicalVolume*> GetAllScoringVolumes() const {return scoringVolumes;}
 
         G4Material * GetMaterial() const {return materialTarget;}
 	    G4double GetThickness() const {return targetThickness;}
-
-        double GetThoraxAngle() const { return thoraxAngle; }
+        G4double GetThoraxAngle() const {return thoraxAngle;}
 
         G4bool  isArm, isHealthyBone, isOsteoBone, isBoneDivided, 
                 is3DModel, isHeart, isLungs, isRibcage, isFiller, isThorax,
@@ -74,9 +73,7 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
         void ConstructBoneDivided();
         void ConstructThorax();
         void ConstructTumor();
-        //Function to construct an ellipsoid where a patology will reside
         void ConstructEllipsoid(G4double aa, G4double bb, G4double cc, G4RotationMatrix* rot, G4ThreeVector EllipsoidPos, G4String name);
-        //To parametrize the regions
         void EllipsoidsParametrization();
 
         G4GenericMessenger * DetectorMessenger;
@@ -119,7 +116,6 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
         //Ellipsoids
         G4double a, b, c, angleX, angleY, angleZ; 
 
-
         //Distribuciones
         std::random_device rd;
         std::mt19937 gen;
@@ -127,7 +123,6 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
         std::uniform_real_distribution<> radiusDist;
         std::uniform_real_distribution<> posDist;
         std::uniform_real_distribution<> posYDist;
-
 };
 
 #endif 

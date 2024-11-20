@@ -13,12 +13,12 @@
 
 extern int arguments;
 
-class MyEventAction : public G4UserEventAction
+class EventAction : public G4UserEventAction
 {
     public:
         
-        MyEventAction(MyRunAction * runAction);
-        ~MyEventAction();
+        EventAction(RunAction * runAction);
+        ~EventAction();
 
         virtual void BeginOfEventAction(const G4Event *);
         virtual void EndOfEventAction  (const G4Event *);
@@ -27,7 +27,7 @@ class MyEventAction : public G4UserEventAction
 
     private:
         
-        MyRunAction * fRunAction = nullptr;
+        RunAction * fRunAction = nullptr;
         
         G4double fEDep, EDep_keV;
 };

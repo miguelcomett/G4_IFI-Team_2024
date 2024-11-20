@@ -27,12 +27,12 @@
 
 extern int arguments;
 
-class MyRunAction : public G4UserRunAction
+class RunAction : public G4UserRunAction
 {
     public:
 
-        MyRunAction();
-        ~MyRunAction(); 
+        RunAction();
+        ~RunAction(); 
 
         void BeginOfRunAction(const G4Run * thisRun) override;
         void EndOfRunAction  (const G4Run * thisRun) override;
@@ -42,15 +42,15 @@ class MyRunAction : public G4UserRunAction
         void AddEdep (G4double edep);
 
         void MergeRootFiles();
-        void SingleData(const std::string& mergedFilePath);
+        void RemoveJunkDataFromRoot(const std::string& mergedFilePath);
 
     private:
 
         Run * customRun = nullptr;
 
-        const MyDetectorConstruction * detectorConstruction;
+        const DetectorConstruction * detectorConstruction;
 
-        const MyPrimaryGenerator * primaryGenerator;
+        const PrimaryGenerator * primaryGenerator;
         G4Accumulable <G4double> fEdep = 0.0;
         std::chrono::system_clock::time_point simulationStartTime, simulationEndTime;
 

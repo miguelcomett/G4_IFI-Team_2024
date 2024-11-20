@@ -1,30 +1,28 @@
 #include "4.0_ActionInitialization.hh"
 
-MyActionInitialization::MyActionInitialization(MyDetectorConstruction* detector)
-    : G4VUserActionInitialization(), fDetector(detector) {}
-MyActionInitialization::~MyActionInitialization(){}
+ActionInitialization::ActionInitialization(DetectorConstruction * detector) : G4VUserActionInitialization(), fDetector(detector) {}
+ActionInitialization::~ActionInitialization(){}
 
-void MyActionInitialization::BuildForMaster() const 
+void ActionInitialization::BuildForMaster() const 
 {
-    MyRunAction * runAction = new MyRunAction();
+    RunAction * runAction = new RunAction();
     SetUserAction(runAction);
 }
 
-void MyActionInitialization::Build() const
+void ActionInitialization::Build() const
 {
     // Pasar fDetector al constructor
-    MyPrimaryGenerator* generator = new MyPrimaryGenerator(fDetector);
+    PrimaryGenerator * generator = new PrimaryGenerator(fDetector);
     SetUserAction(generator);
     
-    MyRunAction * runAction = new MyRunAction();
+    RunAction * runAction = new RunAction();
     SetUserAction(runAction);
 
-    MyEventAction * eventAction = new MyEventAction(runAction);
+    EventAction * eventAction = new EventAction(runAction);
     SetUserAction(eventAction);
 
-    MySteppingAction * steppingAction = new MySteppingAction(eventAction);
+    SteppingAction * steppingAction = new SteppingAction(eventAction);
     SetUserAction(steppingAction);
 
-    // Pasar el puntero de DetectorConstruction a PrimaryGeneratorAction
-    SetUserAction(new MyPrimaryGenerator(fDetector));
+    SetUserAction(new PrimaryGenerator(fDetector));
 }

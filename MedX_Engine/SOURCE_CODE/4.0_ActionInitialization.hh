@@ -9,16 +9,16 @@
 #include "6.1_Run.hh"
 #include "8.0_SteppingAction.hh"
 
-class MyActionInitialization : public G4VUserActionInitialization
+class ActionInitialization : public G4VUserActionInitialization
 {
     public:
-        MyActionInitialization(MyDetectorConstruction* detector);
-        ~MyActionInitialization();
+        ActionInitialization(DetectorConstruction * detector);
+        ~ActionInitialization();
 
         virtual void Build() const;
         virtual void BuildForMaster() const;
 
-        MyDetectorConstruction* fDetector; // Puntero a DetectorConstruction
+        DetectorConstruction * fDetector; 
 };
 
 #endif

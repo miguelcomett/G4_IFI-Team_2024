@@ -1,12 +1,9 @@
 #include "3.0_DetectorConstruction.hh"
 
-MyDetectorConstruction::MyDetectorConstruction() : gen(rd()),                                      // Inicializar el motor con el dispositivo aleatorio
-                                                    randomDist(0.0, 1.0),                          // Configurar la distribución [0.0, 1.0]
-                                                    radiusDist(5.0 * mm, 20.0 * mm),                // Configurar la distribución de radios [5.0 mm, 15.0 mm]
-                                                    posDist(-1.0 * mm, 1.0 * mm),
-                                                    posYDist(-40 * mm, 40 * mm)
+// Inicializar el motor con el dispositivo aleatorio // Configurar la distribución [0.0, 1.0] // Configurar la distribución de radios [5.0 mm, 15.0 mm]
+DetectorConstruction::DetectorConstruction() : gen(rd()), randomDist(0.0, 1.0), radiusDist(5.0*mm, 20.0*mm), posDist(-1.0*mm, 1.0*mm), posYDist(-40*mm, 40*mm)
 {
-    G4GeometryManager::GetInstance()->SetWorldMaximumExtent(100.0 * cm);
+    G4GeometryManager::GetInstance() -> SetWorldMaximumExtent(100.0 * cm);
 
     DefineMaterials();
     stlReader = new STLGeometryReader();
@@ -17,7 +14,7 @@ MyDetectorConstruction::MyDetectorConstruction() : gen(rd()),                   
     DetectorMessenger -> DeclareProperty("ThicknessTarget", targetThickness, "Thickness of the target");
     DetectorMessenger -> DeclareProperty("Rotation", thoraxAngle, "Rotate the 3D model");
 
-    thoraxAngle = 140;
+    thoraxAngle = 0;
 
     boneHeight = 60 * mm;
     innerBoneRadius = 0.0;
@@ -32,14 +29,13 @@ MyDetectorConstruction::MyDetectorConstruction() : gen(rd()),                   
         isHealthyBone = true;
         isOsteoBone = false;
     is3DModel = true;
-        isHeart = true;
-        isLungs = true;
+        isHeart = false;
+        isLungs = false;
         isRibcage = false;
-        isThorax = false;
+        isThorax = true;
         isFiller = true;
-        isTumor = true;
-        //Juts in case you want to modify the area where the tumor appears
-        isTestParametrization = true; 
+        isTumor = false;
+        isTestParametrization = false;
 
     angleX = 0 * deg;
     angleY = -90 * deg;
@@ -51,19 +47,16 @@ MyDetectorConstruction::MyDetectorConstruction() : gen(rd()),                   
 
     // Mostrar las posiciones rotadas
     G4cout << "Posición rotada pulmón derecho: " << ellipsoidPosition << G4endl;
-    G4cout << "Posición rotada pulmón izquierdo: " << ellipsoidPosition2 << G4endl;
-
-
- 
+    G4cout << "Posición rotada pulmón izquierdo: " << ellipsoidPosition2 << G4endl; 
 }
 
-MyDetectorConstruction::~MyDetectorConstruction()
+DetectorConstruction::~DetectorConstruction()
 {
     delete DetectorMessenger;
     delete stlReader;
 }
 
-G4VPhysicalVolume * MyDetectorConstruction::Construct()
+G4VPhysicalVolume * DetectorConstruction::Construct()
 {
     xWorld = 0.5*m, yWorld = 0.5*m, zWorld = 0.5*m;
     solidWorld = new G4Box("SolidWorld", xWorld, yWorld, zWorld);
@@ -100,15 +93,15 @@ G4VPhysicalVolume * MyDetectorConstruction::Construct()
     return physicalWorld;
 }
 
-void MyDetectorConstruction::ConstructSDandField()
+void DetectorConstruction::ConstructSDandField()
 {
-    MySensitiveDetector * sensitiveDetector = new MySensitiveDetector("sensitiveDetector");
+    SensitiveDetector * sensitiveDetector = new SensitiveDetector("sensitiveDetector");
     logicDetector -> SetSensitiveDetector(sensitiveDetector);
 }
 
 // Build Geometries ===============================================================================================================================
 
-void MyDetectorConstruction::ConstructTarget()
+void DetectorConstruction::ConstructTarget()
 { 
     materialTarget = Aluminum;
 
@@ -121,7 +114,7 @@ void MyDetectorConstruction::ConstructTarget()
     scoringVolume_0 = logicRadiator;
 }
 
-void MyDetectorConstruction::ConstructArm() 
+void DetectorConstruction::ConstructArm() 
 {
     innerMuscleRadius = outerBoneRadius;
     outerMuscleRadius = innerMuscleRadius + 25 * mm;
@@ -153,7 +146,7 @@ void MyDetectorConstruction::ConstructArm()
     scoringVolumes.push_back(scoringVolume_5);
 }
 
-void MyDetectorConstruction::ConstructHealthyBone() 
+void DetectorConstruction::ConstructHealthyBone() 
 {
     solidBone = new G4Tubs("Bone", innerBoneRadius, outerBoneRadius, boneHeight/2, 0.0, 360.0*deg);
     logicHealthyBone = new G4LogicalVolume(solidBone, Bone, "LogicBone");
@@ -163,7 +156,7 @@ void MyDetectorConstruction::ConstructHealthyBone()
     scoringVolumes.push_back(scoringVolume_1);
 }
 
-void MyDetectorConstruction::ConstructOsteoporoticBone() 
+void DetectorConstruction::ConstructOsteoporoticBone() 
 {   
     solidBone = new G4Tubs("Bone", innerBoneRadius, outerBoneRadius, boneHeight/2, 0.0, 360.0*deg);
     porousBone = solidBone;
@@ -198,7 +191,7 @@ void MyDetectorConstruction::ConstructOsteoporoticBone()
     scoringVolumes.push_back(scoringVolume_1);
 }
 
-void MyDetectorConstruction::ConstructBoneDivided()
+void DetectorConstruction::ConstructBoneDivided()
 {
     osteoBone = new G4Tubs("Healty_Bone", innerBoneRadius, outerBoneRadius, boneHeight/4, 0.0, 360.0*deg);
     healthyBone = new G4Tubs("Osteo_Bone",  innerBoneRadius, outerBoneRadius, boneHeight/4, 0.0, 360.0*deg);
@@ -218,7 +211,8 @@ void MyDetectorConstruction::ConstructBoneDivided()
 }
 
 // Load 3D Models ===============================================================================================================================
-void MyDetectorConstruction::ConstructThorax()
+
+void DetectorConstruction::ConstructThorax()
 {
     G4STL stl; 
     
@@ -358,20 +352,23 @@ void MyDetectorConstruction::ConstructThorax()
 
     G4cout << "==========================================" << G4endl; G4cout << G4endl; 
 }
-//CREATE TUMOR ===================================================================================================================================
-void MyDetectorConstruction::ConstructTumor()
+
+// Create Tumor ===================================================================================================================================
+
+void DetectorConstruction::ConstructTumor()
 {
     EllipsoidsParametrization(); 
-    double tumorRadius = radiusDist(gen);
-// Crear un objeto aleatorio
+    G4double tumorRadius = radiusDist(gen);
+    
     while (true)
     {
         // Generar coordenadas aleatorias dentro del elipsoide
-        double x = (2.0 * posDist(gen) - 1.0) * (a - tumorRadius); // Reducir semiejes para incluir el radio
-        double y = (2.0 * posYDist(gen) - 1.0) * (b - tumorRadius);
-        double z = (2.0 * posDist(gen) - 1.0) * (c - tumorRadius);
+        G4double x = (2.0 * posDist(gen) - 1.0) * (a - tumorRadius); // Reducir semiejes para incluir el radio
+        G4double y = (2.0 * posYDist(gen) - 1.0) * (b - tumorRadius);
+        G4double z = (2.0 * posDist(gen) - 1.0) * (c - tumorRadius);
 
-        double verify = (x * x) / (a * a) + (y * y) / (b * b) + (z * z) / (c * c); 
+        G4double verify = (x * x) / (a * a) + (y * y) / (b * b) + (z * z) / (c * c); 
+        
         // Verificar si el centro del tumor está dentro del elipsoide con suficiente espacio para el radio
         if (verify <= 1.0)
         {
@@ -382,8 +379,7 @@ void MyDetectorConstruction::ConstructTumor()
         }
     }
 
-    G4cout << "Radio del tumor generado: " << tumorRadius / mm << " mm" << G4endl;
-    G4cout << "Tumor generado en posición: " << tumorPosition << G4endl;
+    G4cout << "Radio del tumor generado: " << tumorRadius / mm << " mm" << G4endl; G4cout << "Tumor generado en posición: " << tumorPosition << G4endl;
 
     tumorSphere = new G4Sphere("Tumor", 0, tumorRadius, 0*deg, 360*deg, 0*deg, 180*deg);
     logicTumor = new G4LogicalVolume(tumorSphere, Muscle, "Tumor");
@@ -395,15 +391,15 @@ void MyDetectorConstruction::ConstructTumor()
     G4cout << "> Tumor (esfera) creado en una posición aleatoria dentro del tórax con radio: " << tumorRadius / mm << " mm" << G4endl;
 }
 
-void MyDetectorConstruction::ConstructEllipsoid(G4double aa, G4double bb, G4double cc, G4RotationMatrix *rot, G4ThreeVector EllipsoidPos, G4String name)
+void DetectorConstruction::ConstructEllipsoid(G4double aa, G4double bb, G4double cc, G4RotationMatrix *rot, G4ThreeVector EllipsoidPos, G4String name)
 {
     // Definir semiejes del elipsoide
-    double a = aa * mm; // Semieje en x
-    double b = bb * mm; // Semieje en y
-    double c = cc * mm; // Semieje en z
+    G4double a = aa * mm; // Semieje en x
+    G4double b = bb * mm; // Semieje en y
+    G4double c = cc * mm; // Semieje en z
 
     // Crear el sólido del elipsoide
-    G4Ellipsoid* ellipsoidSolid = new G4Ellipsoid(name, a, b, c);
+    G4Ellipsoid * ellipsoidSolid = new G4Ellipsoid(name, a, b, c);
     elipsoidRot2 = rot;
 
     // Crear el volumen lógico
@@ -418,24 +414,23 @@ void MyDetectorConstruction::ConstructEllipsoid(G4double aa, G4double bb, G4doub
         << "c = " << c / mm << " mm "
         << "en posición " << EllipsoidPos << G4endl;
 }
-//       Una vez con los parámetros se crea la region para el tumor ->
-void MyDetectorConstruction::EllipsoidsParametrization()
+
+void DetectorConstruction::EllipsoidsParametrization() // Una vez con los parámetros se crea la region para el tumor
 {
     // Parámetros del elipsoide izquierdo
-    G4ThreeVector leftEllipsoidCenter = Model3DRotation->inverse() * ellipsoidPosition; // Centro del elipsoide izquierdo
-    double aLeft = 100.0 * mm; // Semieje x del elipsoide izquierdo
-    double bLeft = 29.0 * mm; // Semieje y del elipsoide izquierdo
-    double cLeft = 43.0 * mm; // Semieje z del elipsoide izquierdo
-
+    G4ThreeVector leftEllipsoidCenter = Model3DRotation -> inverse() * ellipsoidPosition; // Centro del elipsoide izquierdo
+    G4double aLeft = 100.0 * mm; // Semieje x del elipsoide izquierdo
+    G4double bLeft = 29.0 * mm; // Semieje y del elipsoide izquierdo
+    G4double cLeft = 43.0 * mm; // Semieje z del elipsoide izquierdo
 
     // Parámetros del elipsoide derecho
-    G4ThreeVector rightEllipsoidCenter = Model3DRotation->inverse() * ellipsoidPosition2; // Centro del elipsoide derecho
-    double aRight = 100.0 * mm; // Semieje x del elipsoide derecho
-    double bRight = 25.0 * mm; // Semieje y del elipsoide derecho
-    double cRight = 40.0 * mm; // Semieje z del elipsoide derecho
+    G4ThreeVector rightEllipsoidCenter = Model3DRotation -> inverse() * ellipsoidPosition2; // Centro del elipsoide derecho
+    G4double aRight = 100.0 * mm; // Semieje x del elipsoide derecho
+    G4double bRight = 25.0 * mm; // Semieje y del elipsoide derecho
+    G4double cRight = 40.0 * mm; // Semieje z del elipsoide derecho
 
     // Generar un número aleatorio entre 0 y 1
-    double randomNum = randomDist(gen);
+    G4double randomNum = randomDist(gen);
 
     G4cout << "Número aleatorio: " << randomNum << G4endl;
 
@@ -456,14 +451,15 @@ void MyDetectorConstruction::EllipsoidsParametrization()
         G4cout << "Tumor generado en el elipsoide derecho" << G4endl;
     }
 }
-//Define materials =============================================================================================================================
-void MyDetectorConstruction::DefineMaterials()
+
+// Define materials =============================================================================================================================
+
+void DetectorConstruction::DefineMaterials()
 {
     G4NistManager * nist = G4NistManager::Instance();
 
     // Elements ========================================================================================
 
-    // C  = nist -> FindOrBuildElement("C");
     C  = new G4Element("Carbon",     "C",  6,   12.01*g/mole);
     N  = new G4Element("Nitrogen",   "N",  7,   14.01*g/mole);
     O  = new G4Element("Oxygen",     "O",  8,   16.00*g/mole);
@@ -567,7 +563,3 @@ void MyDetectorConstruction::DefineMaterials()
     worldMaterialProperties -> AddProperty("RINDEX", PhotonEnergy, RindexWorld, 2);
     worldMaterial -> SetMaterialPropertiesTable(worldMaterialProperties);
 }
-
-//double MyDetectorConstruction::GetThoraxAngle() const {
-//    return thoraxAngle;
-//}

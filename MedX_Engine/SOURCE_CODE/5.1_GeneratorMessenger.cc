@@ -1,6 +1,6 @@
 #include "5.1_GeneratorMessenger.hh"
 
-PrimaryGeneratorMessenger::PrimaryGeneratorMessenger(MyPrimaryGenerator * gun) : fGun(gun)
+PrimaryGeneratorMessenger::PrimaryGeneratorMessenger(PrimaryGenerator * gun) : fGun(gun)
 {
 	fPgunX = new G4UIcmdWithADoubleAndUnit("/Pgun/X", this);
 	fPgunX -> SetGuidance("Set the source X position.");
@@ -25,7 +25,7 @@ PrimaryGeneratorMessenger::PrimaryGeneratorMessenger(MyPrimaryGenerator * gun) :
 	fPgunAngle = new G4UIcmdWithADouble("/Pgun/Angle", this);
 	fPgunAngle -> SetGuidance("Set the source GunAngle.");
 	fPgunAngle -> SetParameterName("GunAngle", true);
-	//fPgunAngle->SetDefaultUnit("deg");
+	// fPgunAngle->SetDefaultUnit("deg");
 
 	fSpectraMode = new G4UIcmdWithAnInteger("/Pgun/Mode", this); 
 	fSpectraMode -> SetGuidance("Set the particle GunMode");

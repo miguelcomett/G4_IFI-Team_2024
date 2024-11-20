@@ -1,12 +1,12 @@
 #include "8.0_SteppingAction.hh"
 
-MySteppingAction::MySteppingAction(MyEventAction * eventAction) { fEventAction = eventAction; }
-MySteppingAction::~MySteppingAction() {}
+SteppingAction::SteppingAction(EventAction * eventAction) { fEventAction = eventAction; }
+SteppingAction::~SteppingAction() {}
 
-void MySteppingAction::UserSteppingAction(const G4Step * step)
+void SteppingAction::UserSteppingAction(const G4Step * step)
 {
     Volume = step -> GetPreStepPoint() -> GetTouchableHandle() -> GetVolume() -> GetLogicalVolume();
-    const MyDetectorConstruction * detectorConstruction = static_cast < const MyDetectorConstruction *> (G4RunManager::GetRunManager() -> GetUserDetectorConstruction());
+    const DetectorConstruction * detectorConstruction = static_cast < const DetectorConstruction *> (G4RunManager::GetRunManager() -> GetUserDetectorConstruction());
     scoringVolume = detectorConstruction -> GetScoringVolume();
 
     if (arguments == 1 || arguments == 2)

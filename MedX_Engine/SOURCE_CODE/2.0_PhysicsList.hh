@@ -12,11 +12,11 @@
 
 extern int arguments; 
 
-class MyPhysicsList : public G4VModularPhysicsList
+class PhysicsList : public G4VModularPhysicsList
 {
     public:
-        MyPhysicsList();
-        ~MyPhysicsList();   
+        PhysicsList();
+        ~PhysicsList();   
 };
 
 #endif

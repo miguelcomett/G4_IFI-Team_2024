@@ -27,6 +27,8 @@
 #include "G4Sphere.hh"
 #include "G4PhysicalVolumeStore.hh"
 #include "G4SubtractionSolid.hh"
+#include "G4Ellipsoid.hh"
+#include "G4MultiUnion.hh"
 
 #include "G4GeometryManager.hh"
 #include "G4GeometryTolerance.hh"
@@ -60,7 +62,7 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
 
         G4bool  isArm, isHealthyBone, isOsteoBone, isBoneDivided, 
                 is3DModel, isHeart, isLungs, isRibcage, isFiller, isThorax,
-                checkOverlaps, isTumor;
+                checkOverlaps, isTumor, isTestParametrization;
     
     private:
 
@@ -72,6 +74,10 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
         void ConstructBoneDivided();
         void ConstructThorax();
         void ConstructTumor();
+        //Function to construct an ellipsoid where a patology will reside
+        void ConstructEllipsoid(G4double aa, G4double bb, G4double cc, G4RotationMatrix* rot, G4ThreeVector EllipsoidPos, G4String name);
+        //To parametrize the regions
+        void EllipsoidsParametrization();
 
         G4GenericMessenger * DetectorMessenger;
 
@@ -97,8 +103,8 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
         G4VPhysicalVolume * physicalWorld, * physicalRadiator, * physicalDetector, * physBone, * physArm, 
                           * physMuscle, * physGrasa, * physSkin, * physOs, * physHealthy;
                         
-        G4ThreeVector samplePosition, DetectorPosition, porePosition, osteo_position, healthy_position, Radiator_Position, tumorPosition;
-        G4RotationMatrix * armRotation, * Model3DRotation, * originMatrix; 
+        G4ThreeVector samplePosition, DetectorPosition, porePosition, osteo_position, healthy_position, Radiator_Position, tumorPosition, selectedCenter, ellipsoidPosition, ellipsoidPosition2;
+        G4RotationMatrix * armRotation, * Model3DRotation, * originMatrix, * elipsoidRot, * elipsoidRot2; 
 
         G4Element  * C, * Al, * N, * O, * Ca, * Mg, * V, * Cd, * Te, * W;
         G4Material * SiO2, * H2O, * Aerogel, * worldMaterial, * Calcium, * Magnesium, * Aluminum, * Air, * Silicon, * materialTarget, 
@@ -108,8 +114,7 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
         STLGeometryReader * stlReader;
         G4TessellatedSolid * Ribcage, * Lungs, * Heart;
         G4VSolid * Thorax1, * Thorax2;
-        G4SubtractionSolid * subtractedSolid0, * subtractedSolid1, * subtractedSolid2, * subtractedSolid3, * subtractedSolid4, 
-                           * subtractedLung;
+        G4SubtractionSolid * subtractedSolid0, * subtractedSolid1, * subtractedSolid2, * subtractedSolid3, * subtractedSolid4, * subtractedLung;
 };
 
 #endif 

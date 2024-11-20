@@ -214,26 +214,6 @@ void DetectorConstruction::ConstructBoneDivided()
 
 // Load 3D Models ===============================================================================================================================
 
-// void DetectorConstruction::ConstructTumor()
-// {
-// // Crear un objeto aleatorio
-//     std::random_device rd;
-//     std::mt19937 gen(rd());
-//     std::uniform_real_distribution<> posDist(50.0*mm, 100.0*mm); // Distribución de posición en el tórax
-//     std::uniform_real_distribution<> sizeDist(19.0*mm, 20.0*mm);  // Distribución de tamaño para el tumor
-
-// // Definir tamaño aleatorio para el tumor
-//     tumorRadius = sizeDist(gen);
-//     tumorSphere = new G4Sphere("Tumor", 0, tumorRadius, 0*deg, 360*deg, 0*deg, 180*deg);
-
-//     logicTumor = new G4LogicalVolume(tumorSphere, Muscle, "Tumor");
-// // Generar posición aleatoria dentro del tórax
-//     G4ThreeVector tumorPosition(posDist(gen), posDist(gen), 10.0*mm);
-// // Colocar el tumor en el modelo de tórax
-//     new G4PVPlacement(Model3DRotation, tumorPosition, logicTumor, "Tumor", logicWorld, false, 0, true);
-//     G4cout << "> Tumor (esfera) creado en una posición aleatoria dentro del tórax con radio: " << tumorRadius / mm << " mm" << G4endl;
-// }
-
 void DetectorConstruction::ConstructThorax()
 {
     G4STL stl; 
@@ -374,12 +354,15 @@ void DetectorConstruction::ConstructThorax()
 
     G4cout << "==========================================" << G4endl; G4cout << G4endl; 
 }
-//CREATE TUMOR ===================================================================================================================================
+
+// Create Tumor ===================================================================================================================================
+
 void DetectorConstruction::ConstructTumor()
 {
     EllipsoidsParametrization(); 
     double tumorRadius = radiusDist(gen);
-// Crear un objeto aleatorio
+    
+    // Crear un objeto aleatorio
     while (true)
     {
         // Generar coordenadas aleatorias dentro del elipsoide
@@ -388,6 +371,7 @@ void DetectorConstruction::ConstructTumor()
         double z = (2.0 * posDist(gen) - 1.0) * (c - tumorRadius);
 
         double verify = (x * x) / (a * a) + (y * y) / (b * b) + (z * z) / (c * c); 
+        
         // Verificar si el centro del tumor está dentro del elipsoide con suficiente espacio para el radio
         if (verify <= 1.0)
         {
@@ -434,8 +418,8 @@ void DetectorConstruction::ConstructEllipsoid(G4double aa, G4double bb, G4double
         << "c = " << c / mm << " mm "
         << "en posición " << EllipsoidPos << G4endl;
 }
-//       Una vez con los parámetros se crea la region para el tumor ->
-void DetectorConstruction::EllipsoidsParametrization()
+
+void DetectorConstruction::EllipsoidsParametrization() // Una vez con los parámetros se crea la region para el tumor
 {
     // Parámetros del elipsoide izquierdo
     G4ThreeVector leftEllipsoidCenter = Model3DRotation->inverse() * ellipsoidPosition; // Centro del elipsoide izquierdo
@@ -472,14 +456,15 @@ void DetectorConstruction::EllipsoidsParametrization()
         G4cout << "Tumor generado en el elipsoide derecho" << G4endl;
     }
 }
-//Define materials =============================================================================================================================
+
+// Define materials =============================================================================================================================
+
 void DetectorConstruction::DefineMaterials()
 {
     G4NistManager * nist = G4NistManager::Instance();
 
     // Elements ========================================================================================
 
-    // C  = nist -> FindOrBuildElement("C");
     C  = new G4Element("Carbon",     "C",  6,   12.01*g/mole);
     N  = new G4Element("Nitrogen",   "N",  7,   14.01*g/mole);
     O  = new G4Element("Oxygen",     "O",  8,   16.00*g/mole);

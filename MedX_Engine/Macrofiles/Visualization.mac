@@ -1,5 +1,6 @@
 /run/initialize
-/vis/open OGL
+/vis/open/TSG_WINDOWS_ZB
+#/vis/open OGL
 
 #/gui/defaultIcons false
 

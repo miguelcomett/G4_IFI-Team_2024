@@ -10,6 +10,7 @@
 #include "G4VisExecutive.hh"
 #include "G4UIQt.hh"
 #include "G4RunManagerFactory.hh"
+#include "G4UIExecutive.hh"
 
 #include "2.0_PhysicsList.hh"
 #include "3.0_DetectorConstruction.hh"
@@ -67,9 +68,9 @@ int main(int argc, char** argv)
         G4VisManager* visManager = new G4VisExecutive();  // "quiet"
         visManager -> Initialize();
 
-        G4UIQt * UI = new G4UIQt(argc, argv); // Usando G4UIQt en lugar de G4UIExecutive
-        //G4UIExecutive * UI = nullptr;
-        //UI = new G4UIExecutive(argc, argv);
+        //G4UIQt * UI = new G4UIQt(argc, argv); // Usando G4UIQt en lugar de G4UIExecutive
+        G4UIExecutive * UI = nullptr;
+        UI = new G4UIExecutive(argc, argv);
         UImanager -> ApplyCommand("/control/execute Visualization.mac");
         UI -> SessionStart();
         

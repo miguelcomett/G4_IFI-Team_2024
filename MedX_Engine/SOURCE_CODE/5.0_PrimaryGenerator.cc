@@ -1,7 +1,7 @@
 #include "5.0_PrimaryGenerator.hh"
 
 PrimaryGenerator::PrimaryGenerator(DetectorConstruction * detector):GunMode(0), GunXpos(0), GunYpos(0), GunZpos(-450*mm), 
-GunAngle(0.0), GunSpanX(100*mm), GunSpanY(100*mm), spectrumFile("fSpectrum140.txt"), 
+GunAngle(0.0), GunSpanX(100*mm), GunSpanY(1*mm), spectrumFile("fSpectrum140.txt"), 
 GeneratorMessenger(new PrimaryGeneratorMessenger(this)), G4VUserPrimaryGeneratorAction(), fDetector(detector)
 {
     particleGun = new G4ParticleGun(1);
@@ -10,7 +10,7 @@ GeneratorMessenger(new PrimaryGeneratorMessenger(this)), G4VUserPrimaryGenerator
     particle = particleTable -> FindParticle(particleName);
     particleGun -> SetParticleDefinition(particle);   
 
-   if (GunMode == 1) { SpectraFunction(); }
+    if (GunMode == 1) { SpectraFunction(); }
 }
 
 PrimaryGenerator::~PrimaryGenerator() {delete particleGun; delete GeneratorMessenger;}
@@ -19,12 +19,12 @@ void PrimaryGenerator::GeneratePrimaries(G4Event * anEvent)
 { 
     if (GunMode == 1) {realEnergy = InverseCumul(); particleGun -> SetParticleEnergy(realEnergy);}
 	
-    if (fDetector) {thoraxAngle = fDetector -> GetThoraxAngle();} else {thoraxAngle = 0;} // Uso del puntero fDetector para acceder a datos de DetectorConstruction
+    // if (fDetector) {thoraxAngle = fDetector -> GetThoraxAngle();} else {thoraxAngle = 0;} // Uso del puntero fDetector para acceder a datos de DetectorConstruction
 
     // x0 = 2 * (G4UniformRand() - 0.5);
     // x0 = x0 * GunSpanX;
     x0 = G4RandGauss::shoot(0, GunSpanX / 1.5);
-    x0 = x0 * std::cos(thoraxAngle/2);
+    // x0 = x0 * std::cos(thoraxAngle/2);
 
     y0 = 2 * (G4UniformRand() - 0.5);
     y0 = y0 * GunSpanY;
@@ -50,7 +50,7 @@ void PrimaryGenerator::GeneratePrimaries(G4Event * anEvent)
     particleGun -> GeneratePrimaryVertex(anEvent);
 }
 
-// Messenger ==============================================================================================================================
+// Messengers ==============================================================================================================================
 
 void PrimaryGenerator::SetGunXpos(G4double GunXpos)
 {
@@ -73,17 +73,17 @@ void PrimaryGenerator::SetGunZpos(G4double GunZpos)
     else { G4cout << "Same Position Selected." << G4endl;}
 }
 
-void PrimaryGenerator::SetGunSpanX(G4double SpanX)
+void PrimaryGenerator::SetGunSpanX(G4double GunSpanX)
 {
-    G4cout << "Setting source Span to: " << SpanX << G4endl;
-    if(SpanX != GunSpanX) { GunSpanX = SpanX; G4cout << "Source Span changed to: " << GunSpanX << G4endl;}
+    G4cout << "Setting source Span to: " << GunSpanX << G4endl;
+    if(GunSpanX != GunSpanX) { GunSpanX = GunSpanX; G4cout << "Source Span changed to: " << GunSpanX << G4endl;}
     else { G4cout << "Same Span selected." << G4endl; }
 }
 
-void PrimaryGenerator::SetGunSpanY(G4double SpanY)
+void PrimaryGenerator::SetGunSpanY(G4double GunSpanY)
 {
-    G4cout << "Setting source Span to: " << SpanY << G4endl;
-    if(SpanY != GunSpanY) { GunSpanY = SpanY; G4cout << "Source Span changed to: " << GunSpanY << G4endl;}
+    G4cout << "Setting source Span to: " << GunSpanY << G4endl;
+    if(GunSpanY != GunSpanY) { GunSpanY = GunSpanY; G4cout << "Source Span changed to: " << GunSpanY << G4endl;}
     else { G4cout << "Same Span selected." << G4endl; }
 }
 

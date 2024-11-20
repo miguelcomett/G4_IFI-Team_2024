@@ -24,6 +24,5 @@ void ActionInitialization::Build() const
     SteppingAction * steppingAction = new SteppingAction(eventAction);
     SetUserAction(steppingAction);
 
-    // Pasar el puntero de DetectorConstruction a PrimaryGeneratorAction
     SetUserAction(new PrimaryGenerator(fDetector));
 }

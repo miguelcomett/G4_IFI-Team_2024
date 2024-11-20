@@ -2,9 +2,7 @@
 
 def SingleEnergyBisection(directory, mac_filename, root_filename, tree_name, branch_1, branch_2, initial_energy, thick_0, thick_1, tolerance):
     
-    import os
-    import subprocess
-    import uproot
+    import os; import subprocess; import uproot
 
     executable_file = "Sim"
     run_sim = f"./{executable_file} {mac_filename} . ."

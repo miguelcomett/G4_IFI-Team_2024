@@ -31,14 +31,13 @@ class PrimaryGenerator:public G4VUserPrimaryGeneratorAction
         void SetGunXpos(G4double GunXpos);
         void SetGunYpos(G4double GunYpos);
         void SetGunZpos(G4double GunZpos);
-        void SetGunSpanX(G4double SpanX);
-        void SetGunSpanY(G4double SpanY);
-        void SetGunAngle(G4double angle); 
-        void SetGunMode(G4int mode); 
+        void SetGunSpanX(G4double GunSpanX);
+        void SetGunSpanY(G4double GunSpanY);
+        void SetGunAngle(G4double GunAngle); 
+        void SetGunMode(G4int GunMode); 
 	
         G4ParticleGun * GetParticleGun() const {return particleGun;}
         
-        //Real spectrum feature
         void ReadSpectrumFromFile(const std::string & filename, std::vector<G4double> & xx, std::vector<G4double> & yy, G4int & fNPoints);
         G4double InverseCumul();
     
@@ -46,6 +45,7 @@ class PrimaryGenerator:public G4VUserPrimaryGeneratorAction
 
         G4ParticleGun * particleGun;        
         PrimaryGeneratorMessenger * GeneratorMessenger;
+        DetectorConstruction * fDetector;
 
         G4String particleName;
         G4ParticleTable * particleTable;
@@ -71,9 +71,6 @@ class PrimaryGenerator:public G4VUserPrimaryGeneratorAction
         std::vector<G4double>  fSlp;         //slopes
         std::vector<G4double>  fYC;          //cumulative function of Y
         G4double               fYmax = 0.;   //max(Y)
-
-        //const DetectorConstruction * fDetector;
-        DetectorConstruction * fDetector; // Puntero al DetectorConstruction
 };
 
 #endif

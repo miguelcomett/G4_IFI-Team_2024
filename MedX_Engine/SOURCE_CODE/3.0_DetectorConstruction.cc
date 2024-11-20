@@ -14,7 +14,7 @@ DetectorConstruction::DetectorConstruction() : gen(rd()), randomDist(0.0, 1.0), 
     DetectorMessenger -> DeclareProperty("ThicknessTarget", targetThickness, "Thickness of the target");
     DetectorMessenger -> DeclareProperty("Rotation", thoraxAngle, "Rotate the 3D model");
 
-    thoraxAngle = 140;
+    thoraxAngle = 0;
 
     boneHeight = 60 * mm;
     innerBoneRadius = 0.0;
@@ -29,13 +29,13 @@ DetectorConstruction::DetectorConstruction() : gen(rd()), randomDist(0.0, 1.0), 
         isHealthyBone = true;
         isOsteoBone = false;
     is3DModel = true;
-        isHeart = true;
-        isLungs = true;
+        isHeart = false;
+        isLungs = false;
         isRibcage = false;
-        isThorax = false;
+        isThorax = true;
         isFiller = true;
-        isTumor = true;
-        isTestParametrization = true; //Juts in case you want to modify the area where the tumor appears
+        isTumor = false;
+        isTestParametrization = false;
 
     angleX = 0 * deg;
     angleY = -90 * deg;
@@ -418,13 +418,13 @@ void DetectorConstruction::ConstructEllipsoid(G4double aa, G4double bb, G4double
 void DetectorConstruction::EllipsoidsParametrization() // Una vez con los parámetros se crea la region para el tumor
 {
     // Parámetros del elipsoide izquierdo
-    G4ThreeVector leftEllipsoidCenter = Model3DRotation->inverse() * ellipsoidPosition; // Centro del elipsoide izquierdo
+    G4ThreeVector leftEllipsoidCenter = Model3DRotation -> inverse() * ellipsoidPosition; // Centro del elipsoide izquierdo
     G4double aLeft = 100.0 * mm; // Semieje x del elipsoide izquierdo
     G4double bLeft = 29.0 * mm; // Semieje y del elipsoide izquierdo
     G4double cLeft = 43.0 * mm; // Semieje z del elipsoide izquierdo
 
     // Parámetros del elipsoide derecho
-    G4ThreeVector rightEllipsoidCenter = Model3DRotation->inverse() * ellipsoidPosition2; // Centro del elipsoide derecho
+    G4ThreeVector rightEllipsoidCenter = Model3DRotation -> inverse() * ellipsoidPosition2; // Centro del elipsoide derecho
     G4double aRight = 100.0 * mm; // Semieje x del elipsoide derecho
     G4double bRight = 25.0 * mm; // Semieje y del elipsoide derecho
     G4double cRight = 40.0 * mm; // Semieje z del elipsoide derecho

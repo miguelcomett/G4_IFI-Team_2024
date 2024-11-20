@@ -18,7 +18,7 @@ class ActionInitialization : public G4VUserActionInitialization
         virtual void Build() const;
         virtual void BuildForMaster() const;
 
-        DetectorConstruction* fDetector; // Puntero a DetectorConstruction
+        DetectorConstruction * fDetector; 
 };
 
 #endif

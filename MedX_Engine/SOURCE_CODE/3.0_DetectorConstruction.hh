@@ -73,7 +73,6 @@ class DetectorConstruction : public G4VUserDetectorConstruction
         void ConstructBoneDivided();
         void ConstructThorax();
         void ConstructTumor();
-        //Function to construct an ellipsoid where a patology will reside
         void ConstructEllipsoid(G4double aa, G4double bb, G4double cc, G4RotationMatrix* rot, G4ThreeVector EllipsoidPos, G4String name);
         void EllipsoidsParametrization();
 

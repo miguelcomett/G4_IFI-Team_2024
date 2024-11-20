@@ -1,6 +1,7 @@
 #include "4.0_ActionInitialization.hh"
 
-MyActionInitialization::MyActionInitialization(){}
+MyActionInitialization::MyActionInitialization(MyDetectorConstruction* detector)
+    : G4VUserActionInitialization(), fDetector(detector) {}
 MyActionInitialization::~MyActionInitialization(){}
 
 void MyActionInitialization::BuildForMaster() const 
@@ -11,7 +12,8 @@ void MyActionInitialization::BuildForMaster() const
 
 void MyActionInitialization::Build() const
 {
-    MyPrimaryGenerator * generator = new MyPrimaryGenerator();
+    // Pasar fDetector al constructor
+    MyPrimaryGenerator* generator = new MyPrimaryGenerator(fDetector);
     SetUserAction(generator);
     
     MyRunAction * runAction = new MyRunAction();
@@ -22,4 +24,7 @@ void MyActionInitialization::Build() const
 
     MySteppingAction * steppingAction = new MySteppingAction(eventAction);
     SetUserAction(steppingAction);
+
+    // Pasar el puntero de DetectorConstruction a PrimaryGeneratorAction
+    SetUserAction(new MyPrimaryGenerator(fDetector));
 }

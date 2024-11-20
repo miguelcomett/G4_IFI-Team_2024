@@ -56,7 +56,7 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
         G4Material * GetMaterial() const {return materialTarget;}
 	    G4double GetThickness() const {return targetThickness;}
 
-        double GetThoraxAngle() const;
+        double GetThoraxAngle() const { return thoraxAngle; }
 
         G4bool  isArm, isHealthyBone, isOsteoBone, isBoneDivided, 
                 is3DModel, isHeart, isLungs, isRibcage, isFiller, isThorax,

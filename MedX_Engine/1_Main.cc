@@ -46,15 +46,25 @@ int main(int argc, char** argv)
     long seed = std::time(nullptr);
     CLHEP::HepRandom::setTheSeed(seed);
 
-    runManager->SetUserInitialization(new MyDetectorConstruction);
-    runManager->SetUserInitialization(new MyPhysicsList);
-    runManager->SetUserInitialization(new MyActionInitialization); 
+    //runManager->SetUserInitialization(new MyDetectorConstruction);
+    //runManager->SetUserInitialization(new MyPhysicsList);
+    //runManager->SetUserInitialization(new MyActionInitialization); 
+
+    // Crear instancia de DetectorConstruction
+    auto* myDetector = new MyDetectorConstruction();
+    runManager->SetUserInitialization(myDetector);
+
+    // Configurar PhysicsList
+    runManager->SetUserInitialization(new MyPhysicsList());
+
+    // Pasar myDetector a ActionInitialization
+    runManager->SetUserInitialization(new MyActionInitialization(myDetector));
 
     G4UImanager* UImanager = G4UImanager::GetUIpointer();
     
     if(argc == 1)
     {
-        G4VisManager* visManager = new G4VisExecutive("quiet"); 
+        G4VisManager* visManager = new G4VisExecutive();  // "quiet"
         visManager -> Initialize();
 
         G4UIQt * UI = new G4UIQt(argc, argv); // Usando G4UIQt en lugar de G4UIExecutive

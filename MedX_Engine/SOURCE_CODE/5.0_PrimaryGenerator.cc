@@ -1,8 +1,10 @@
 #include "5.0_PrimaryGenerator.hh"
 
-MyPrimaryGenerator::MyPrimaryGenerator(): 
+MyPrimaryGenerator::MyPrimaryGenerator(MyDetectorConstruction* detector):
 GunMode(0), GunXpos(0), GunYpos(0), GunZpos(-450*mm), GunAngle(0.0), GunSpanX(100*mm), GunSpanY(100*mm), 
-spectrumFile("fSpectrum140.txt"), GeneratorMessenger(new PrimaryGeneratorMessenger(this))
+spectrumFile("fSpectrum140.txt"), GeneratorMessenger(new PrimaryGeneratorMessenger(this)),
+G4VUserPrimaryGeneratorAction(), fDetector(detector)
+
 {
     particleGun = new G4ParticleGun(1);
     particleTable = G4ParticleTable::GetParticleTable();
@@ -23,12 +25,20 @@ void MyPrimaryGenerator::GeneratePrimaries(G4Event * anEvent)
 	    particleGun -> SetParticleEnergy(realEnergy);
     }
 	
-    double algo = fDetectorConstruction->GetThoraxAngle();
+    // Uso del puntero fDetector para acceder a datos de DetectorConstruction
+    // Uso del puntero fDetector para acceder a datos de DetectorConstruction
+    double thoraxAngle = 0; // Declarar la variable antes del if-else
 
+    if (fDetector) {
+        thoraxAngle = fDetector->GetThoraxAngle();
+    }
+    else {
+        thoraxAngle = 0;
+    }
     // x0 = 2 * (G4UniformRand() - 0.5);
     // x0 = x0 * GunSpanX;
     x0 = G4RandGauss::shoot(0, GunSpanX / 1.5);
-    // x0 = x0 * std::cos(algo/2);
+    // x0 = x0 * std::cos(thoraxAngle/2);
 
     y0 = 2 * (G4UniformRand() - 0.5);
     y0 = y0 * GunSpanY;

@@ -240,14 +240,14 @@ void MyRunAction::MergeRootFiles()
 
     // Modificado: La carpeta Output se moverá al mismo nivel que ROOT
     #ifdef __APPLE__
-        std::string rootDirectory = std::filesystem::path(currentPath).string() + "/ROOT_temp/";
+        std::string rootDirectory = std::filesystem::path(currentPath).string() + "\\ROOT_temp\\";
     #else
-        std::string rootDirectory = std::filesystem::path(currentPath).parent_path().string() + "/ROOT_temp/";
+        std::string rootDirectory = std::filesystem::path(currentPath).parent_path().string() + "\\ROOT_temp\\";
     #endif
 
     // Nueva ruta para Output/ fuera de ROOT/
     // std::string outputDirectory = std::filesystem::path(currentPath).parent_path().string() + "/ROOT/";
-    std::string outputDirectory = std::filesystem::path(currentPath).string() + "/ROOT/";
+    std::string outputDirectory = std::filesystem::path(currentPath).string() + "\\ROOT\\";
 
     // Crear la carpeta Output si no existe
     if (!std::filesystem::exists(outputDirectory))

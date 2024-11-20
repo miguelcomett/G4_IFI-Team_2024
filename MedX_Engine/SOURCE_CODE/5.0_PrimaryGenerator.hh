@@ -24,7 +24,7 @@ class MyPrimaryGenerator : public G4VUserPrimaryGeneratorAction
 {
     public:
 
-        MyPrimaryGenerator();
+        MyPrimaryGenerator(MyDetectorConstruction* detector);
         ~MyPrimaryGenerator();
 
         virtual void GeneratePrimaries(G4Event *);
@@ -72,7 +72,8 @@ class MyPrimaryGenerator : public G4VUserPrimaryGeneratorAction
         std::vector<G4double>  fYC;          //cumulative function of Y
         G4double               fYmax = 0.;   //max(Y)
 
-        const MyDetectorConstruction * fDetectorConstruction;
+        //const MyDetectorConstruction * fDetector;
+        MyDetectorConstruction* fDetector; // Puntero al DetectorConstruction
 };
 
 #endif

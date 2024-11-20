@@ -461,6 +461,6 @@ void MyDetectorConstruction::DefineMaterials()
     worldMaterial -> SetMaterialPropertiesTable(worldMaterialProperties);
 }
 
-double MyDetectorConstruction::GetThoraxAngle() const {
-    return thoraxAngle;
-}
+//double MyDetectorConstruction::GetThoraxAngle() const {
+//    return thoraxAngle;
+//}

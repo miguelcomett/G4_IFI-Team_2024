@@ -1,7 +1,7 @@
 /run/initialize
 /vis/open OGL
 
-/gui/defaultIcons false
+#/gui/defaultIcons false
 
 
 

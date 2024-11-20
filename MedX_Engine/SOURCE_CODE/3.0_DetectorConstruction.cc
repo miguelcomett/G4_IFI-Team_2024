@@ -17,7 +17,7 @@ MyDetectorConstruction::MyDetectorConstruction() : gen(rd()),                   
     DetectorMessenger -> DeclareProperty("ThicknessTarget", targetThickness, "Thickness of the target");
     DetectorMessenger -> DeclareProperty("Rotation", thoraxAngle, "Rotate the 3D model");
 
-    thoraxAngle = 90;
+    thoraxAngle = 140;
 
     boneHeight = 60 * mm;
     innerBoneRadius = 0.0;
@@ -34,16 +34,26 @@ MyDetectorConstruction::MyDetectorConstruction() : gen(rd()),                   
     is3DModel = true;
         isHeart = true;
         isLungs = true;
-        isRibcage = true;
-        isThorax = true;
+        isRibcage = false;
+        isThorax = false;
         isFiller = true;
         isTumor = true;
         //Juts in case you want to modify the area where the tumor appears
-        isTestParametrization = false; 
+        isTestParametrization = true; 
 
+    angleX = 0 * deg;
+    angleY = -90 * deg;
+    angleZ = (thoraxAngle + 180) * deg; 
+    Model3DRotation = new G4RotationMatrix(angleX, angleY, angleZ);
     //Ellipsoids params
     ellipsoidPosition = G4ThreeVector(88.0 * mm, 5.0 * mm, -8.0 * mm); // Ejemplo: centro del pulmón derecho
     ellipsoidPosition2 = G4ThreeVector(-93 * mm, 5.0 * mm, -13.0 * mm); // Ejemplo: centro del pulmón izquierdo
+
+    // Mostrar las posiciones rotadas
+    G4cout << "Posición rotada pulmón derecho: " << ellipsoidPosition << G4endl;
+    G4cout << "Posición rotada pulmón izquierdo: " << ellipsoidPosition2 << G4endl;
+
+
  
 }
 
@@ -66,9 +76,16 @@ G4VPhysicalVolume * MyDetectorConstruction::Construct()
     //Test ellipsoids where the tumor will reside 
     if (isTestParametrization)
     {
+        /*G4double angleX = Model3DRotation.x() + 100 * deg;
+        G4double angleY = Model3DRotation.y() + 0 * deg;
+        G4double angleZ = Model3DRotation.z() + 5 * deg;
+        G4double angleX2 = Model3DRotation.x() - 100 * deg;
+        G4double angleY2 = Model3DRotation.y() + 0 * deg;
+        G4double angleZ2 = Model3DRotation.z() + 0 * deg;*/
+
                            //a, b, c,           rotationMat                                  VectorPos
-        ConstructEllipsoid(100, 29, 43, new G4RotationMatrix(100 * deg, 0 * deg, 5 * deg), ellipsoidPosition, "LeftLung");
-        ConstructEllipsoid(100, 25, 40, new G4RotationMatrix(-100 * deg, 0 * deg, 0 * deg), ellipsoidPosition2, "RightLung");
+        ConstructEllipsoid(100, 29, 43, new G4RotationMatrix(100 * deg, 0 *deg, 5 * deg), ellipsoidPosition, "LeftLung");
+        ConstructEllipsoid(100, 25, 40, new G4RotationMatrix(-100 * deg, 0 * deg,  0 * deg), ellipsoidPosition2, "RightLung");
     }
 
     solidDetector = new G4Box("solidDetector", xWorld/DetRowNum, yWorld/DetColumnNum, 0.01*m);
@@ -216,7 +233,6 @@ void MyDetectorConstruction::ConstructThorax()
         //std::string modelPath = "C:\\Users\\conej\\Documents\\Universidad\\Geant4\\Projects\\Models2\\"; // Define el directorio de los modelos 3D
     #endif
 
-    Model3DRotation = new G4RotationMatrix(0*deg, -90*deg, (thoraxAngle+180)*deg);
     originMatrix = new G4RotationMatrix(0, 0, 0);
         
     if (arguments == 1) { G4cout << G4endl; }
@@ -375,7 +391,7 @@ void MyDetectorConstruction::ConstructTumor()
     // tumor Y = substract Z
     // tumor X = substract -X
     // Colocar el tumor en el modelo de tórax
-    new G4PVPlacement(Model3DRotation, tumorPosition, logicTumor, "Tumor", logicWorld, false, 0, true);
+    new G4PVPlacement(Model3DRotation, Model3DRotation->inverse() *  tumorPosition, logicTumor, "Tumor", logicWorld, false, 0, true);
     G4cout << "> Tumor (esfera) creado en una posición aleatoria dentro del tórax con radio: " << tumorRadius / mm << " mm" << G4endl;
 }
 
@@ -394,7 +410,7 @@ void MyDetectorConstruction::ConstructEllipsoid(G4double aa, G4double bb, G4doub
     G4LogicalVolume* ellipsoidLogic = new G4LogicalVolume(ellipsoidSolid, Air, name);
 
     // Colocar el elipsoide en el mundo
-    new G4PVPlacement(elipsoidRot2, EllipsoidPos, ellipsoidLogic, name, logicWorld, false, 0, true);
+    new G4PVPlacement(elipsoidRot2, Model3DRotation->inverse() * EllipsoidPos, ellipsoidLogic, name, logicWorld, false, 0, true);
 
     G4cout << "> " << name << " creado con semiejes : "
         << "a = " << a / mm << " mm, "
@@ -406,14 +422,14 @@ void MyDetectorConstruction::ConstructEllipsoid(G4double aa, G4double bb, G4doub
 void MyDetectorConstruction::EllipsoidsParametrization()
 {
     // Parámetros del elipsoide izquierdo
-    G4ThreeVector leftEllipsoidCenter = ellipsoidPosition; // Centro del elipsoide izquierdo
+    G4ThreeVector leftEllipsoidCenter = Model3DRotation->inverse() * ellipsoidPosition; // Centro del elipsoide izquierdo
     double aLeft = 100.0 * mm; // Semieje x del elipsoide izquierdo
     double bLeft = 29.0 * mm; // Semieje y del elipsoide izquierdo
     double cLeft = 43.0 * mm; // Semieje z del elipsoide izquierdo
 
 
     // Parámetros del elipsoide derecho
-    G4ThreeVector rightEllipsoidCenter = ellipsoidPosition2; // Centro del elipsoide derecho
+    G4ThreeVector rightEllipsoidCenter = Model3DRotation->inverse() * ellipsoidPosition2; // Centro del elipsoide derecho
     double aRight = 100.0 * mm; // Semieje x del elipsoide derecho
     double bRight = 25.0 * mm; // Semieje y del elipsoide derecho
     double cRight = 40.0 * mm; // Semieje z del elipsoide derecho

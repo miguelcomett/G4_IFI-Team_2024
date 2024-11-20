@@ -113,8 +113,21 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
         
         STLGeometryReader * stlReader;
         G4TessellatedSolid * Ribcage, * Lungs, * Heart;
-        G4VSolid * Thorax1, * Thorax2;
+        G4VSolid * Thorax1, * Thorax2, * AccumulatedLungs;
         G4SubtractionSolid * subtractedSolid0, * subtractedSolid1, * subtractedSolid2, * subtractedSolid3, * subtractedSolid4, * subtractedLung;
+
+        //Ellipsoids
+        G4double a, b, c, angleX, angleY, angleZ; 
+
+
+        //Distribuciones
+        std::random_device rd;
+        std::mt19937 gen;
+        std::uniform_real_distribution<> randomDist;
+        std::uniform_real_distribution<> radiusDist;
+        std::uniform_real_distribution<> posDist;
+        std::uniform_real_distribution<> posYDist;
+
 };
 
 #endif 

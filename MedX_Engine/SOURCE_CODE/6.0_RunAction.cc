@@ -230,30 +230,24 @@ void RunAction::EndOfRunAction(const G4Run * thisRun)
 
 void RunAction::MergeRootFiles()
 {
-    // G4cout << G4endl;
-    // G4cout << "============= Merging Process ============" << G4endl;
+    // G4cout << G4endl; G4cout << "============= Merging Process ============" << G4endl;
 
     TFileMerger merger;
     merger.SetFastMethod(true);
 
     std::string currentPath = std::filesystem::current_path().string();
 
-    // Modificado: La carpeta Output se moverá al mismo nivel que ROOT
     #ifdef __APPLE__
         std::string rootDirectory = std::filesystem::path(currentPath).string() + "/ROOT_temp/";
+        std::string outputDirectory = std::filesystem::path(currentPath).string() + "/ROOT/";
     #else
         std::string rootDirectory = std::filesystem::path(currentPath).parent_path().string() + "\\ROOT_temp\\";
+        std::string outputDirectory = std::filesystem::path(currentPath).string() + "\\ROOT\\";
     #endif
-
-    // Nueva ruta para Output/ fuera de ROOT/
-    // std::string outputDirectory = std::filesystem::path(currentPath).parent_path().string() + "/ROOT/";
-    std::string outputDirectory = std::filesystem::path(currentPath).string() + "\\ROOT\\";
-
-    // Crear la carpeta Output si no existe
-    if (!std::filesystem::exists(outputDirectory))
+   
+    if (!std::filesystem::exists(outputDirectory))  // Crear la carpeta Output si no existe
     {
-        std::filesystem::create_directory(outputDirectory);
-        // G4cout << "-> Output folder merger at: " << outputDirectory << G4endl;
+        std::filesystem::create_directory(outputDirectory); // G4cout << "-> Output folder merger at: " << outputDirectory << G4endl;
     }
 
     // Definir el nombre base del archivo según el valor de 'arguments'
@@ -278,7 +272,7 @@ void RunAction::MergeRootFiles()
     while (std::filesystem::exists(mergedFileName));
 
     // Iterar sobre los archivos en el directorio ROOT y agregar archivos .root al merger
-    for (const auto& entry : std::filesystem::directory_iterator(rootDirectory))
+    for (const auto & entry : std::filesystem::directory_iterator(rootDirectory))
     {
         if (entry.is_regular_file() && entry.path().extension() == ".root")
         {
@@ -297,19 +291,13 @@ void RunAction::MergeRootFiles()
 
     if (merger.Merge())
     {
-        // G4cout << "Successfully merged ROOT files into: " << mergedFileName << G4endl;
         SingleData(mergedFileName);
+        G4cout << "Successfully merged ROOT files into: " << mergedFileName << G4endl;
     }
-    else
-    {
-        // G4cout << "Error during ROOT file merging!" << G4endl;
-    }
+    else {G4cout << "Error during ROOT file merging!" << G4endl;}
 
-    // Eliminar la carpeta ROOT después de terminar el proceso de fusión
     std::filesystem::remove_all(rootDirectory); // Elimina la carpeta ROOT/ y su contenido
-
-    // G4cout << "==========================================" << G4endl;
-    // G4cout << G4endl;
+    // G4cout << "==========================================" << G4endl; G4cout << G4endl;
 }
 
 void RunAction::SingleData(const std::string & mergedFileName)

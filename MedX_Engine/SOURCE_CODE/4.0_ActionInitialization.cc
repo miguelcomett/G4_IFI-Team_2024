@@ -1,13 +1,7 @@
 #include "4.0_ActionInitialization.hh"
 
-<<<<<<< Updated upstream
-MyActionInitialization::MyActionInitialization(MyDetectorConstruction* detector)
-    : G4VUserActionInitialization(), fDetector(detector) {}
-MyActionInitialization::~MyActionInitialization(){}
-=======
-ActionInitialization::ActionInitialization(){}
+ActionInitialization::ActionInitialization(DetectorConstruction * detector) : G4VUserActionInitialization(), fDetector(detector) {}
 ActionInitialization::~ActionInitialization(){}
->>>>>>> Stashed changes
 
 void ActionInitialization::BuildForMaster() const 
 {
@@ -17,12 +11,8 @@ void ActionInitialization::BuildForMaster() const
 
 void ActionInitialization::Build() const
 {
-<<<<<<< Updated upstream
     // Pasar fDetector al constructor
-    MyPrimaryGenerator* generator = new MyPrimaryGenerator(fDetector);
-=======
-    PrimaryGenerator * generator = new PrimaryGenerator();
->>>>>>> Stashed changes
+    PrimaryGenerator * generator = new PrimaryGenerator(fDetector);
     SetUserAction(generator);
     
     RunAction * runAction = new RunAction();
@@ -35,5 +25,5 @@ void ActionInitialization::Build() const
     SetUserAction(steppingAction);
 
     // Pasar el puntero de DetectorConstruction a PrimaryGeneratorAction
-    SetUserAction(new MyPrimaryGenerator(fDetector));
+    SetUserAction(new PrimaryGenerator(fDetector));
 }

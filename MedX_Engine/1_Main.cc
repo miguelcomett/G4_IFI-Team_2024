@@ -46,25 +46,13 @@ int main(int argc, char** argv)
     long seed = std::time(nullptr);
     CLHEP::HepRandom::setTheSeed(seed);
 
-<<<<<<< Updated upstream
-    //runManager->SetUserInitialization(new MyDetectorConstruction);
-    //runManager->SetUserInitialization(new MyPhysicsList);
-    //runManager->SetUserInitialization(new MyActionInitialization); 
-
     // Crear instancia de DetectorConstruction
-    auto* myDetector = new MyDetectorConstruction();
+    auto * myDetector = new DetectorConstruction();
     runManager->SetUserInitialization(myDetector);
 
-    // Configurar PhysicsList
-    runManager->SetUserInitialization(new MyPhysicsList());
-
-    // Pasar myDetector a ActionInitialization
-    runManager->SetUserInitialization(new MyActionInitialization(myDetector));
-=======
-    runManager->SetUserInitialization(new DetectorConstruction);
-    runManager->SetUserInitialization(new PhysicsList);
-    runManager->SetUserInitialization(new ActionInitialization); 
->>>>>>> Stashed changes
+    runManager -> SetUserInitialization(new PhysicsList());
+    runManager -> SetUserInitialization(new DetectorConstruction);
+    runManager -> SetUserInitialization(new ActionInitialization(myDetector));
 
     G4UImanager* UImanager = G4UImanager::GetUIpointer();
     

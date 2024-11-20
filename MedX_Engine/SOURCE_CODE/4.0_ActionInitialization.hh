@@ -12,18 +12,13 @@
 class ActionInitialization : public G4VUserActionInitialization
 {
     public:
-<<<<<<< Updated upstream
-        MyActionInitialization(MyDetectorConstruction* detector);
-        ~MyActionInitialization();
-=======
-        ActionInitialization();
+        ActionInitialization(DetectorConstruction * detector);
         ~ActionInitialization();
->>>>>>> Stashed changes
 
         virtual void Build() const;
         virtual void BuildForMaster() const;
 
-        MyDetectorConstruction* fDetector; // Puntero a DetectorConstruction
+        DetectorConstruction* fDetector; // Puntero a DetectorConstruction
 };
 
 #endif

@@ -1,14 +1,8 @@
 #include "5.0_PrimaryGenerator.hh"
 
-<<<<<<< Updated upstream
-MyPrimaryGenerator::MyPrimaryGenerator(MyDetectorConstruction* detector):
-=======
-PrimaryGenerator::PrimaryGenerator(): 
->>>>>>> Stashed changes
-GunMode(0), GunXpos(0), GunYpos(0), GunZpos(-450*mm), GunAngle(0.0), GunSpanX(100*mm), GunSpanY(100*mm), 
-spectrumFile("fSpectrum140.txt"), GeneratorMessenger(new PrimaryGeneratorMessenger(this)),
-G4VUserPrimaryGeneratorAction(), fDetector(detector)
-
+PrimaryGenerator::PrimaryGenerator(DetectorConstruction * detector):GunMode(0), GunXpos(0), GunYpos(0), GunZpos(-450*mm), 
+GunAngle(0.0), GunSpanX(100*mm), GunSpanY(100*mm), spectrumFile("fSpectrum140.txt"), 
+GeneratorMessenger(new PrimaryGeneratorMessenger(this)), G4VUserPrimaryGeneratorAction(), fDetector(detector)
 {
     particleGun = new G4ParticleGun(1);
     particleTable = G4ParticleTable::GetParticleTable();

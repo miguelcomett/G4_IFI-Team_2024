@@ -38,8 +38,7 @@ MyDetectorConstruction::MyDetectorConstruction() : gen(rd()),                   
         isThorax = false;
         isFiller = true;
         isTumor = true;
-        //Juts in case you want to modify the area where the tumor appears
-        isTestParametrization = true; 
+        isTestParametrization = true; //Juts in case you want to modify the area where the tumor appears
 
     angleX = 0 * deg;
     angleY = -90 * deg;
@@ -51,10 +50,7 @@ MyDetectorConstruction::MyDetectorConstruction() : gen(rd()),                   
 
     // Mostrar las posiciones rotadas
     G4cout << "Posición rotada pulmón derecho: " << ellipsoidPosition << G4endl;
-    G4cout << "Posición rotada pulmón izquierdo: " << ellipsoidPosition2 << G4endl;
-
-
- 
+    G4cout << "Posición rotada pulmón izquierdo: " << ellipsoidPosition2 << G4endl; 
 }
 
 MyDetectorConstruction::~MyDetectorConstruction()

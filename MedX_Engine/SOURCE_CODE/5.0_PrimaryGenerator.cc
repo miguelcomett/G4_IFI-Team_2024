@@ -17,11 +17,7 @@ PrimaryGenerator::~PrimaryGenerator() {delete particleGun; delete GeneratorMesse
 
 void PrimaryGenerator::GeneratePrimaries(G4Event * anEvent)
 { 
-    if (GunMode == 1)
-    {
-	    realEnergy = InverseCumul(); 
-	    particleGun -> SetParticleEnergy(realEnergy);
-    }
+    if (GunMode == 1) {realEnergy = InverseCumul(); particleGun -> SetParticleEnergy(realEnergy);}
 	
     if (fDetector) {thoraxAngle = fDetector -> GetThoraxAngle();} else {thoraxAngle = 0;} // Uso del puntero fDetector para acceder a datos de DetectorConstruction
 
@@ -54,7 +50,7 @@ void PrimaryGenerator::GeneratePrimaries(G4Event * anEvent)
     particleGun -> GeneratePrimaryVertex(anEvent);
 }
 
-// MESSENGERS ===================================================================================================
+// Messenger ==============================================================================================================================
 
 void PrimaryGenerator::SetGunXpos(G4double GunXpos)
 {
@@ -107,56 +103,34 @@ void PrimaryGenerator::SetGunMode(G4int mode)
     else { G4cout << "No mode selected. Default value applied." << G4endl; }
 }
 
-// CREATE SPECTRUM, DON'T MOVE ===================================================================================
+// Create Ratiation Spectra ====================================================================================================================
 
-void PrimaryGenerator::SpectraFunction()
+void PrimaryGenerator::SpectraFunction() // tabulated function // Y is assumed positive, linear per segment, continuous
 {
-	// tabulated function 
-	// Y is assumed positive, linear per segment, continuous
     std::vector<G4double> xx;
     std::vector<G4double> yy;
     fNPoints = 0;
 
-	// Leer los datos desde el archivo "datos.txt"
     ReadSpectrumFromFile(spectrumFile, xx, yy, fNPoints);
 
-	// Mostrar los datos leídos y la cantidad de puntos
     G4cout << "Número de puntos leídos: " << fNPoints << G4endl;
-    for (size_t i = 0; i < xx.size(); ++i) 
-    {
-        G4cout << "Energía: " << xx[i] / keV << " keV, Intensidad: " << yy[i] << G4endl; 
-    }
+    for (size_t i = 0; i < xx.size(); ++i) {G4cout << "Energía: " << xx[i] / keV << " keV, Intensidad: " << yy[i] << G4endl;}
 
 	// copy arrays in std::vector and compute fMax
     fX.resize(fNPoints); fY.resize(fNPoints);
-    fYmax = 0.;
-    for (G4int j=0; j<fNPoints; j++) 
-    {
-        fX[j] = xx[j]; fY[j] = yy[j];
-        if (fYmax < fY[j]) fYmax = fY[j];
-	};
+    fYmax = 0.0;
+    for (G4int j=0; j<fNPoints; j++) {fX[j] = xx[j]; fY[j] = yy[j]; if (fYmax < fY[j]) fYmax = fY[j];};
 
     fSlp.resize(fNPoints); //compute slopes
-    for (G4int j=0; j<fNPoints-1; j++) 
-    {
-        fSlp[j] = (fY[j+1] - fY[j])/(fX[j+1] - fX[j]); 
-    };
+    for (G4int j=0; j<fNPoints-1; j++) {fSlp[j] = (fY[j+1] - fY[j])/(fX[j+1] - fX[j]);};
 
     fYC.resize(fNPoints); // compute cumulative function
     fYC[0] = 0.;
-    for (G4int j=1; j<fNPoints; j++) 
-    {
-        fYC[j] = fYC[j-1] + 0.5*(fY[j] + fY[j-1])*(fX[j] - fX[j-1]);
-    };     
+    for (G4int j=1; j<fNPoints; j++) {fYC[j] = fYC[j-1] + 0.5*(fY[j] + fY[j-1])*(fX[j] - fX[j-1]);};     
 }
 
-G4double PrimaryGenerator::InverseCumul() // Function to estimate counts
-{
-    // tabulated function
-    // Y is assumed positive, linear per segment, continuous 
-    // --> cumulative function is second order polynomial
-    // (see Particle Data Group: pdg.lbl.gov --> Monte Carlo techniques)
-  
+G4double PrimaryGenerator::InverseCumul() // Function to estimate counts // --> cumulative function is second order polynomial // (see Particle Data Group: pdg.lbl.gov --> Monte Carlo techniques)
+{ 
     G4double Yrndm = G4UniformRand() * fYC[fNPoints-1]; //choose y randomly
  
     G4int j = fNPoints - 2;  // find bin
@@ -165,40 +139,31 @@ G4double PrimaryGenerator::InverseCumul() // Function to estimate counts
     G4double Xrndm = fX[j];
     G4double a = fSlp[j];
     
-    if (a != 0.) 
+    if (a != 0.0) 
     {
         G4double b = fY[j]/a, c = 2*(Yrndm - fYC[j])/a;
         G4double delta = b*b + c;
         G4int sign = 1; if (a < 0.) sign = -1;
         Xrndm += sign*std::sqrt(delta) - b;    
     } 
-    else 
-    if (fY[j] > 0.) 
-    {
-        Xrndm += (Yrndm - fYC[j])/fY[j];
-    };
+    else if (fY[j] > 0.0) {Xrndm += (Yrndm - fYC[j])/fY[j];};
     
     return Xrndm;
 }
 
-void PrimaryGenerator::ReadSpectrumFromFile(const std::string & filename, std::vector<G4double> & xx, std::vector<G4double> & yy, G4int & fNPoints) 
-{ // Function to fill the vectors
-    
+void PrimaryGenerator::ReadSpectrumFromFile(const std::string & filename, std::vector<G4double> & xx, std::vector<G4double> & yy, G4int & fNPoints) // Function to fill the vectors
+{ 
     std::ifstream infile(filename);
-    if (!infile) 
-    {
-        G4cerr << "Error opening file: " << filename << G4endl;
-        return;
-    }
+    if (!infile) {G4cerr << "Error opening file: " << filename << G4endl; return;}
     
     G4double energy, intensity;
-    fNPoints = 0; // Inicializar el número de puntos
+    fNPoints = 0; 
 
     while (infile >> energy >> intensity) // Convertir energía de keV a las unidades internas de Geant4
     {
         xx.push_back(energy * keV);
         yy.push_back(intensity);
-        fNPoints++; // Incrementar el contador de puntos
+        fNPoints++; 
     }
 
     infile.close();

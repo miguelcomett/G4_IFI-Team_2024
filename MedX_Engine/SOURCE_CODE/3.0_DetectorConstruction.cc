@@ -1,9 +1,7 @@
 #include "3.0_DetectorConstruction.hh"
 
-DetectorConstruction::DetectorConstruction() : gen(rd()),                                      // Inicializar el motor con el dispositivo aleatorio
-                                                    randomDist(0.0, 1.0),                          // Configurar la distribución [0.0, 1.0]
-                                                    radiusDist(5.0 * mm, 20.0 * mm),                // Configurar la distribución de radios [5.0 mm, 15.0 mm]
-                                                    posDist(-1.0 * mm, 1.0 * mm), posYDist(-40 * mm, 40 * mm)
+// Inicializar el motor con el dispositivo aleatorio // Configurar la distribución [0.0, 1.0] // Configurar la distribución de radios [5.0 mm, 15.0 mm]
+DetectorConstruction::DetectorConstruction() : gen(rd()), randomDist(0.0, 1.0), radiusDist(5.0*mm, 20.0*mm), posDist(-1.0*mm, 1.0*mm), posYDist(-40*mm, 40*mm)
 {
     G4GeometryManager::GetInstance() -> SetWorldMaximumExtent(100.0 * cm);
 
@@ -360,17 +358,16 @@ void DetectorConstruction::ConstructThorax()
 void DetectorConstruction::ConstructTumor()
 {
     EllipsoidsParametrization(); 
-    double tumorRadius = radiusDist(gen);
+    G4double tumorRadius = radiusDist(gen);
     
-    // Crear un objeto aleatorio
     while (true)
     {
         // Generar coordenadas aleatorias dentro del elipsoide
-        double x = (2.0 * posDist(gen) - 1.0) * (a - tumorRadius); // Reducir semiejes para incluir el radio
-        double y = (2.0 * posYDist(gen) - 1.0) * (b - tumorRadius);
-        double z = (2.0 * posDist(gen) - 1.0) * (c - tumorRadius);
+        G4double x = (2.0 * posDist(gen) - 1.0) * (a - tumorRadius); // Reducir semiejes para incluir el radio
+        G4double y = (2.0 * posYDist(gen) - 1.0) * (b - tumorRadius);
+        G4double z = (2.0 * posDist(gen) - 1.0) * (c - tumorRadius);
 
-        double verify = (x * x) / (a * a) + (y * y) / (b * b) + (z * z) / (c * c); 
+        G4double verify = (x * x) / (a * a) + (y * y) / (b * b) + (z * z) / (c * c); 
         
         // Verificar si el centro del tumor está dentro del elipsoide con suficiente espacio para el radio
         if (verify <= 1.0)
@@ -382,8 +379,7 @@ void DetectorConstruction::ConstructTumor()
         }
     }
 
-    G4cout << "Radio del tumor generado: " << tumorRadius / mm << " mm" << G4endl;
-    G4cout << "Tumor generado en posición: " << tumorPosition << G4endl;
+    G4cout << "Radio del tumor generado: " << tumorRadius / mm << " mm" << G4endl; G4cout << "Tumor generado en posición: " << tumorPosition << G4endl;
 
     tumorSphere = new G4Sphere("Tumor", 0, tumorRadius, 0*deg, 360*deg, 0*deg, 180*deg);
     logicTumor = new G4LogicalVolume(tumorSphere, Muscle, "Tumor");
@@ -398,12 +394,12 @@ void DetectorConstruction::ConstructTumor()
 void DetectorConstruction::ConstructEllipsoid(G4double aa, G4double bb, G4double cc, G4RotationMatrix *rot, G4ThreeVector EllipsoidPos, G4String name)
 {
     // Definir semiejes del elipsoide
-    double a = aa * mm; // Semieje en x
-    double b = bb * mm; // Semieje en y
-    double c = cc * mm; // Semieje en z
+    G4double a = aa * mm; // Semieje en x
+    G4double b = bb * mm; // Semieje en y
+    G4double c = cc * mm; // Semieje en z
 
     // Crear el sólido del elipsoide
-    G4Ellipsoid* ellipsoidSolid = new G4Ellipsoid(name, a, b, c);
+    G4Ellipsoid * ellipsoidSolid = new G4Ellipsoid(name, a, b, c);
     elipsoidRot2 = rot;
 
     // Crear el volumen lógico
@@ -423,19 +419,18 @@ void DetectorConstruction::EllipsoidsParametrization() // Una vez con los parám
 {
     // Parámetros del elipsoide izquierdo
     G4ThreeVector leftEllipsoidCenter = Model3DRotation->inverse() * ellipsoidPosition; // Centro del elipsoide izquierdo
-    double aLeft = 100.0 * mm; // Semieje x del elipsoide izquierdo
-    double bLeft = 29.0 * mm; // Semieje y del elipsoide izquierdo
-    double cLeft = 43.0 * mm; // Semieje z del elipsoide izquierdo
-
+    G4double aLeft = 100.0 * mm; // Semieje x del elipsoide izquierdo
+    G4double bLeft = 29.0 * mm; // Semieje y del elipsoide izquierdo
+    G4double cLeft = 43.0 * mm; // Semieje z del elipsoide izquierdo
 
     // Parámetros del elipsoide derecho
     G4ThreeVector rightEllipsoidCenter = Model3DRotation->inverse() * ellipsoidPosition2; // Centro del elipsoide derecho
-    double aRight = 100.0 * mm; // Semieje x del elipsoide derecho
-    double bRight = 25.0 * mm; // Semieje y del elipsoide derecho
-    double cRight = 40.0 * mm; // Semieje z del elipsoide derecho
+    G4double aRight = 100.0 * mm; // Semieje x del elipsoide derecho
+    G4double bRight = 25.0 * mm; // Semieje y del elipsoide derecho
+    G4double cRight = 40.0 * mm; // Semieje z del elipsoide derecho
 
     // Generar un número aleatorio entre 0 y 1
-    double randomNum = randomDist(gen);
+    G4double randomNum = randomDist(gen);
 
     G4cout << "Número aleatorio: " << randomNum << G4endl;
 

@@ -57,12 +57,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
 
         G4Material * GetMaterial() const {return materialTarget;}
 	    G4double GetThickness() const {return targetThickness;}
-<<<<<<< Updated upstream
-
-        double GetThoraxAngle() const { return thoraxAngle; }
-=======
         G4double GetThoraxAngle() const {return thoraxAngle;}
->>>>>>> Stashed changes
 
         G4bool  isArm, isHealthyBone, isOsteoBone, isBoneDivided, 
                 is3DModel, isHeart, isLungs, isRibcage, isFiller, isThorax,
@@ -80,7 +75,6 @@ class DetectorConstruction : public G4VUserDetectorConstruction
         void ConstructTumor();
         //Function to construct an ellipsoid where a patology will reside
         void ConstructEllipsoid(G4double aa, G4double bb, G4double cc, G4RotationMatrix* rot, G4ThreeVector EllipsoidPos, G4String name);
-        //To parametrize the regions
         void EllipsoidsParametrization();
 
         G4GenericMessenger * DetectorMessenger;
@@ -123,7 +117,6 @@ class DetectorConstruction : public G4VUserDetectorConstruction
         //Ellipsoids
         G4double a, b, c, angleX, angleY, angleZ; 
 
-
         //Distribuciones
         std::random_device rd;
         std::mt19937 gen;
@@ -131,7 +124,6 @@ class DetectorConstruction : public G4VUserDetectorConstruction
         std::uniform_real_distribution<> radiusDist;
         std::uniform_real_distribution<> posDist;
         std::uniform_real_distribution<> posYDist;
-
 };
 
 #endif 

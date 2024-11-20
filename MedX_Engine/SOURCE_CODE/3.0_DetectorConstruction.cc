@@ -1,14 +1,10 @@
 #include "3.0_DetectorConstruction.hh"
 
-<<<<<<< Updated upstream
 MyDetectorConstruction::MyDetectorConstruction() : gen(rd()),                                      // Inicializar el motor con el dispositivo aleatorio
                                                     randomDist(0.0, 1.0),                          // Configurar la distribución [0.0, 1.0]
                                                     radiusDist(5.0 * mm, 20.0 * mm),                // Configurar la distribución de radios [5.0 mm, 15.0 mm]
                                                     posDist(-1.0 * mm, 1.0 * mm),
                                                     posYDist(-40 * mm, 40 * mm)
-=======
-DetectorConstruction::DetectorConstruction()
->>>>>>> Stashed changes
 {
     G4GeometryManager::GetInstance()->SetWorldMaximumExtent(100.0 * cm);
 
@@ -218,9 +214,6 @@ void DetectorConstruction::ConstructBoneDivided()
 }
 
 // Load 3D Models ===============================================================================================================================
-<<<<<<< Updated upstream
-void MyDetectorConstruction::ConstructThorax()
-=======
 
 void DetectorConstruction::ConstructTumor()
 {
@@ -243,7 +236,6 @@ void DetectorConstruction::ConstructTumor()
 }
 
 void DetectorConstruction::ConstructThorax()
->>>>>>> Stashed changes
 {
     G4STL stl; 
     
@@ -396,7 +388,6 @@ void MyDetectorConstruction::ConstructTumor()
         double y = (2.0 * posYDist(gen) - 1.0) * (b - tumorRadius);
         double z = (2.0 * posDist(gen) - 1.0) * (c - tumorRadius);
 
-<<<<<<< Updated upstream
         double verify = (x * x) / (a * a) + (y * y) / (b * b) + (z * z) / (c * c); 
         // Verificar si el centro del tumor está dentro del elipsoide con suficiente espacio para el radio
         if (verify <= 1.0)
@@ -484,9 +475,6 @@ void MyDetectorConstruction::EllipsoidsParametrization()
 }
 //Define materials =============================================================================================================================
 void MyDetectorConstruction::DefineMaterials()
-=======
-void DetectorConstruction::DefineMaterials()
->>>>>>> Stashed changes
 {
     G4NistManager * nist = G4NistManager::Instance();
 
@@ -596,11 +584,3 @@ void DetectorConstruction::DefineMaterials()
     worldMaterialProperties -> AddProperty("RINDEX", PhotonEnergy, RindexWorld, 2);
     worldMaterial -> SetMaterialPropertiesTable(worldMaterialProperties);
 }
-
-<<<<<<< Updated upstream
-//double MyDetectorConstruction::GetThoraxAngle() const {
-//    return thoraxAngle;
-//}
-=======
-// double DetectorConstruction::GetThoraxAngle() const {return thoraxAngle;}
->>>>>>> Stashed changes

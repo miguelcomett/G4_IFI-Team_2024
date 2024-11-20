@@ -1,6 +1,10 @@
 #include "5.0_PrimaryGenerator.hh"
 
+<<<<<<< Updated upstream
 MyPrimaryGenerator::MyPrimaryGenerator(MyDetectorConstruction* detector):
+=======
+PrimaryGenerator::PrimaryGenerator(): 
+>>>>>>> Stashed changes
 GunMode(0), GunXpos(0), GunYpos(0), GunZpos(-450*mm), GunAngle(0.0), GunSpanX(100*mm), GunSpanY(100*mm), 
 spectrumFile("fSpectrum140.txt"), GeneratorMessenger(new PrimaryGeneratorMessenger(this)),
 G4VUserPrimaryGeneratorAction(), fDetector(detector)
@@ -15,11 +19,11 @@ G4VUserPrimaryGeneratorAction(), fDetector(detector)
    if (GunMode == 1) { SpectraFunction(); }
 }
 
-MyPrimaryGenerator::~MyPrimaryGenerator() {delete particleGun; delete GeneratorMessenger;}
+PrimaryGenerator::~PrimaryGenerator() {delete particleGun; delete GeneratorMessenger;}
 
-void MyPrimaryGenerator::GeneratePrimaries(G4Event * anEvent)
+void PrimaryGenerator::GeneratePrimaries(G4Event * anEvent)
 { 
-    if (GunMode == 1) // Espectro real
+    if (GunMode == 1)
     {
 	    realEnergy = InverseCumul(); 
 	    particleGun -> SetParticleEnergy(realEnergy);
@@ -66,49 +70,49 @@ void MyPrimaryGenerator::GeneratePrimaries(G4Event * anEvent)
 
 // MESSENGERS ===================================================================================================
 
-void MyPrimaryGenerator::SetGunXpos(G4double GunXpos)
+void PrimaryGenerator::SetGunXpos(G4double GunXpos)
 {
     G4cout << "Setting source position to: " << GunXpos << G4endl;
     if (this -> GunXpos != GunXpos) {this -> GunXpos = GunXpos; G4cout << "Source Position changed to: " << GunXpos << G4endl;}
     else { G4cout << "Same Position Selected." << G4endl;}
 }
 
-void MyPrimaryGenerator::SetGunYpos(G4double GunYpos)
+void PrimaryGenerator::SetGunYpos(G4double GunYpos)
 {
     G4cout << "Setting source position to: " << GunYpos << G4endl;
     if (this -> GunYpos != GunYpos) {this -> GunYpos = GunYpos; G4cout << "Source Position changed to: " << GunYpos << G4endl;}
     else { G4cout << "Same Position Selected." << G4endl;}
 }
 
-void MyPrimaryGenerator::SetGunZpos(G4double GunZpos)
+void PrimaryGenerator::SetGunZpos(G4double GunZpos)
 {
     G4cout << "Setting source position to: " << GunZpos << G4endl;
     if (this -> GunZpos != GunZpos) {this -> GunZpos = GunZpos; G4cout << "Source Position changed to: " << GunZpos << G4endl;}
     else { G4cout << "Same Position Selected." << G4endl;}
 }
 
-void MyPrimaryGenerator::SetGunSpanX(G4double SpanX)
+void PrimaryGenerator::SetGunSpanX(G4double SpanX)
 {
     G4cout << "Setting source Span to: " << SpanX << G4endl;
     if(SpanX != GunSpanX) { GunSpanX = SpanX; G4cout << "Source Span changed to: " << GunSpanX << G4endl;}
     else { G4cout << "Same Span selected." << G4endl; }
 }
 
-void MyPrimaryGenerator::SetGunSpanY(G4double SpanY)
+void PrimaryGenerator::SetGunSpanY(G4double SpanY)
 {
     G4cout << "Setting source Span to: " << SpanY << G4endl;
     if(SpanY != GunSpanY) { GunSpanY = SpanY; G4cout << "Source Span changed to: " << GunSpanY << G4endl;}
     else { G4cout << "Same Span selected." << G4endl; }
 }
 
-void MyPrimaryGenerator::SetGunAngle(G4double angle)
+void PrimaryGenerator::SetGunAngle(G4double angle)
 {
     G4cout << "Setting source angle to: " << angle << G4endl;
     if(angle != GunAngle) { GunAngle = angle; G4cout << "Source Angle changed to: " << GunAngle << G4endl;}
     else { G4cout << "Same Angle selected." << G4endl; }
 }
 
-void MyPrimaryGenerator::SetGunMode(G4int mode)
+void PrimaryGenerator::SetGunMode(G4int mode)
 {
     G4cout << "Setting mode to: " << mode << G4endl; 
     if(mode == 0) { GunMode = 0; G4cout << "Monocromatic Mode" << G4endl; }
@@ -119,7 +123,7 @@ void MyPrimaryGenerator::SetGunMode(G4int mode)
 
 // CREATE SPECTRUM, DON'T MOVE ===================================================================================
 
-void MyPrimaryGenerator::SpectraFunction()
+void PrimaryGenerator::SpectraFunction()
 {
 	// tabulated function 
 	// Y is assumed positive, linear per segment, continuous
@@ -160,7 +164,7 @@ void MyPrimaryGenerator::SpectraFunction()
     };     
 }
 
-G4double MyPrimaryGenerator::InverseCumul() // Function to estimate counts
+G4double PrimaryGenerator::InverseCumul() // Function to estimate counts
 {
     // tabulated function
     // Y is assumed positive, linear per segment, continuous 
@@ -191,7 +195,7 @@ G4double MyPrimaryGenerator::InverseCumul() // Function to estimate counts
     return Xrndm;
 }
 
-void MyPrimaryGenerator::ReadSpectrumFromFile(const std::string & filename, std::vector<G4double> & xx, std::vector<G4double> & yy, G4int & fNPoints) 
+void PrimaryGenerator::ReadSpectrumFromFile(const std::string & filename, std::vector<G4double> & xx, std::vector<G4double> & yy, G4int & fNPoints) 
 { // Function to fill the vectors
     
     std::ifstream infile(filename);

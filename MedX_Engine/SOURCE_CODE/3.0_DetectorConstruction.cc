@@ -1,10 +1,14 @@
 #include "3.0_DetectorConstruction.hh"
 
+<<<<<<< Updated upstream
 MyDetectorConstruction::MyDetectorConstruction() : gen(rd()),                                      // Inicializar el motor con el dispositivo aleatorio
                                                     randomDist(0.0, 1.0),                          // Configurar la distribución [0.0, 1.0]
                                                     radiusDist(5.0 * mm, 20.0 * mm),                // Configurar la distribución de radios [5.0 mm, 15.0 mm]
                                                     posDist(-1.0 * mm, 1.0 * mm),
                                                     posYDist(-40 * mm, 40 * mm)
+=======
+DetectorConstruction::DetectorConstruction()
+>>>>>>> Stashed changes
 {
     G4GeometryManager::GetInstance()->SetWorldMaximumExtent(100.0 * cm);
 
@@ -53,13 +57,13 @@ MyDetectorConstruction::MyDetectorConstruction() : gen(rd()),                   
     G4cout << "Posición rotada pulmón izquierdo: " << ellipsoidPosition2 << G4endl; 
 }
 
-MyDetectorConstruction::~MyDetectorConstruction()
+DetectorConstruction::~DetectorConstruction()
 {
     delete DetectorMessenger;
     delete stlReader;
 }
 
-G4VPhysicalVolume * MyDetectorConstruction::Construct()
+G4VPhysicalVolume * DetectorConstruction::Construct()
 {
     xWorld = 0.5*m, yWorld = 0.5*m, zWorld = 0.5*m;
     solidWorld = new G4Box("SolidWorld", xWorld, yWorld, zWorld);
@@ -96,15 +100,15 @@ G4VPhysicalVolume * MyDetectorConstruction::Construct()
     return physicalWorld;
 }
 
-void MyDetectorConstruction::ConstructSDandField()
+void DetectorConstruction::ConstructSDandField()
 {
-    MySensitiveDetector * sensitiveDetector = new MySensitiveDetector("sensitiveDetector");
+    SensitiveDetector * sensitiveDetector = new SensitiveDetector("sensitiveDetector");
     logicDetector -> SetSensitiveDetector(sensitiveDetector);
 }
 
 // Build Geometries ===============================================================================================================================
 
-void MyDetectorConstruction::ConstructTarget()
+void DetectorConstruction::ConstructTarget()
 { 
     materialTarget = Aluminum;
 
@@ -117,7 +121,7 @@ void MyDetectorConstruction::ConstructTarget()
     scoringVolume_0 = logicRadiator;
 }
 
-void MyDetectorConstruction::ConstructArm() 
+void DetectorConstruction::ConstructArm() 
 {
     innerMuscleRadius = outerBoneRadius;
     outerMuscleRadius = innerMuscleRadius + 25 * mm;
@@ -149,7 +153,7 @@ void MyDetectorConstruction::ConstructArm()
     scoringVolumes.push_back(scoringVolume_5);
 }
 
-void MyDetectorConstruction::ConstructHealthyBone() 
+void DetectorConstruction::ConstructHealthyBone() 
 {
     solidBone = new G4Tubs("Bone", innerBoneRadius, outerBoneRadius, boneHeight/2, 0.0, 360.0*deg);
     logicHealthyBone = new G4LogicalVolume(solidBone, Bone, "LogicBone");
@@ -159,7 +163,7 @@ void MyDetectorConstruction::ConstructHealthyBone()
     scoringVolumes.push_back(scoringVolume_1);
 }
 
-void MyDetectorConstruction::ConstructOsteoporoticBone() 
+void DetectorConstruction::ConstructOsteoporoticBone() 
 {   
     solidBone = new G4Tubs("Bone", innerBoneRadius, outerBoneRadius, boneHeight/2, 0.0, 360.0*deg);
     porousBone = solidBone;
@@ -194,7 +198,7 @@ void MyDetectorConstruction::ConstructOsteoporoticBone()
     scoringVolumes.push_back(scoringVolume_1);
 }
 
-void MyDetectorConstruction::ConstructBoneDivided()
+void DetectorConstruction::ConstructBoneDivided()
 {
     osteoBone = new G4Tubs("Healty_Bone", innerBoneRadius, outerBoneRadius, boneHeight/4, 0.0, 360.0*deg);
     healthyBone = new G4Tubs("Osteo_Bone",  innerBoneRadius, outerBoneRadius, boneHeight/4, 0.0, 360.0*deg);
@@ -214,7 +218,32 @@ void MyDetectorConstruction::ConstructBoneDivided()
 }
 
 // Load 3D Models ===============================================================================================================================
+<<<<<<< Updated upstream
 void MyDetectorConstruction::ConstructThorax()
+=======
+
+void DetectorConstruction::ConstructTumor()
+{
+// Crear un objeto aleatorio
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> posDist(50.0*mm, 100.0*mm); // Distribución de posición en el tórax
+    std::uniform_real_distribution<> sizeDist(19.0*mm, 20.0*mm);  // Distribución de tamaño para el tumor
+
+// Definir tamaño aleatorio para el tumor
+    tumorRadius = sizeDist(gen);
+    tumorSphere = new G4Sphere("Tumor", 0, tumorRadius, 0*deg, 360*deg, 0*deg, 180*deg);
+
+    logicTumor = new G4LogicalVolume(tumorSphere, Muscle, "Tumor");
+// Generar posición aleatoria dentro del tórax
+    G4ThreeVector tumorPosition(posDist(gen), posDist(gen), 10.0*mm);
+// Colocar el tumor en el modelo de tórax
+    new G4PVPlacement(Model3DRotation, tumorPosition, logicTumor, "Tumor", logicWorld, false, 0, true);
+    G4cout << "> Tumor (esfera) creado en una posición aleatoria dentro del tórax con radio: " << tumorRadius / mm << " mm" << G4endl;
+}
+
+void DetectorConstruction::ConstructThorax()
+>>>>>>> Stashed changes
 {
     G4STL stl; 
     
@@ -367,6 +396,7 @@ void MyDetectorConstruction::ConstructTumor()
         double y = (2.0 * posYDist(gen) - 1.0) * (b - tumorRadius);
         double z = (2.0 * posDist(gen) - 1.0) * (c - tumorRadius);
 
+<<<<<<< Updated upstream
         double verify = (x * x) / (a * a) + (y * y) / (b * b) + (z * z) / (c * c); 
         // Verificar si el centro del tumor está dentro del elipsoide con suficiente espacio para el radio
         if (verify <= 1.0)
@@ -454,6 +484,9 @@ void MyDetectorConstruction::EllipsoidsParametrization()
 }
 //Define materials =============================================================================================================================
 void MyDetectorConstruction::DefineMaterials()
+=======
+void DetectorConstruction::DefineMaterials()
+>>>>>>> Stashed changes
 {
     G4NistManager * nist = G4NistManager::Instance();
 
@@ -564,6 +597,10 @@ void MyDetectorConstruction::DefineMaterials()
     worldMaterial -> SetMaterialPropertiesTable(worldMaterialProperties);
 }
 
+<<<<<<< Updated upstream
 //double MyDetectorConstruction::GetThoraxAngle() const {
 //    return thoraxAngle;
 //}
+=======
+// double DetectorConstruction::GetThoraxAngle() const {return thoraxAngle;}
+>>>>>>> Stashed changes

@@ -8,12 +8,12 @@
 
 extern int arguments;
 
-class MySensitiveDetector : public G4VSensitiveDetector
+class SensitiveDetector : public G4VSensitiveDetector
 {
     public:
 
-        MySensitiveDetector(G4String);
-        ~MySensitiveDetector();
+        SensitiveDetector(G4String);
+        ~SensitiveDetector();
     
     private: 
 

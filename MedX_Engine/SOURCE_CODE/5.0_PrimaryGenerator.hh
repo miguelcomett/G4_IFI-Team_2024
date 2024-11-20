@@ -18,14 +18,19 @@
 #include "5.1_GeneratorMessenger.hh"
 
 class PrimaryGeneratorMessenger;
-class MyDetectorConstruction;
+class DetectorConstruction;
 
-class MyPrimaryGenerator : public G4VUserPrimaryGeneratorAction
+class PrimaryGenerator:public G4VUserPrimaryGeneratorAction
 {
     public:
 
+<<<<<<< Updated upstream
         MyPrimaryGenerator(MyDetectorConstruction* detector);
         ~MyPrimaryGenerator();
+=======
+        PrimaryGenerator();
+        ~PrimaryGenerator();
+>>>>>>> Stashed changes
 
         virtual void GeneratePrimaries(G4Event *);
         void SetGunXpos(G4double GunXpos);
@@ -72,8 +77,12 @@ class MyPrimaryGenerator : public G4VUserPrimaryGeneratorAction
         std::vector<G4double>  fYC;          //cumulative function of Y
         G4double               fYmax = 0.;   //max(Y)
 
+<<<<<<< Updated upstream
         //const MyDetectorConstruction * fDetector;
         MyDetectorConstruction* fDetector; // Puntero al DetectorConstruction
+=======
+        const DetectorConstruction * fDetectorConstruction;
+>>>>>>> Stashed changes
 };
 
 #endif

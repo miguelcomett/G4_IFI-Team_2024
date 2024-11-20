@@ -1,12 +1,12 @@
 #include "7.0_EventAction.hh"
 
-MyEventAction::MyEventAction(MyRunAction * runAction) : fRunAction(runAction) {fEDep = 0.0;}
-MyEventAction::~MyEventAction(){}
+EventAction::EventAction(RunAction * runAction) : fRunAction(runAction) {fEDep = 0.0;}
+EventAction::~EventAction(){}
 
-void MyEventAction::AddEDep(G4double EDep) { fEDep = fEDep + EDep; }
+void EventAction::AddEDep(G4double EDep) { fEDep = fEDep + EDep; }
 
-void MyEventAction::BeginOfEventAction(const G4Event * event) {fEDep = 0.0;}
-void MyEventAction::EndOfEventAction(const G4Event * event) 
+void EventAction::BeginOfEventAction(const G4Event * event) {fEDep = 0.0;}
+void EventAction::EndOfEventAction(const G4Event * event) 
 { 
     G4AnalysisManager * analysisManager = G4AnalysisManager::Instance();
 

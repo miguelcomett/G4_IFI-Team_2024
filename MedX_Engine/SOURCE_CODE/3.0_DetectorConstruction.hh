@@ -39,12 +39,12 @@
 
 extern int arguments;
 
-class MyDetectorConstruction : public G4VUserDetectorConstruction
+class DetectorConstruction : public G4VUserDetectorConstruction
 {   
     public:
 
-        MyDetectorConstruction();
-        ~MyDetectorConstruction() override;
+        DetectorConstruction();
+        ~DetectorConstruction() override;
 
         void DefineMaterials();
         void ConstructSDandField() override;
@@ -53,12 +53,16 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
         G4LogicalVolume * GetScoringVolume() const {return scoringVolume_0;}
 
         std::vector<G4LogicalVolume*> scoringVolumes;
-        std::vector<G4LogicalVolume*> GetAllScoringVolumes() const { return scoringVolumes; }
+        std::vector<G4LogicalVolume*> GetAllScoringVolumes() const {return scoringVolumes;}
 
         G4Material * GetMaterial() const {return materialTarget;}
 	    G4double GetThickness() const {return targetThickness;}
+<<<<<<< Updated upstream
 
         double GetThoraxAngle() const { return thoraxAngle; }
+=======
+        G4double GetThoraxAngle() const {return thoraxAngle;}
+>>>>>>> Stashed changes
 
         G4bool  isArm, isHealthyBone, isOsteoBone, isBoneDivided, 
                 is3DModel, isHeart, isLungs, isRibcage, isFiller, isThorax,

@@ -26,7 +26,7 @@ void Run::EndOfRun()
 {
     if (arguments == 3)
     {
-        detectorConstruction = static_cast < const MyDetectorConstruction *> (G4RunManager::GetRunManager() -> GetUserDetectorConstruction());     
+        detectorConstruction = static_cast < const DetectorConstruction *> (G4RunManager::GetRunManager() -> GetUserDetectorConstruction());     
         
         material = detectorConstruction -> GetMaterial();
         density = material  -> GetDensity();

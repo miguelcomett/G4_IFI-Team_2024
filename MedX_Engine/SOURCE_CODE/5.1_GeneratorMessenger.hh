@@ -12,18 +12,18 @@
 
 #include "5.0_PrimaryGenerator.hh"
 
-class MyPrimaryGenerator; 
+class PrimaryGenerator; 
 class PrimaryGeneratorMessenger : public G4UImessenger
 {
 	public:
 
-		PrimaryGeneratorMessenger(MyPrimaryGenerator * gun);
+		PrimaryGeneratorMessenger(PrimaryGenerator * gun);
 		~PrimaryGeneratorMessenger() override;
 		void SetNewValue(G4UIcommand * command, G4String newValue) override;
     	
 	private:
 		
-		MyPrimaryGenerator * fGun;
+		PrimaryGenerator * fGun;
 		
 		G4UIcmdWithADoubleAndUnit * fPgunX, * fPgunY, * fPgunZ; 
 		G4UIcmdWithADouble * fPgunSpanX, * fPgunSpanY, * fPgunAngle;

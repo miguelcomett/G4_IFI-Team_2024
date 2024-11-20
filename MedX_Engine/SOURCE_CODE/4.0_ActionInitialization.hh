@@ -9,11 +9,16 @@
 #include "6.1_Run.hh"
 #include "8.0_SteppingAction.hh"
 
-class MyActionInitialization : public G4VUserActionInitialization
+class ActionInitialization : public G4VUserActionInitialization
 {
     public:
+<<<<<<< Updated upstream
         MyActionInitialization(MyDetectorConstruction* detector);
         ~MyActionInitialization();
+=======
+        ActionInitialization();
+        ~ActionInitialization();
+>>>>>>> Stashed changes
 
         virtual void Build() const;
         virtual void BuildForMaster() const;

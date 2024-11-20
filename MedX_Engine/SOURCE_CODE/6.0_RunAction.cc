@@ -1,6 +1,6 @@
 #include "6.0_RunAction.hh"
 
-MyRunAction::MyRunAction()
+RunAction::RunAction()
 {
     new G4UnitDefinition("milligray", "milliGy" , "Dose", milligray);
     new G4UnitDefinition("microgray", "microGy" , "Dose", microgray);
@@ -83,13 +83,13 @@ MyRunAction::MyRunAction()
     }
 }
 
-MyRunAction::~MyRunAction(){}
+RunAction::~RunAction(){}
 
-G4Run * MyRunAction::GenerateRun() { customRun = new Run(); return customRun; }
+G4Run * RunAction::GenerateRun() { customRun = new Run(); return customRun; }
 
-void MyRunAction::AddEdep(G4double edep) { fEdep += edep; }
+void RunAction::AddEdep(G4double edep) { fEdep += edep; }
 
-void MyRunAction::BeginOfRunAction(const G4Run * thisRun)
+void RunAction::BeginOfRunAction(const G4Run * thisRun)
 {
     threadID = G4Threading::G4GetThreadId();
 
@@ -109,7 +109,7 @@ void MyRunAction::BeginOfRunAction(const G4Run * thisRun)
         std::filesystem::create_directory(rootDirectory); // G4cout << "Created ROOT directory at: " << rootDirectory << G4endl;   
     }
 
-    primaryGenerator = static_cast < const MyPrimaryGenerator *> (G4RunManager::GetRunManager() -> GetUserPrimaryGeneratorAction()); 
+    primaryGenerator = static_cast < const PrimaryGenerator *> (G4RunManager::GetRunManager() -> GetUserPrimaryGeneratorAction()); 
     if (primaryGenerator && primaryGenerator -> GetParticleGun()) 
     {
         particle = primaryGenerator -> GetParticleGun() -> GetParticleDefinition();
@@ -152,7 +152,7 @@ void MyRunAction::BeginOfRunAction(const G4Run * thisRun)
     }
 }
 
-void MyRunAction::EndOfRunAction(const G4Run * thisRun)
+void RunAction::EndOfRunAction(const G4Run * thisRun)
 {  
     G4AnalysisManager * analysisManager = G4AnalysisManager::Instance();
     
@@ -161,7 +161,7 @@ void MyRunAction::EndOfRunAction(const G4Run * thisRun)
     
     if (isMaster && arguments != 3) 
     { 
-        detectorConstruction = static_cast < const MyDetectorConstruction *> (G4RunManager::GetRunManager() -> GetUserDetectorConstruction());   
+        detectorConstruction = static_cast < const DetectorConstruction *> (G4RunManager::GetRunManager() -> GetUserDetectorConstruction());   
         std::vector <G4LogicalVolume*> scoringVolumes = detectorConstruction -> GetAllScoringVolumes();
 
         totalMass = 0;
@@ -223,12 +223,12 @@ void MyRunAction::EndOfRunAction(const G4Run * thisRun)
     analysisManager -> CloseFile();
     
     if (isMaster) {MergeRootFiles();}
-
+    
     //std::string currentPath = std::filesystem::current_path().string();
     //G4cout << "Current working directory: " << currentPath << G4endl;
 }
 
-void MyRunAction::MergeRootFiles()
+void RunAction::MergeRootFiles()
 {
     // G4cout << G4endl;
     // G4cout << "============= Merging Process ============" << G4endl;
@@ -312,7 +312,7 @@ void MyRunAction::MergeRootFiles()
     // G4cout << G4endl;
 }
 
-void MyRunAction::SingleData(const std::string & mergedFileName)
+void RunAction::SingleData(const std::string & mergedFileName)
 {
     TFile * mergedFile = TFile::Open(mergedFileName.c_str(), "UPDATE");
     if (!mergedFile || mergedFile -> IsZombie()) 

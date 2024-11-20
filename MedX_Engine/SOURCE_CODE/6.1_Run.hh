@@ -35,7 +35,7 @@ class Run : public G4Run
 
         std::map <G4String, G4int> processCounter;
 
-        const MyDetectorConstruction * detectorConstruction;
+        const DetectorConstruction * detectorConstruction;
         G4ParticleDefinition * link_ParticleDefinition = nullptr;
 
         G4Material * material;

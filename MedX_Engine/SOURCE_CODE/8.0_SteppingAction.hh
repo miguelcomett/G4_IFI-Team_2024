@@ -13,18 +13,18 @@
 
 extern int arguments;
 
-class MySteppingAction : public G4UserSteppingAction
+class SteppingAction : public G4UserSteppingAction
 {
     public:
 
-        MySteppingAction(MyEventAction * eventAction);
-        ~ MySteppingAction();
+        SteppingAction(EventAction * eventAction);
+        ~ SteppingAction();
 
         virtual void UserSteppingAction(const G4Step *);
     
     private:
 
-        MyEventAction * fEventAction;
+        EventAction * fEventAction;
         G4LogicalVolume * scoringVolume;
         G4LogicalVolume * Volume;
         G4StepPoint * endPoint;

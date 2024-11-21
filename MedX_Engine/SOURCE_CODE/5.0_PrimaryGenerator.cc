@@ -19,11 +19,11 @@ void PrimaryGenerator::GeneratePrimaries(G4Event * anEvent)
 { 
     if (GunMode == 1) {realEnergy = InverseCumul(); particleGun -> SetParticleEnergy(realEnergy);}
 	
-    // if (fDetector) {thoraxAngle = fDetector -> GetThoraxAngle();} else {thoraxAngle = 0;} // Uso del puntero fDetector para acceder a datos de DetectorConstruction
+    if (fDetector) {thoraxAngle = fDetector -> GetThoraxAngle();} else {thoraxAngle = 0;}
 
-    // x0 = 2 * (G4UniformRand() - 0.5);
-    // x0 = x0 * GunSpanX;
-    x0 = G4RandGauss::shoot(0, GunSpanX / 1.5);
+    x0 = 2 * (G4UniformRand() - 0.5);
+    x0 = x0 * GunSpanX;
+    // x0 = G4RandGauss::shoot(0, GunSpanX / 1.5);
     // x0 = x0 * std::cos(thoraxAngle/2);
 
     y0 = 2 * (G4UniformRand() - 0.5);
@@ -52,45 +52,47 @@ void PrimaryGenerator::GeneratePrimaries(G4Event * anEvent)
 
 // Messengers ==============================================================================================================================
 
-void PrimaryGenerator::SetGunXpos(G4double GunXpos)
+void PrimaryGenerator::SetGunXpos(G4double Xpos)
 {
     G4cout << "Setting source position to: " << GunXpos << G4endl;
-    if (this -> GunXpos != GunXpos) {this -> GunXpos = GunXpos; G4cout << "Source Position changed to: " << GunXpos << G4endl;}
+    if (this -> GunXpos != GunXpos) {this -> GunXpos = Xpos; G4cout << "Source Position changed to: " << GunXpos << G4endl;}
     else { G4cout << "Same Position Selected." << G4endl;}
 }
 
-void PrimaryGenerator::SetGunYpos(G4double GunYpos)
+void PrimaryGenerator::SetGunYpos(G4double Ypos)
 {
-    G4cout << "Setting source position to: " << GunYpos << G4endl;
-    if (this -> GunYpos != GunYpos) {this -> GunYpos = GunYpos; G4cout << "Source Position changed to: " << GunYpos << G4endl;}
+    G4cout << "Setting source position to: " << Ypos << G4endl;
+    if (this -> Ypos != GunYpos) {this -> GunYpos = Ypos; G4cout << "Source Position changed to: " << GunYpos << G4endl;}
     else { G4cout << "Same Position Selected." << G4endl;}
 }
 
-void PrimaryGenerator::SetGunZpos(G4double GunZpos)
+void PrimaryGenerator::SetGunZpos(G4double Zpos)
 {
-    G4cout << "Setting source position to: " << GunZpos << G4endl;
-    if (this -> GunZpos != GunZpos) {this -> GunZpos = GunZpos; G4cout << "Source Position changed to: " << GunZpos << G4endl;}
+    G4cout << "Setting source position to: " << Zpos << G4endl;
+    if (this -> Zpos != GunZpos) {this -> GunZpos = Zpos; G4cout << "Source Position changed to: " << GunZpos << G4endl;}
     else { G4cout << "Same Position Selected." << G4endl;}
 }
 
-void PrimaryGenerator::SetGunSpanX(G4double GunSpanX)
+void PrimaryGenerator::SetGunSpanX(G4double SpanX)
 {
-    G4cout << "Setting source Span to: " << GunSpanX << G4endl;
-    if(GunSpanX != GunSpanX) { GunSpanX = GunSpanX; G4cout << "Source Span changed to: " << GunSpanX << G4endl;}
+    G4cout << "Setting source Span to: " << SpanX << G4endl;
+    G4cout << "GunSpanX" << GunSpanX << G4endl;
+    G4cout << "SpanX" << SpanX << G4endl;
+    if(SpanX != GunSpanX) { GunSpanX = SpanX; G4cout << "Source Span changed to: " << GunSpanX << G4endl;}
     else { G4cout << "Same Span selected." << G4endl; }
 }
 
-void PrimaryGenerator::SetGunSpanY(G4double GunSpanY)
+void PrimaryGenerator::SetGunSpanY(G4double SpanY)
 {
-    G4cout << "Setting source Span to: " << GunSpanY << G4endl;
-    if(GunSpanY != GunSpanY) { GunSpanY = GunSpanY; G4cout << "Source Span changed to: " << GunSpanY << G4endl;}
+    G4cout << "Setting source Span to: " << SpanY << G4endl;
+    if(SpanY != GunSpanY) { GunSpanY = SpanY; G4cout << "Source Span changed to: " << GunSpanY << G4endl;}
     else { G4cout << "Same Span selected." << G4endl; }
 }
 
-void PrimaryGenerator::SetGunAngle(G4double angle)
+void PrimaryGenerator::SetGunAngle(G4double Angle)
 {
-    G4cout << "Setting source angle to: " << angle << G4endl;
-    if(angle != GunAngle) { GunAngle = angle; G4cout << "Source Angle changed to: " << GunAngle << G4endl;}
+    G4cout << "Setting source Angle to: " << Angle << G4endl;
+    if(Angle != GunAngle) { GunAngle = Angle; G4cout << "Source Angle changed to: " << GunAngle << G4endl;}
     else { G4cout << "Same Angle selected." << G4endl; }
 }
 

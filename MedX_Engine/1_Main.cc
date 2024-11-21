@@ -23,25 +23,12 @@ int main(int argc, char** argv)
     arguments = (argc);
 
     #ifdef __APPLE__
-
         G4RunManager * runManager;
-        // G4cout << G4endl; G4cout << "~~~~~~~~~~~~ Running on macOS ~~~~~~~~~~~~" << G4endl;
-
-        if (argc == 1) 
-        {
-            // G4cout << "===== Running in Single-threaded mode ====" << G4endl; G4cout << G4endl;
-            runManager = new G4RunManager();
-        } 
-        else 
-        {
-            // G4cout << "===== Running in Multi-threaded mode =====" << G4endl;
-            runManager = new G4MTRunManager();
-        }
+        if (argc == 1) {runManager = new G4RunManager();} 
+        else {runManager = new G4MTRunManager();}
     #endif
-
     #ifdef _WIN32
-        // std::cout << std::endl; std::cout << "~~~~~~~~~~~~ Running on Windows ~~~~~~~~~~~" << std::endl;
-        auto * runManager =G4RunManagerFactory::CreateRunManager(G4RunManagerType::Default);
+        auto * runManager = G4RunManagerFactory::CreateRunManager(G4RunManagerType::Default);
     #endif
 
     long seed = std::time(nullptr);
@@ -72,7 +59,7 @@ int main(int argc, char** argv)
     {
         G4String command = "/control/execute ";
         G4String fileName = argv[1];
-        UImanager->ApplyCommand(command + fileName);
+        UImanager -> ApplyCommand(command + fileName);
     }
 
     UImanager -> ApplyCommand("/control/verbose 0");

@@ -58,7 +58,7 @@ class PrimaryGenerator:public G4VUserPrimaryGeneratorAction
         const G4double pi = 3.14159265358979323846;
         
         G4int GunMode;
-        G4double GunXpos, GunYpos, GunZpos, GunSpanX, GunSpanY, GunAngle, realEnergy;
+        G4double Xpos, Ypos, Zpos, GunXpos, GunYpos, GunZpos, GunSpanX, GunSpanY, GunAngle, realEnergy;
 
         void SpectraFunction(); 
         

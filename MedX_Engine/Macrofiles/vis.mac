@@ -3,8 +3,6 @@
 
 /gui/defaultIcons false
 
-
-
 /vis/drawVolume
 /vis/viewer/set/viewpointVector 0 0 -1
 

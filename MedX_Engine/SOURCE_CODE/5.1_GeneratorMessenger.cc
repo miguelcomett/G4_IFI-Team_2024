@@ -32,6 +32,8 @@ PrimaryGeneratorMessenger::PrimaryGeneratorMessenger(PrimaryGenerator * gun) : f
 	fSpectraMode -> SetGuidance("0 monocromatic energy");
 	fSpectraMode -> SetGuidance("1 real custom spectrum"); 
 	fSpectraMode -> SetParameterName("GunMode", true);
+
+	threadID = G4Threading::G4GetThreadId();
 }
 
 PrimaryGeneratorMessenger::~PrimaryGeneratorMessenger()
@@ -47,49 +49,49 @@ void PrimaryGeneratorMessenger::SetNewValue(G4UIcommand * command, G4String newV
 	if (command == fPgunX)
 	{
 	    G4double GunXpos = fPgunX -> GetNewDoubleValue(newValue);
-	    G4cout << "Command received: /Pgun/X " << GunXpos << G4endl;
 	    fGun -> SetGunXpos(GunXpos);
+	    // if (threadID == 0) {std::cout << "Command received: /Pgun/X " << GunXpos << std::endl;}
 	}
 
 	if (command == fPgunY)
 	{
-	    G4double GunYpos = fPgunY -> GetNewDoubleValue(newValue);
-	    G4cout << "Command received: /Pgun/Y " << GunYpos << G4endl;
-	    fGun -> SetGunYpos(GunYpos);
+	    G4double GunYpos = fPgunY -> GetNewDoubleValue(newValue); 
+		fGun -> SetGunYpos(GunYpos);
+		// if (threadID == 0) {std::cout << "Command received: /Pgun/Y " << GunYpos << std::endl;}
 	}
 
 	if (command == fPgunZ)
 	{
 	    G4double GunZpos = fPgunZ -> GetNewDoubleValue(newValue);
-	    G4cout << "Command received: /Pgun/Z " << GunZpos << G4endl;
 	    fGun -> SetGunZpos(GunZpos);
+	    // if (threadID == 0) {std::cout << "Command received: /Pgun/Z " << GunZpos << std::endl;}
 	}
 
 	if (command == fPgunSpanX)
 	{
 		G4double GunSpanX = fPgunSpanX -> GetNewDoubleValue(newValue);
-	    G4cout << "Command received: /Pgun/GunSpanX " << GunSpanX << G4endl;
 	    fGun -> SetGunSpanX(GunSpanX);
+	    // if (threadID == 0) {std::cout << "Command received: /Pgun/GunSpanX " << GunSpanX << std::endl;}
 	}
 
 	if (command == fPgunSpanY)
 	{
 		G4double GunSpanY = fPgunSpanY -> GetNewDoubleValue(newValue);
-	    G4cout << "Command received: /Pgun/GunSpanY " << GunSpanY << G4endl;
 	    fGun -> SetGunSpanY(GunSpanY);
+	    // if (threadID == 0) {std::cout << "Command received: /Pgun/GunSpanY " << GunSpanY << std::endl;}
 	}
 	
 	if (command == fPgunAngle)
 	{
 	    G4double GunAngle = fPgunAngle -> GetNewDoubleValue(newValue);
-	    G4cout << "Command received: /Pgun/Angle " << GunAngle << G4endl;
 	    fGun -> SetGunAngle(GunAngle);
+	    // if (threadID == 0) {std::cout << "Command received: /Pgun/Angle " << GunAngle << std::endl;}
 	}
 
 	if (command == fSpectraMode)
 	{
 	    G4int GunMode = fSpectraMode -> GetNewIntValue(newValue); 
-	    G4cout << "Command received: /Pgun/Mode " << GunMode << G4endl;
 	    fGun -> SetGunMode(GunMode);
+	    // if (threadID == 0) {std::cout << "Command received: /Pgun/Mode " << GunMode << std::endl;}
 	}
 }

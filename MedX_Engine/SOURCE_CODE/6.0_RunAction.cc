@@ -219,8 +219,6 @@ void RunAction::EndOfRunAction(const G4Run * thisRun)
 
 void RunAction::MergeRootFiles()
 {
-    // G4cout << G4endl; G4cout << "============= Merging Process ============" << G4endl;
-
     TFileMerger merger;
     merger.SetFastMethod(true);
 
@@ -263,9 +261,7 @@ void RunAction::MergeRootFiles()
     if (merger.Merge()) {RemoveJunkDataFromRoot(mergedFileName); G4cout << "Successfully merged ROOT files" << G4endl;}
     else {G4cout << "Error during ROOT file merging!" << G4endl;}
 
-    std::filesystem::remove_all(rootDirectory); // Elimina la carpeta ROOT y su contenido
-    
-    // G4cout << "==========================================" << G4endl; G4cout << G4endl;
+    std::filesystem::remove_all(rootDirectory);
 }
 
 void RunAction::RemoveJunkDataFromRoot(const std::string & mergedFileName)

@@ -12,6 +12,7 @@
 #include "G4SystemOfUnits.hh"
 #include "G4GeneralParticleSource.hh"
 #include "G4PhysicalConstants.hh"
+#include "G4RunManager.hh"
 
 #include "3.0_DetectorConstruction.hh"
 #include "6.1_Run.hh"
@@ -50,6 +51,8 @@ class PrimaryGenerator:public G4VUserPrimaryGeneratorAction
         G4String particleName;
         G4ParticleTable * particleTable;
         G4ParticleDefinition * particle;
+
+        G4int threadID;
 
         G4ThreeVector photonPosition, photonMomentum;
         

@@ -29,13 +29,13 @@ DetectorConstruction::DetectorConstruction() : gen(rd()), randomDist(0.0, 1.0), 
         isHealthyBone = true;
         isOsteoBone = false;
     is3DModel = true;
-        isHeart = false;
-        isLungs = false;
-        isRibcage = false;
+        isHeart = true;
+        isLungs = true;
+        isRibcage = true;
         isThorax = true;
-        isFiller = false;
+        isFiller = true;
         isTumor = false;
-        isTestParametrization = false;
+            isTestParametrization = false;
 
     angleX = 0 * deg;
     angleY = -90 * deg;

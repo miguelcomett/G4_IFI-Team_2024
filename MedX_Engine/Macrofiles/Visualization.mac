@@ -1,10 +1,5 @@
 /run/initialize
-/vis/open/TSG_WINDOWS_ZB
-#/vis/open OGL
-
-#/gui/defaultIcons false
-
-
+/vis/open OGL
 
 /vis/drawVolume
 /vis/viewer/set/viewpointVector 0 0 -1
@@ -28,13 +23,13 @@
 #/vis/geometry/set/colour LogicSkin -1 1 1 1 0.4
 
 /vis/geometry/set/colour Heart   -1 1 0 0 0.9
-#/vis/geometry/set/colour Lungs   -1 1 1 0 0.8
-#/vis/geometry/set/colour Ribcage -1 0.4 0.2 0.9 0.58
-#/vis/geometry/set/colour Thorax  -1 0.5 0.8 1 0.42
-#/vis/geometry/set/colour Filler  -1 1 1 1 0.1
+/vis/geometry/set/colour Lungs   -1 1 1 0 0.8
+/vis/geometry/set/colour Ribcage -1 0.4 0.2 0.9 0.58
+/vis/geometry/set/colour Thorax  -1 0.5 0.8 1 0.42
+/vis/geometry/set/colour Filler  -1 1 1 1 0.1
 
 #/vis/geometry/set/visibility Heart 0 false
 #/vis/geometry/set/visibility Lungs 0 false
-/vis/geometry/set/visibility Ribcage 0 false
-/vis/geometry/set/visibility Thorax 0 false
-/vis/geometry/set/visibility Filler 0 false
+#/vis/geometry/set/visibility Ribcage 0 false
+#/vis/geometry/set/visibility Thorax 0 false
+#/vis/geometry/set/visibility Filler 0 false

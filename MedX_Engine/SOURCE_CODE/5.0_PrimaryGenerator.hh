@@ -28,13 +28,13 @@ class PrimaryGenerator:public G4VUserPrimaryGeneratorAction
         ~PrimaryGenerator();
 
         virtual void GeneratePrimaries(G4Event *);
-        void SetGunXpos(G4double GunXpos);
-        void SetGunYpos(G4double GunYpos);
-        void SetGunZpos(G4double GunZpos);
-        void SetGunSpanX(G4double GunSpanX);
-        void SetGunSpanY(G4double GunSpanY);
-        void SetGunAngle(G4double GunAngle); 
-        void SetGunMode(G4int GunMode); 
+        void SetGunXpos(G4double newXpos);
+        void SetGunYpos(G4double newYpos);
+        void SetGunZpos(G4double newZpos);
+        void SetGunSpanX(G4double newSpanX);
+        void SetGunSpanY(G4double newSpanY);
+        void SetGunAngle(G4double newAngle); 
+        void SetGunMode(G4int newMode); 
 	
         G4ParticleGun * GetParticleGun() const {return particleGun;}
         
@@ -53,15 +53,13 @@ class PrimaryGenerator:public G4VUserPrimaryGeneratorAction
 
         G4ThreeVector photonPosition, photonMomentum;
         
-        G4bool fullAngle;
-        G4double thoraxAngle, radius, theta, phi, angle, angleInRadians, angleInCarts, x0, y0, z0;
         const G4double pi = 3.14159265358979323846;
+        G4double x0, y0, z0, thoraxAngle, theta, phi, AngleInCarts;
+        G4double Xpos, Ypos, Zpos, SpanX, SpanY, GunAngle, RealEnergy;
         
-        G4int GunMode;
-        G4double Xpos, Ypos, Zpos, GunXpos, GunYpos, GunZpos, GunSpanX, GunSpanY, GunAngle, realEnergy;
-
         void SpectraFunction(); 
         
+        G4int SpectraMode;
         G4double energy;
         
         G4String spectrumFile; 	       

@@ -5,12 +5,12 @@
 
 #include "G4RunManager.hh"
 #include "G4MTRunManager.hh"
+#include "G4RunManagerFactory.hh"
 #include "G4UIManager.hh"
+#include "G4UIExecutive.hh"
 #include "G4VisManager.hh"
 #include "G4VisExecutive.hh"
-#include "G4UIQt.hh"
-#include "G4RunManagerFactory.hh"
-#include "G4UIExecutive.hh"
+// #include "G4UIQt.hh"
 
 #include "2.0_PhysicsList.hh"
 #include "3.0_DetectorConstruction.hh"
@@ -43,7 +43,7 @@ int main(int argc, char** argv)
     
     if(argc == 1)
     {
-        G4VisManager* visManager = new G4VisExecutive("quiet");  // "quiet"
+        G4VisManager * visManager = new G4VisExecutive("quiet");  // "quiet"
         visManager -> Initialize();
 
         //G4UIQt * UI = new G4UIQt(argc, argv); // Usando G4UIQt en lugar de G4UIExecutive

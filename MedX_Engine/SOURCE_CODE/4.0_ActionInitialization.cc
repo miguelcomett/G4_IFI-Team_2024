@@ -11,7 +11,6 @@ void ActionInitialization::BuildForMaster() const
 
 void ActionInitialization::Build() const
 {
-    // Pasar fDetector al constructor
     PrimaryGenerator * generator = new PrimaryGenerator(fDetector);
     SetUserAction(generator);
     

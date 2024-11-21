@@ -33,7 +33,7 @@ DetectorConstruction::DetectorConstruction() : gen(rd()), randomDist(0.0, 1.0), 
         isLungs = false;
         isRibcage = false;
         isThorax = true;
-        isFiller = true;
+        isFiller = false;
         isTumor = false;
         isTestParametrization = false;
 
@@ -46,8 +46,8 @@ DetectorConstruction::DetectorConstruction() : gen(rd()), randomDist(0.0, 1.0), 
     ellipsoidPosition2 = G4ThreeVector(-93 * mm, 5.0 * mm, -13.0 * mm); // Ejemplo: centro del pulmón izquierdo
 
     // Mostrar las posiciones rotadas
-    G4cout << "Posición rotada pulmón derecho: " << ellipsoidPosition << G4endl;
-    G4cout << "Posición rotada pulmón izquierdo: " << ellipsoidPosition2 << G4endl; 
+    // G4cout << "Posición rotada pulmón derecho: " << ellipsoidPosition << G4endl;
+    // G4cout << "Posición rotada pulmón izquierdo: " << ellipsoidPosition2 << G4endl; 
 }
 
 DetectorConstruction::~DetectorConstruction()
@@ -254,9 +254,9 @@ void DetectorConstruction::ConstructThorax()
     Lungs = stl.Read(modelPath + "LUNGS.stl");
     if (Lungs && isLungs)
     {
-        if (isTumor) //If there is a tumor the final lung will be a lung with a hole in the position of the tumor
-        { 
-            AccumulatedLungs = Lungs; //Se puede igualar un solido a un tesselate
+        if (isTumor) // If there is a tumor the final lung will be a lung with a hole in the position of the tumor
+        {
+            AccumulatedLungs = Lungs; // Se puede igualar un solido a un tesselate
             G4int NumTumores = 2; 
             for (int i = 1; i <= NumTumores; i++)
             {
@@ -268,8 +268,7 @@ void DetectorConstruction::ConstructThorax()
             logicLungs = new G4LogicalVolume(AccumulatedLungs, Air, "Lungs"); // Crear el volumen lógico del sólido resultante
             new G4PVPlacement(Model3DRotation, samplePosition, logicLungs, "Lungs", logicWorld, false, 0, true);
         }
-
-        else //If there is no tumor the lung will be a normal lung
+        else
         {
             logicLungs = new G4LogicalVolume(Lungs, Air, "Lungs");
             new G4PVPlacement(Model3DRotation, samplePosition, logicLungs, "Lungs", logicWorld, false, 0, true);
@@ -388,7 +387,7 @@ void DetectorConstruction::ConstructTumor()
     // tumor X = substract -X
     // Colocar el tumor en el modelo de tórax
     new G4PVPlacement(Model3DRotation, Model3DRotation->inverse() *  tumorPosition, logicTumor, "Tumor", logicWorld, false, 0, true);
-    G4cout << "> Tumor (esfera) creado en una posición aleatoria dentro del tórax con radio: " << tumorRadius / mm << " mm" << G4endl;
+    // G4cout << "> Tumor (esfera) creado en una posición aleatoria dentro del tórax con radio: " << tumorRadius / mm << " mm" << G4endl;
 }
 
 void DetectorConstruction::ConstructEllipsoid(G4double aa, G4double bb, G4double cc, G4RotationMatrix *rot, G4ThreeVector EllipsoidPos, G4String name)

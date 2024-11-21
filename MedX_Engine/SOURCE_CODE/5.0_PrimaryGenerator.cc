@@ -23,7 +23,7 @@ void PrimaryGenerator::GeneratePrimaries(G4Event * anEvent)
 
     // x0 = 2 * (G4UniformRand() - 0.5);
     // x0 = x0 * SpanX;
-    x0 = G4RandGauss::shoot(0, SpanX / 1.5);
+    x0 = G4RandGauss::shoot(0, 80*mm);
     x0 = x0 * std::cos(thoraxAngle/2);
 
     y0 = 2 * (G4UniformRand() - 0.5);

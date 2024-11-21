@@ -21,15 +21,13 @@ void PrimaryGenerator::GeneratePrimaries(G4Event * anEvent)
 	
     if (fDetector) {thoraxAngle = fDetector -> GetThoraxAngle();} else {thoraxAngle = 0;}
 
-    x0 = 2 * (G4UniformRand() - 0.5);
-    x0 = x0 * SpanX;
-    // x0 = G4RandGauss::shoot(0, fPgunSpanX / 1.5);
-    // x0 = x0 * std::cos(thoraxAngle/2);
+    // x0 = 2 * (G4UniformRand() - 0.5);
+    // x0 = x0 * SpanX;
+    x0 = G4RandGauss::shoot(0, fPgunSpanX / 1.5);
+    x0 = x0 * std::cos(thoraxAngle/2);
 
     y0 = 2 * (G4UniformRand() - 0.5);
     y0 = y0 * SpanY;
-
-    G4cout << "Xpos: " << Xpos << G4endl;
 
     x0 = x0 + Xpos; 
     y0 = y0 + Ypos;
@@ -51,16 +49,7 @@ void PrimaryGenerator::GeneratePrimaries(G4Event * anEvent)
 // Messengers ==============================================================================================================================
 
 void PrimaryGenerator::SetGunXpos(G4double newXpos)
-{
-    G4cout << "++++++++++++++++++++++++++++++" << G4endl;
-    G4cout << "Xpos: " << Xpos << G4endl;
-    G4cout << "newXpos: " << newXpos << G4endl; 
-
-    if (newXpos != Xpos) {Xpos = newXpos; G4cout << "Source Position changed to: " << Xpos << G4endl;} else {G4cout << "Same Position Selected." << G4endl;}
-
-    G4cout << "Xpos: " << Xpos << G4endl;
-    G4cout << "++++++++++++++++++++++++++++++" << G4endl;
-}
+{if (newXpos != Xpos) {Xpos = newXpos; G4cout << "Source Position changed to: " << Xpos << G4endl;} else {G4cout << "Same Position Selected." << G4endl;}}
 
 void PrimaryGenerator::SetGunYpos(G4double newYpos)
 {if (newYpos != Ypos) {Ypos = newYpos; G4cout << "Source Position changed to: " << Ypos << G4endl;} else { G4cout << "Same Position Selected." << G4endl;}}

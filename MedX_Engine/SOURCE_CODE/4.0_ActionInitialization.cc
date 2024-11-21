@@ -22,6 +22,4 @@ void ActionInitialization::Build() const
 
     SteppingAction * steppingAction = new SteppingAction(eventAction);
     SetUserAction(steppingAction);
-
-    SetUserAction(new PrimaryGenerator(fDetector));
 }

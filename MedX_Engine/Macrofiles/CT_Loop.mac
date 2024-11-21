@@ -1,4 +1,4 @@
 /run/numberOfThreads 9
 /run/initialize
 
-/control/loop ct.mac beamLine -280 250 1
+/control/loop ct.mac beamLine -280 250 2.5

@@ -1,7 +1,7 @@
 #include "5.0_PrimaryGenerator.hh"
 
-PrimaryGenerator::PrimaryGenerator(DetectorConstruction * detector) : SpectraMode(0), Xpos(300.0*mm), Ypos(0.0*mm), Zpos(-450*mm), 
-GunAngle(0.0), SpanX(10*mm), SpanY(10*mm), spectrumFile("fSpectrum140.txt"), 
+PrimaryGenerator::PrimaryGenerator(DetectorConstruction * detector) : SpectraMode(0), Xpos(0.0*mm), Ypos(0.0*mm), Zpos(-450*mm), 
+GunAngle(0.0), SpanX(1*mm), SpanY(1*mm), spectrumFile("fSpectrum140.txt"), 
 GeneratorMessenger(new PrimaryGeneratorMessenger(this)), G4VUserPrimaryGeneratorAction(), fDetector(detector)
 {
     particleGun = new G4ParticleGun(1);
@@ -23,7 +23,7 @@ void PrimaryGenerator::GeneratePrimaries(G4Event * anEvent)
 
     // x0 = 2 * (G4UniformRand() - 0.5);
     // x0 = x0 * SpanX;
-    x0 = G4RandGauss::shoot(0, fPgunSpanX / 1.5);
+    x0 = G4RandGauss::shoot(0, SpanX / 1.5);
     x0 = x0 * std::cos(thoraxAngle/2);
 
     y0 = 2 * (G4UniformRand() - 0.5);

@@ -63,7 +63,7 @@ G4bool SensitiveDetector::ProcessHits(G4Step * aStep, G4TouchableHistory * ROhis
 
         if (arguments == 5)
         {
-            digits = 4; defaultDecimals = G4cout.precision(digits);
+            digits = 5; defaultDecimals = G4cout.precision(digits);
 
             analysisManager -> FillNtupleDColumn(0, 0, posPhoton[0]);
             analysisManager -> FillNtupleDColumn(0, 1, posPhoton[1]);

@@ -34,6 +34,7 @@ DetectorConstruction::DetectorConstruction() : gen(rd()), randomDist(0.0, 1.0), 
         isRibcage = true;
         isThorax = true;
         isFiller = true;
+        
         isTumor = false;
             isTestParametrization = false;
 

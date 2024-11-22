@@ -61,7 +61,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
 
         G4bool  isArm, isHealthyBone, isOsteoBone, isBoneDivided, 
                 is3DModel, isHeart, isLungs, isRibcage, isFiller, isThorax,
-                checkOverlaps, isTumor, isTestParametrization;
+                checkOverlaps, isTumor, isTestParametrization, isFixed, isDebug;
     
     private:
 
@@ -72,49 +72,48 @@ class DetectorConstruction : public G4VUserDetectorConstruction
         void ConstructTissue();
         void ConstructBoneDivided();
         void ConstructThorax();
-        void ConstructTumor();
+        void ConstructTumor(int i);
         void ConstructEllipsoid(G4double aa, G4double bb, G4double cc, G4RotationMatrix* rot, G4ThreeVector EllipsoidPos, G4String name);
         void EllipsoidsParametrization();
 
         G4GenericMessenger * DetectorMessenger;
 
-        G4int numPores;
+        G4int numPores, numTumores;
         G4int DetColumnNum = 10, DetRowNum = 10; 
         
         G4double innerBoneRadius, outerBoneRadius, boneHeight, poreRadius, xWorld, yWorld, zWorld, 
                  regionMinZ, regionMaxZ, regionMinRadius, regionMaxRadius, r, theta, z, x, y,
                  innerMuscleRadius, outerMuscleRadius, innerGrasaRadius, outerGrasaRadius, innerSkinRadius, outerSkinRadius,
-                 fractionMass_VO2, fractionMass_SiO2, fTargetAngle, tumorRadius;
-        G4double thoraxAngle, targetThickness;
+                 fractionMass_VO2, fractionMass_SiO2, fTargetAngle, thoraxAngle, targetThickness, 
+                 tumorRadius, a, b, c, angleX, angleY, angleZ, verify, randomNum, aRight, bRight, cRight, aLeft, bLeft, cLeft;
 
         G4Box    * solidWorld, * solidDetector, * solidRadiator;
         G4Tubs   * solidBone, * solidMuscle, * solidGrasa, * solidSkin, * solidBone2, * osteoBone, * healthyBone; 
         G4Sphere * pore,  * tumorSphere;
         G4VSolid * porousBone; 
+        G4Ellipsoid * ellipsoidSolid;
 
         G4LogicalVolume   * logicWorld, * logicRadiator, * logicDetector, * logicHealthyBone, * logicOsteoBone, * logicMuscle, 
                           * logicGrasa, * logicSkin, * logicOs, * logicHealthy, 
                           * logicLungs, * logicHeart, * logicThorax, * logicRibcage, * logicFiller,
                           * scoringVolume_0, * scoringVolume_1, * scoringVolume_2, * scoringVolume_3, 
-                          * scoringVolume_4, * scoringVolume_5, * scoringVolume_6, * logicTumor; 
+                          * scoringVolume_4, * scoringVolume_5, * scoringVolume_6, * logicTumor, * ellipsoidLogic; 
         G4VPhysicalVolume * physicalWorld, * physicalRadiator, * physicalDetector, * physBone, * physArm, 
                           * physMuscle, * physGrasa, * physSkin, * physOs, * physHealthy;
                         
-        G4ThreeVector samplePosition, DetectorPosition, porePosition, osteo_position, healthy_position, Radiator_Position, tumorPosition, selectedCenter, ellipsoidPosition, ellipsoidPosition2;
+        G4ThreeVector samplePosition, DetectorPosition, porePosition, osteo_position, healthy_position, Radiator_Position, 
+                      tumorPosition, selectedCenter, ellipsoidPosition1, ellipsoidPosition2, leftEllipsoidCenter, rightEllipsoidCenter;
         G4RotationMatrix * armRotation, * Model3DRotation, * originMatrix, * elipsoidRot, * elipsoidRot2; 
 
         G4Element  * C, * Al, * N, * O, * Ca, * Mg, * V, * Cd, * Te, * W;
         G4Material * SiO2, * H2O, * Aerogel, * worldMaterial, * Calcium, * Magnesium, * Aluminum, * Air, * Silicon, * materialTarget, 
                    * CadTel, * vanadiumGlassMix, * amorphousGlass, * Wolframium, * V2O5, 
-                   * Adipose, * Skin, * Muscle, * Bone, * OsBone, * compactBone, * TissueMix, * Light_Adipose;
+                   * Adipose, * Skin, * Muscle, * Bone, * OsBone, * compactBone, * TissueMix, * Light_Adipose, * Muscle_Sucrose;
         
         STLGeometryReader * stlReader;
         G4TessellatedSolid * Ribcage, * Lungs, * Heart;
         G4VSolid * Thorax1, * Thorax2, * AccumulatedLungs;
         G4SubtractionSolid * subtractedSolid0, * subtractedSolid1, * subtractedSolid2, * subtractedSolid3, * subtractedSolid4, * subtractedLung;
-
-        //Ellipsoids
-        G4double a, b, c, angleX, angleY, angleZ; 
 
         //Distribuciones
         std::random_device rd;

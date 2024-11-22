@@ -615,7 +615,7 @@ def CT_Loop(directory, starts_with, angles):
         /run/reinitializeGeometry
 
         /gun/energy 80 keV
-        /run/beamOn 50000
+        /run/beamOn 100000
         """
 
         mac_content = mac_template.format(angle = angle, beamLine = "{beamLine}")

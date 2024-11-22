@@ -572,6 +572,67 @@ def Plotly_Heatmap(array, xlim, ylim, title, x_label, y_label, annotation, width
 
 # 8.0 ========================================================================================================================================================
 
+def ClearFolder(directory):
+
+    import os
+
+    if os.path.exists(directory):
+        
+        for file_name in os.listdir(directory):
+
+            file_path = os.path.join(directory, file_name)
+            if os.path.isfile(file_path):
+                try: os.remove(file_path)
+                except Exception as e: print(f"Error deleting file {file_path}: {e}")
+
+def CT_Loop(directory, starts_with, angles):
+
+    import Radiography_Library as RadLib
+    import os; import subprocess; import shutil; from tqdm import tqdm
+    import sys; from contextlib import redirect_stdout, redirect_stderr
+
+    executable_file = "Sim"
+    mac_filename_1 = 'CT_Loop.mac'
+    mac_filename_2 = 'CT.mac'
+    run_sim = f"./{executable_file} {mac_filename_1} . . ."
+
+    root_folder = directory + "ROOT/"
+    mac_filepath = directory + mac_filename_2
+    ct_folder = directory + "ROOT/" + "CT/"
+    os.makedirs(ct_folder, exist_ok = True)
+    
+    for angle in tqdm(range(angles[0], angles[1]), desc = "Creating CT", unit = "Angles", leave = True):
+        
+        ClearFolder(root_folder)
+
+        mac_template = """\
+        /myDetector/Rotation {angle}
+
+        /Pgun/X 0 mm
+        /Pgun/Y {beamLine} mm
+        /Pgun/SpanY 0.01 mm
+
+        /run/reinitializeGeometry
+
+        /gun/energy 80 keV
+        /run/beamOn 50000
+        """
+
+        mac_content = mac_template.format(angle = angle, beamLine = "{beamLine}")
+        with open(mac_filepath, 'w') as f: f.write(mac_content)
+
+        try: subprocess.run(run_sim, cwd = directory, check = True, shell = True, stdout = subprocess.DEVNULL)
+        except subprocess.CalledProcessError as e: print(f"Error al ejecutar la simulación: {e}")
+    
+        output_name = f'Aang_{angle}'
+        with open(os.devnull, "w") as fnull: 
+            with redirect_stdout(fnull), redirect_stderr(fnull):
+                RadLib.MergeRoots_Parallel(root_folder, starts_with, output_name)
+
+        merged_file_path = root_folder + output_name + '.root'
+        if os.path.exists(merged_file_path): shutil.move(merged_file_path, ct_folder)
+
+
 def CT_Heatmap_from_Dask(x_data, y_data, size_x, size_y, x_shift, y_shift, pixel_size):
 
     import matplotlib.pyplot as plt; import numpy as np

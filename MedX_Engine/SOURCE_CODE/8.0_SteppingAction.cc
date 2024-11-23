@@ -5,12 +5,12 @@ SteppingAction::~SteppingAction() {}
 
 void SteppingAction::UserSteppingAction(const G4Step * step)
 {
-    G4double minStepSize = 1.0*um;
+    minStepSize = 1.0e-2*mm;
+    stepLength = step -> GetStepLength();
     if (stepLength < minStepSize) {step -> GetTrack() -> SetStepLength(minStepSize);}
 
-    stepLength = step -> GetStepLength();
     currentVolume = step -> GetPreStepPoint() -> GetPhysicalVolume();
-    if (currentVolume -> GetName() == "Heart") {G4cout << "Step size: " << stepLength / mm << " mm " << " in volume: " << currentVolume -> GetName() << G4endl;}
+    // if (currentVolume -> GetName() == "Heart") {G4cout << "Step size: " << stepLength / mm << " mm " << " in volume: " << currentVolume -> GetName() << G4endl;}
 
     Volume = step -> GetPreStepPoint() -> GetTouchableHandle() -> GetVolume() -> GetLogicalVolume();
     detectorConstruction = static_cast < const DetectorConstruction *> (G4RunManager::GetRunManager() -> GetUserDetectorConstruction());

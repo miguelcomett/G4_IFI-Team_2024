@@ -36,8 +36,8 @@ DetectorConstruction::DetectorConstruction() : gen(rd()), randomDist(0.0, 1.0), 
     is3DModel = true;
         isHeart = true;
         isLungs = true;
-        isRibcage = false;
-        isThorax = false;
+        isRibcage = true;
+        isThorax = true;
         isFiller = true;
         
         isTumor = true;

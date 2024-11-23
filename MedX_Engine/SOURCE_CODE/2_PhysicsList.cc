@@ -1,5 +1,6 @@
 #include "2.0_PhysicsList.hh"
 
+
 PhysicsList::PhysicsList()
 {
     if (arguments != 5) {RegisterPhysics(new G4EmStandardPhysics(0));}
@@ -9,6 +10,3 @@ PhysicsList::PhysicsList()
 }
 
 PhysicsList::~PhysicsList(){}
-
-
-// RegisterPhysics(new G4EmLivermorePhysics(0));

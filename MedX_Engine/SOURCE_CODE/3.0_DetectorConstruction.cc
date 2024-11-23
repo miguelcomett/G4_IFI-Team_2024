@@ -213,15 +213,13 @@ void DetectorConstruction::ConstructThorax()
 
     originMatrix = new G4RotationMatrix(0, 0, 0);
         
-    if (arguments == 1) { G4cout << G4endl; }
-    G4cout << "=============== 3D MODELS ===============" << G4endl; 
+    if (arguments == 1) {G4cout << G4endl;}
+    G4cout << "=============== 3D MODELS ====================================" << G4endl; 
 
     Heart = stl.Read(modelPath + "HEART.stl");
     if (Heart && isHeart) 
     {
         logicHeart = new G4LogicalVolume(Heart, Muscle, "Heart");
-        stepLimit = new G4UserLimits(1e-6 * mm);
-        logicHeart -> SetUserLimits(stepLimit);
         new G4PVPlacement(Model3DRotation, samplePosition, logicHeart, "Heart", logicWorld, false, 0, true);
         
         scoringVolume_1 = logicHeart;
@@ -233,7 +231,7 @@ void DetectorConstruction::ConstructThorax()
     {
         G4cout << "--> HEART model not found" << G4endl; 
         G4cout << "Critical error: Stopping the Simulation" << G4endl;
-        G4cout << "==========================================" << G4endl; G4cout << G4endl;
+        G4cout << "==============================================================" << G4endl; G4cout << G4endl;
         std::exit(EXIT_FAILURE);
     }
 
@@ -270,7 +268,7 @@ void DetectorConstruction::ConstructThorax()
     {
         G4cout << "--> LUNGS model not found" << G4endl;
         G4cout << "Critical error: Stopping the Simulation" << G4endl;
-        G4cout << "==========================================" << G4endl; G4cout << G4endl;
+        G4cout << "==============================================================" << G4endl; G4cout << G4endl;
         std::exit(EXIT_FAILURE);
     }
 
@@ -289,7 +287,7 @@ void DetectorConstruction::ConstructThorax()
     {
         G4cout << "--> RIBCAGE model not found" << G4endl;
         G4cout << "Critical error: Stopping the Simulation" << G4endl;
-        G4cout << "==========================================" << G4endl; G4cout << G4endl;
+        G4cout << "==============================================================" << G4endl; G4cout << G4endl;
         std::exit(EXIT_FAILURE);
     }
 
@@ -311,7 +309,7 @@ void DetectorConstruction::ConstructThorax()
     {
         G4cout << "--> THORAX model not found" << G4endl;
         G4cout << "Critical error: Stopping the Simulation" << G4endl;
-        G4cout << "==========================================" << G4endl; G4cout << G4endl;
+        G4cout << "==============================================================" << G4endl; G4cout << G4endl;
         std::exit(EXIT_FAILURE);
     }
 
@@ -332,11 +330,11 @@ void DetectorConstruction::ConstructThorax()
     {
         G4cout << "--> FILLER model not found" << G4endl;
         G4cout << "Critical error: Stopping the Simulation" << G4endl;
-        G4cout << "==========================================" << G4endl; 
+        G4cout << "==============================================================" << G4endl; 
         std::exit(EXIT_FAILURE);
     }
 
-    G4cout << "==========================================" << G4endl; G4cout << G4endl; 
+    G4cout << "==============================================================" << G4endl; G4cout << G4endl; 
 }
 
 // Create Tumor ===================================================================================================================================

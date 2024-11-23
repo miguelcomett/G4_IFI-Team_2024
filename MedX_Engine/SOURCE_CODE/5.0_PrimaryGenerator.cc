@@ -13,6 +13,8 @@ GeneratorMessenger(new PrimaryGeneratorMessenger(this)), G4VUserPrimaryGenerator
     if (SpectraMode == 1) { SpectraFunction(); }
 
     threadID = G4Threading::G4GetThreadId();
+
+    if (threadID == 0) {std::cout << std::endl; std::cout << "============= GUN MESSENGERS =============" << std::endl;}
 }
 
 PrimaryGenerator::~PrimaryGenerator() {delete particleGun; delete GeneratorMessenger;}
@@ -51,8 +53,6 @@ void PrimaryGenerator::GeneratePrimaries(G4Event * anEvent)
 
 void PrimaryGenerator::SetGunXpos(G4double newXpos)
 {
-    if (threadID == 0) {std::cout << std::endl; std::cout << "============= GUN MESSENGERS =============" << std::endl;}
-
     if (newXpos != Xpos) {Xpos = newXpos; 
         if (threadID == 0) {std::cout << "-> Source X Post changed to: " << Xpos << std::endl;} 
     else if (threadID == 0) {std::cout << "-> Same Position Selected." << std::endl;}}
@@ -73,7 +73,7 @@ void PrimaryGenerator::SetGunZpos(G4double newZpos)
 }
 
 void PrimaryGenerator::SetGunXGauss(G4bool newXgauss)
-{
+{   
     if (newXgauss == true) {Xgauss = true; 
         if (threadID == 0) {std::cout << "-> Source X changed to: Gauss Distribution" << std::endl;}}
     if (newXgauss == false) {Xgauss = false; 

@@ -20,3 +20,12 @@ class PhysicsList : public G4VModularPhysicsList
 };
 
 #endif
+
+// Decrease the step size
+// #include "G4StepLimiterPhysics.hh"
+// G4StepLimiterPhysics * stepLimitPhys = new G4StepLimiterPhysics();
+// stepLimitPhys -> SetApplyToAll(true);
+// RegisterPhysics(stepLimitPhys);
+// in detector construction:
+// stepLimit = new G4UserLimits(1e-3 * mm);
+// logicHeart -> SetUserLimits(stepLimit);

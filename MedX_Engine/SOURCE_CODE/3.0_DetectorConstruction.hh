@@ -29,6 +29,7 @@
 #include "G4SubtractionSolid.hh"
 #include "G4Ellipsoid.hh"
 #include "G4MultiUnion.hh"
+#include "G4UserLimits.hh"
 
 #include "G4GeometryManager.hh"
 #include "G4GeometryTolerance.hh"
@@ -92,6 +93,8 @@ class DetectorConstruction : public G4VUserDetectorConstruction
         G4Sphere * pore,  * tumorSphere;
         G4VSolid * porousBone; 
         G4Ellipsoid * ellipsoidSolid;
+
+        G4UserLimits * stepLimit;
 
         G4LogicalVolume   * logicWorld, * logicRadiator, * logicDetector, * logicHealthyBone, * logicOsteoBone, * logicMuscle, 
                           * logicGrasa, * logicSkin, * logicOs, * logicHealthy, 

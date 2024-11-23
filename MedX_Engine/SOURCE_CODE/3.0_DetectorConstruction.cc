@@ -1,5 +1,4 @@
 #include "3.0_DetectorConstruction.hh"
-#include "G4UserLimits.hh"
 
 DetectorConstruction::DetectorConstruction() : gen(rd()), randomDist(0.0, 1.0), radiusDist(5.0*mm, 20.0*mm), posDist(-1.0*mm, 1.0*mm), posYDist(-40*mm, 40*mm)
 {
@@ -221,7 +220,7 @@ void DetectorConstruction::ConstructThorax()
     if (Heart && isHeart) 
     {
         logicHeart = new G4LogicalVolume(Heart, Muscle, "Heart");
-        G4UserLimits * stepLimit = new G4UserLimits(1e-1 * mm);
+        stepLimit = new G4UserLimits(1e-6 * mm);
         logicHeart -> SetUserLimits(stepLimit);
         new G4PVPlacement(Model3DRotation, samplePosition, logicHeart, "Heart", logicWorld, false, 0, true);
         

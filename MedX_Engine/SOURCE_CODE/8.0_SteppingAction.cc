@@ -21,7 +21,7 @@ void SteppingAction::UserSteppingAction(const G4Step * step)
     
     if (stepLength < minStepSize) 
     {
-        // currentLogicVolume -> SetUserLimits(stepLimit); 
+        currentLogicVolume -> SetUserLimits(stepLimit); 
         track -> SetTrackStatus(fPostponeToNextEvent);
     }
 

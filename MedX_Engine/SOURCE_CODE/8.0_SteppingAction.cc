@@ -1,12 +1,16 @@
 #include "8.0_SteppingAction.hh"
 
-SteppingAction::SteppingAction(EventAction * eventAction) { fEventAction = eventAction; }
+SteppingAction::SteppingAction(EventAction * eventAction) {fEventAction = eventAction;}
 SteppingAction::~SteppingAction() {}
 
 void SteppingAction::UserSteppingAction(const G4Step * step)
 {
+    stepLength = step -> GetStepLength();
+    currentVolume = step -> GetPreStepPoint() -> GetPhysicalVolume();
+    // if (currentVolume -> GetName() == "Heart") {G4cout << "Step size: " << stepLength / mm << " mm " << " in volume: " << currentVolume -> GetName() << G4endl;}
+
     Volume = step -> GetPreStepPoint() -> GetTouchableHandle() -> GetVolume() -> GetLogicalVolume();
-    const DetectorConstruction * detectorConstruction = static_cast < const DetectorConstruction *> (G4RunManager::GetRunManager() -> GetUserDetectorConstruction());
+    detectorConstruction = static_cast < const DetectorConstruction *> (G4RunManager::GetRunManager() -> GetUserDetectorConstruction());
     scoringVolume = detectorConstruction -> GetScoringVolume();
 
     if (arguments == 1 || arguments == 2)
@@ -15,7 +19,7 @@ void SteppingAction::UserSteppingAction(const G4Step * step)
         if (std::find(scoringVolumes.begin(), scoringVolumes.end(), Volume) == scoringVolumes.end()) {return;}
         {
             EDep = step -> GetTotalEnergyDeposit();
-            if (EDep > 0.0) { fEventAction -> AddEDep(EDep); }
+            if (EDep > 0.0) {fEventAction -> AddEDep(EDep);}
             fEventAction -> AddEDep(EDep);
             // G4cout << "Energy deposition (keV): " << EDep << G4endl; 
         }
@@ -40,7 +44,7 @@ void SteppingAction::UserSteppingAction(const G4Step * step)
         if (std::find(scoringVolumes.begin(), scoringVolumes.end(), Volume) == scoringVolumes.end()) {return;}
         {       
             EDep = step -> GetTotalEnergyDeposit();
-            if (EDep > 0.0) { fEventAction -> AddEDep(EDep); }
+            if (EDep > 0.0) {fEventAction -> AddEDep(EDep);}
             // G4cout << "Energy deposition (eV): " << G4BestUnit(EDep, "Energy") << G4endl; 
         }
     }

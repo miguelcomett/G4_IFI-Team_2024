@@ -30,7 +30,10 @@ class SteppingAction : public G4UserSteppingAction
         G4StepPoint * endPoint;
         
         G4String processName;
-        G4double EDep;
+        G4double EDep, stepLength;
+
+        G4VPhysicalVolume * currentVolume;
+        const DetectorConstruction * detectorConstruction;
 };
 
 #endif

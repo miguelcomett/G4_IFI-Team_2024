@@ -5,6 +5,7 @@
 #include "G4UIcmdWithADoubleAndUnit.hh"
 #include "G4UIcmdWithADouble.hh"
 #include "G4UIcmdWithAnInteger.hh"
+#include "G4UIcmdWithABool.hh"
 
 #include "G4SystemOfUnits.hh"
 #include "G4UImanager.hh"
@@ -24,12 +25,13 @@ class PrimaryGeneratorMessenger : public G4UImessenger
 	private:
 		
 		PrimaryGenerator * fGun;
-		
-		G4UIcmdWithADoubleAndUnit * fPgunX, * fPgunY, * fPgunZ; 
-		G4UIcmdWithADouble * fPgunSpanX, * fPgunSpanY, * fPgunAngle;
-		G4UIcmdWithAnInteger * fSpectraMode;   
 
 		G4int threadID;
+		
+		G4UIcmdWithABool * fPgunXgauss;   
+		G4UIcmdWithAnInteger * fSpectraMode;
+		G4UIcmdWithADouble * fPgunSpanX, * fPgunSpanY, * fPgunAngle;
+		G4UIcmdWithADoubleAndUnit * fPgunX, * fPgunY, * fPgunZ; 
 };
 
 #endif

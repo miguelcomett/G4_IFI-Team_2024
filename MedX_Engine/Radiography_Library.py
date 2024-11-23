@@ -609,6 +609,7 @@ def CT_Loop(directory, starts_with, angles):
         /myDetector/Rotation {angle}
 
         /Pgun/X 0 mm
+        /Pgun/gaussX true
         /Pgun/Y {beamLine} mm
         /Pgun/SpanY 0.01 mm
 

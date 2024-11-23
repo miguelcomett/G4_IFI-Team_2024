@@ -24,16 +24,14 @@ void PrimaryGenerator::GeneratePrimaries(G4Event * anEvent)
     if (fDetector) {thoraxAngle = fDetector -> GetThoraxAngle();} else {thoraxAngle = 0;}
     thoraxAngle = thoraxAngle * (2*pi / 360.0);
 
-    // x0 = 2 * (G4UniformRand() - 0.5);
-    // x0 = x0 * SpanX;
-    x0 = G4RandGauss::shoot(0, 80*mm);
-    x0 = x0 * std::cos(thoraxAngle/2);
+    if (Xgauss == true)  {x0 = G4RandGauss::shoot(0, 80*mm); x0 = x0 * std::cos(thoraxAngle/2);}
+    if (Xgauss == false) {x0 = 2 * (G4UniformRand() - 0.5); x0 = x0 * SpanX;}
+    x0 = x0 + Xpos; 
 
     y0 = 2 * (G4UniformRand() - 0.5);
     y0 = y0 * SpanY;
-
-    x0 = x0 + Xpos; 
     y0 = y0 + Ypos;
+
     z0 = Zpos; 
 
     photonPosition = G4ThreeVector(x0, y0, z0);
@@ -56,51 +54,59 @@ void PrimaryGenerator::SetGunXpos(G4double newXpos)
     if (threadID == 0) {std::cout << std::endl; std::cout << "============= GUN MESSENGERS =============" << std::endl;}
 
     if (newXpos != Xpos) {Xpos = newXpos; 
-        if (threadID == 0) {std::cout << "Source X Post changed to: " << Xpos << std::endl;} 
-    else if (threadID == 0) {std::cout << "Same Position Selected." << std::endl;}}
+        if (threadID == 0) {std::cout << "-> Source X Post changed to: " << Xpos << std::endl;} 
+    else if (threadID == 0) {std::cout << "-> Same Position Selected." << std::endl;}}
 }
 
 void PrimaryGenerator::SetGunYpos(G4double newYpos)
 {
     if (newYpos != Ypos) {Ypos = newYpos;
-        if (threadID == 0) {std::cout << "Source Y Post changed to: " << Ypos << std::endl;} 
-    else if (threadID == 0) {G4cout << "Same Position Selected." << std::endl;}}
+        if (threadID == 0) {std::cout << "-> Source Y Post changed to: " << Ypos << std::endl;} 
+    else if (threadID == 0) {G4cout << "-> Same Position Selected." << std::endl;}}
 }
 
 void PrimaryGenerator::SetGunZpos(G4double newZpos)
 {
     if (newZpos != Zpos) {Zpos = newZpos; 
-        if (threadID == 0) {std::cout << "Source Z Post changed to: " << Zpos << std::endl;} 
-    else if (threadID == 0) {std::cout << "Same Position Selected." << std::endl;}}
+        if (threadID == 0) {std::cout << "-> Source Z Post changed to: " << Zpos << std::endl;} 
+    else if (threadID == 0) {std::cout << "-> Same Position Selected." << std::endl;}}
+}
+
+void PrimaryGenerator::SetGunXGauss(G4bool newXgauss)
+{
+    if (newXgauss == true) {Xgauss = true; 
+        if (threadID == 0) {std::cout << "-> Source X changed to: Gauss Distribution" << std::endl;}}
+    if (newXgauss == false) {Xgauss = false; 
+        if (threadID == 0) {std::cout << "-> Source X changed to: Linear Distribution" << std::endl;}}
 }
 
 void PrimaryGenerator::SetGunSpanX(G4double newSpanX)
 {
     if(newSpanX != SpanX) {SpanX = newSpanX; 
-        if (threadID == 0) {std::cout << "Source X Span changed to: " << SpanX << std::endl;} 
-    else if (threadID == 0) {std::cout << "Same Span selected." << std::endl;}}
+        if (threadID == 0) {std::cout << "-> Source X Span changed to: " << SpanX << std::endl;} 
+    else if (threadID == 0) {std::cout << "-> Same Span selected." << std::endl;}}
 }
 
 void PrimaryGenerator::SetGunSpanY(G4double newSpanY)
 {
     if(newSpanY != SpanY) {SpanY = newSpanY; 
-        if (threadID == 0) {std::cout << "Source Y Span changed to: " << SpanY << std::endl;}}
-    else if (threadID == 0) {std::cout << "Same Span selected." << std::endl;}
+        if (threadID == 0) {std::cout << "-> Source Y Span changed to: " << SpanY << std::endl;}}
+    else if (threadID == 0) {std::cout << "-> Same Span selected." << std::endl;}
 }
 
 void PrimaryGenerator::SetGunAngle(G4double newAngle)
 {   
     if(newAngle != GunAngle) {GunAngle = newAngle; 
-        if (threadID == 0) {std::cout << "Source Angle changed to: " << GunAngle << std::endl;} 
-    else if (threadID == 0) {std::cout << "Same Angle selected." << std::endl;}}
+        if (threadID == 0) {std::cout << "-> Source Angle changed to: " << GunAngle << std::endl;} 
+    else if (threadID == 0) {std::cout << "-> Same Angle selected." << std::endl;}}
 }
 
 void PrimaryGenerator::SetGunMode(G4int newMode)
 {
     if(newMode == 0) {SpectraMode = 0; 
-        if (threadID == 0) {std::cout << "Monocromatic Mode Selected" << std::endl;}}
+        if (threadID == 0) {std::cout << "-> Monocromatic Mode Selected" << std::endl;}}
     if(newMode == 1) {SpectraMode = 1; 
-        if (threadID == 0) {std::cout << "Real Spectrum Selected" << std::endl;}}
+        if (threadID == 0) {std::cout << "-> Real Spectrum Selected" << std::endl;}}
     // else {G4cout << "No mode selected. Default value applied." << G4endl;}
 }
 

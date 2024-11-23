@@ -1,22 +1,16 @@
 # /run/numberOfThreads 8
-
 /run/initialize
 
 /myDetector/nColumns 1
 /myDetector/nRows 1
 
-#/myDetector/ThicknessTarget
 #/myDetector/Rotation
 
 #/Pgun/Z
-#/Pgun/Radius
 #/Pgun/Angle
 #/Pgun/Mode
 
-/gun/energy 40 keV
 /run/printProgress 
-/run/beamOn 10
 
-/gun/energy 80 keV
-/run/printProgress 
+/gun/energy 40 keV
 /run/beamOn 10

@@ -8,6 +8,7 @@
 
 /Pgun/X 0 cm
 /Pgun/Y 0 cm
+/Pgun/gaussX true
 /Pgun/SpanX 220 mm
 /Pgun/SpanY 0.05 mm
 

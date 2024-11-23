@@ -258,7 +258,7 @@ void RunAction::MergeRootFiles()
 
     merger.OutputFile(mergedFileName.c_str()); // Guardar el archivo fusionado en la nueva carpeta Output
 
-    if (merger.Merge()) {RemoveJunkDataFromRoot(mergedFileName); G4cout << "Successfully merged ROOT files" << G4endl;}
+    if (merger.Merge()) {RemoveJunkDataFromRoot(mergedFileName); G4cout << "~ Successfully merged ROOT files ~" << G4endl; G4cout << G4endl;}
     else {G4cout << "Error during ROOT file merging!" << G4endl;}
 
     std::filesystem::remove_all(rootDirectory);

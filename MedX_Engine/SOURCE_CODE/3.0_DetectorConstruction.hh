@@ -94,8 +94,6 @@ class DetectorConstruction : public G4VUserDetectorConstruction
         G4VSolid * porousBone; 
         G4Ellipsoid * ellipsoidSolid;
 
-        G4UserLimits * stepLimit;
-
         G4LogicalVolume   * logicWorld, * logicRadiator, * logicDetector, * logicHealthyBone, * logicOsteoBone, * logicMuscle, 
                           * logicGrasa, * logicSkin, * logicOs, * logicHealthy, 
                           * logicLungs, * logicHeart, * logicThorax, * logicRibcage, * logicFiller,

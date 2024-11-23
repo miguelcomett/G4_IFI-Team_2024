@@ -24,15 +24,18 @@ class SteppingAction : public G4UserSteppingAction
     
     private:
 
+        G4double worldMaxX, worldMinX, worldMaxY, worldMinY, worldMaxZ, worldMinZ;
+
         EventAction * fEventAction;
-        G4LogicalVolume * scoringVolume;
-        G4LogicalVolume * Volume;
+        G4LogicalVolume * scoringVolume, * Volume, * currentLogicVolume;
         G4StepPoint * endPoint;
+
+        G4UserLimits * stepLimit;
         
         G4String processName;
         G4double EDep, minStepSize, stepLength;
 
-        G4VPhysicalVolume * currentVolume;
+        G4VPhysicalVolume * currentPhysVolume;
         const DetectorConstruction * detectorConstruction;
 };
 

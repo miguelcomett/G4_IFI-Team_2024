@@ -1,16 +1,29 @@
 #include "8.0_SteppingAction.hh"
+#include "G4UserLimits.hh"
 
 SteppingAction::SteppingAction(EventAction * eventAction) {fEventAction = eventAction;}
 SteppingAction::~SteppingAction() {}
 
 void SteppingAction::UserSteppingAction(const G4Step * step)
 {
-    minStepSize = 1.0e-2*mm;
+    G4Track * track = step -> GetTrack();
+    G4ThreeVector position = track -> GetPosition();
+    worldMaxX =  500.1 * mm; worldMinX = -500.1 * mm; 
+    worldMaxY =  500.1 * mm; worldMinY = -500.1 * mm;
+    worldMaxZ =  500.1 * mm; worldMinZ = -500.1 * mm;
+    if (position.x() < worldMinX || position.x() > worldMaxX || position.y() < worldMinY || position.y() > worldMaxY || position.z() < worldMinZ || position.z() > worldMaxZ)  
+    {track -> SetTrackStatus(fStopAndKill); G4cout << " ERROR: Particle outside world bounds!!!" << G4endl;}
+    
+    stepLimit = new G4UserLimits(1.0e-5*mm);
     stepLength = step -> GetStepLength();
-    if (stepLength < minStepSize) {step -> GetTrack() -> SetStepLength(minStepSize);}
-
-    currentVolume = step -> GetPreStepPoint() -> GetPhysicalVolume();
-    // if (currentVolume -> GetName() == "Heart") {G4cout << "Step size: " << stepLength / mm << " mm " << " in volume: " << currentVolume -> GetName() << G4endl;}
+    currentPhysVolume = step -> GetPreStepPoint() -> GetPhysicalVolume();
+    currentLogicVolume = currentPhysVolume -> GetLogicalVolume();
+    
+    if (stepLength < minStepSize) 
+    {
+        // currentLogicVolume -> SetUserLimits(stepLimit); 
+        track -> SetTrackStatus(fPostponeToNextEvent);
+    }
 
     Volume = step -> GetPreStepPoint() -> GetTouchableHandle() -> GetVolume() -> GetLogicalVolume();
     detectorConstruction = static_cast < const DetectorConstruction *> (G4RunManager::GetRunManager() -> GetUserDetectorConstruction());

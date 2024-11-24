@@ -23,12 +23,13 @@ class EventAction : public G4UserEventAction
         virtual void BeginOfEventAction(const G4Event *);
         virtual void EndOfEventAction  (const G4Event *);
 
-        void AddEDep(G4double EDep);
+        void AddEDep(G4double EDep){fEDep = fEDep + EDep;};
 
     private:
         
         RunAction * fRunAction = nullptr;
         
+        G4int totalEvents, eventID;
         G4double fEDep, EDep_keV;
 };
 

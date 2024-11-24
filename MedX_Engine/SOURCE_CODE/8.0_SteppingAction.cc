@@ -45,14 +45,14 @@ void SteppingAction::UserSteppingAction(const G4Step * step)
 
     if (arguments == 4 || arguments == 5)
     {   
-        minStepSize = 1.0e-4*mm;
-        stepLength = step -> GetStepLength(); // G4cout << "Step Lenght: " << stepLength/mm << G4endl;
-        currentPhysVolume = step -> GetPreStepPoint() -> GetPhysicalVolume();
-        if (currentPhysVolume -> GetName() == "PhysicalWorld" && stepLength < minStepSize && stepLength != 0)
-        {
-            track -> SetTrackStatus(fStopAndKill);
-            std::cout << "### Stuck Particle in " << currentPhysVolume -> GetName() <<", Killed ###" << std::endl;
-        }
+        // minStepSize = 1.0e-4*mm;
+        // stepLength = step -> GetStepLength(); // G4cout << "Step Lenght: " << stepLength/mm << G4endl;
+        // currentPhysVolume = step -> GetPreStepPoint() -> GetPhysicalVolume();
+        // if (currentPhysVolume -> GetName() == "PhysicalWorld" && stepLength < minStepSize && stepLength != 0)
+        // {
+        //     track -> SetTrackStatus(fStopAndKill);
+        //     std::cout << "### Stuck Particle in " << currentPhysVolume -> GetName() <<", Killed ###" << std::endl;
+        // }
 
         std::vector<G4LogicalVolume*> scoringVolumes = detectorConstruction -> GetAllScoringVolumes();
         if (std::find(scoringVolumes.begin(), scoringVolumes.end(), Volume) == scoringVolumes.end()) {return;}

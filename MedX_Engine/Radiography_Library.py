@@ -153,21 +153,12 @@ def Root_to_Heatmap(directory, root_name, tree_name, x_branch, y_branch, size, l
 
     return normal_map, set_bins, set_bins
 
-# 4.1 ========================================================================================================================================================
-
-def LoadRoots(directory, rootnames, tree_name, x_branch, y_branch):
-
-    x_1, y_1 = Root_to_Dask(directory, rootnames[0], tree_name, x_branch, y_branch)
-    x_2, y_2 = Root_to_Dask(directory, rootnames[1], tree_name, x_branch, y_branch)
-    print("Dataframes created")
-
-    return x_1, y_1, x_2, y_2
+# 3.0. ========================================================================================================================================================
 
 def IsolateTissues(low_energy_img, high_energy_img, sigma1, sigma2, wn, save_in, 
                    save_as_1, save_as_2, save_as_3, save_as_4, save_as_5, save_as_6, save_as_7, save_as_8):
 
-    from scipy.ndimage import gaussian_filter
-    import matplotlib.pyplot as plt
+    from scipy.ndimage import gaussian_filter; import matplotlib.pyplot as plt
 
     U_b_l = 0.7519 # mu1
     U_b_h = 0.3012 # mu2
@@ -221,6 +212,8 @@ def IsolateTissues(low_energy_img, high_energy_img, sigma1, sigma2, wn, save_in,
     plt.subplot(2, 4, 8); plt.imshow(ACNR_Tissue,       cmap='gray'); plt.axis('off');  plt.title("Tissue [ACNR]")
    
     return SLS_Bone, SLS_Tissue, SSH_Bone, SSH_Tissue, ACNR_Bone, ACNR_Tissue
+
+# 4.0. ========================================================================================================================================================
 
 def BMO(SLS_Bone, SLS_Tissue, save_as):
 
@@ -958,3 +951,11 @@ def Heatmap_from_Dask(x_data, y_data, size, log_factor, x_shift, y_shift, save_a
     plt.subplot(1, 3, 3); plt.plot(normal_map[:,rows//2])
 
     return normal_map, x_edges, y_edges
+
+def LoadRoots(directory, rootnames, tree_name, x_branch, y_branch):
+
+    x_1, y_1 = Root_to_Dask(directory, rootnames[0], tree_name, x_branch, y_branch)
+    x_2, y_2 = Root_to_Dask(directory, rootnames[1], tree_name, x_branch, y_branch)
+    print("Dataframes created")
+
+    return x_1, y_1, x_2, y_2

@@ -3,11 +3,16 @@
 EventAction::EventAction(RunAction * runAction) : fRunAction(runAction) {fEDep = 0.0;}
 EventAction::~EventAction(){}
 
-void EventAction::AddEDep(G4double EDep) { fEDep = fEDep + EDep; }
-
 void EventAction::BeginOfEventAction(const G4Event * event) {fEDep = 0.0;}
 void EventAction::EndOfEventAction(const G4Event * event) 
 { 
+    totalEvents = G4RunManager::GetRunManager() -> GetNumberOfEventsToBeProcessed();
+    eventID = event -> GetEventID();
+
+    if (eventID == std::ceil(totalEvents*.25)) { std::cout << "Progress: 25%" << std::endl; }
+    if (eventID == std::ceil(totalEvents*.50)) { std::cout << "Progress: 50%" << std::endl; }
+    if (eventID == std::ceil(totalEvents*.75)) { std::cout << "Progress: 75%" << std::endl; }
+
     G4AnalysisManager * analysisManager = G4AnalysisManager::Instance();
 
     if (arguments == 1 || arguments == 2)

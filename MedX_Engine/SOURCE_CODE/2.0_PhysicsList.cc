@@ -7,9 +7,9 @@ PhysicsList::PhysicsList()
     
     RegisterPhysics(new G4OpticalPhysics(0));
 
-    G4StepLimiterPhysics * stepLimitPhys = new G4StepLimiterPhysics();
-    stepLimitPhys -> SetApplyToAll(true);
-    RegisterPhysics(stepLimitPhys);
+    // G4StepLimiterPhysics * stepLimitPhys = new G4StepLimiterPhysics();
+    // stepLimitPhys -> SetApplyToAll(true);
+    // RegisterPhysics(stepLimitPhys);
 }
 
 PhysicsList::~PhysicsList(){}

@@ -68,8 +68,6 @@ def process_file(file, f_out, lock, step_size="10 MB"):
 def MergeRoots_Parallel(directory, starts_with, output_name, max_workers = 9):
     
     file_list = []
-
-    # Crear lista de archivos para procesar
     for file in os.listdir(directory):
         if file.endswith('.root') and not file.startswith('merge') and not file.startswith(output_name):
             if starts_with == '' or file.startswith(starts_with):

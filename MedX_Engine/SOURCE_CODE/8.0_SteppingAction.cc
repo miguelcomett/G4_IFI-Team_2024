@@ -14,15 +14,14 @@ void SteppingAction::UserSteppingAction(const G4Step * step)
     if (position.x() < worldMinX || position.x() > worldMaxX || position.y() < worldMinY || position.y() > worldMaxY || position.z() < worldMinZ || position.z() > worldMaxZ)  
     {track -> SetTrackStatus(fStopAndKill); G4cout << " ERROR: Particle outside world bounds!!!" << G4endl;}
     
-    stepLimit = new G4UserLimits(1.0e-5*mm);
-    stepLength = step -> GetStepLength();
+    minStepSize = 1.0e-5*mm;
+    stepLength = step -> GetStepLength(); // G4cout << "Step Lenght: " << stepLength/mm << G4endl;
     currentPhysVolume = step -> GetPreStepPoint() -> GetPhysicalVolume();
-    currentLogicVolume = currentPhysVolume -> GetLogicalVolume();
     
-    if (stepLength < minStepSize) 
+    if (currentPhysVolume -> GetName() == "PhysicalWorld" && stepLength < minStepSize && stepLength != 0)
     {
-        currentLogicVolume -> SetUserLimits(stepLimit); 
-        track -> SetTrackStatus(fPostponeToNextEvent);
+        track -> SetTrackStatus(fStopAndKill);
+        std::cout << "### Stuck Particle in " << currentPhysVolume -> GetName() <<", Killed ###" << std::endl;
     }
 
     Volume = step -> GetPreStepPoint() -> GetTouchableHandle() -> GetVolume() -> GetLogicalVolume();

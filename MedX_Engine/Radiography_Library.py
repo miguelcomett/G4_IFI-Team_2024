@@ -72,7 +72,6 @@ def process_file(file, f_out, lock, trim_coords):
             
             else: print(f"Skipping unrecognized tree or object: {base_key}")
 
-
 def MergeRoots_Parallel(directory, starts_with, output_name, trim_coords):
     
     import uproot; import os; from tqdm import tqdm
@@ -101,102 +100,58 @@ def MergeRoots_Parallel(directory, starts_with, output_name, trim_coords):
 
     print("Archivo final creado en:", merged_file)
 
-# 1.2. ========================================================================================================================================================
-
-def ModifyRoot(directory, root_name, tree_name, branch_names, output_name, new_tree_name, new_branch_names):
-
-    import uproot; import uproot.writing; import os
-
-    input_file = directory + root_name + '.root'
-    with uproot.open(input_file) as file:       
-        tree = file[tree_name]
-        branches = tree.arrays(branch_names, library="np")
-        
-    output_file = directory + output_name
-    counter = 1
-    while True:
-        if not os.path.exists(f"{output_file}{counter}.root"):
-            output_file = f"{output_file}{counter}.root"
-            break
-        counter = counter + 1
-
-    with uproot.recreate(output_file) as new_file:
-        new_file[new_tree_name] = {new_branch_names[0]: branches[branch_names[0]],
-                                   new_branch_names[1]: branches[branch_names[1]]}
-
 # 2.0. ========================================================================================================================================================
 
-def Root_to_Dask(directory, root_name, tree_name, x_branch, y_branch):
-    
-    import uproot; import numpy as np
-    import dask.array as da; import dask.dataframe as dd
+def Root_to_Heatmap(directory, root_name, tree_name, x_branch, y_branch, size, log_factor, x_shift, y_shift, save_as):
 
-    file_name = directory + root_name 
+    import uproot; import numpy as np; import matplotlib.pyplot as plt; import dask.array as da
+    
+    chunk_size = 1_000_000
+
+    file_name = directory + root_name
 
     with uproot.open(file_name) as root_file:
-        tree = root_file[tree_name]
-        if tree is None:
-            print(f"Tree '{tree_name}' not found in {file_name}")
-            return
-
-        x_values = tree[x_branch].array(library="np") if x_branch in tree else print('error_x')
-        y_values = tree[y_branch].array(library="np") if y_branch in tree else print('error_y')
-
-        decimal_places = 1
-
-        if x_values is not None:
-            x_values = np.round(x_values, decimal_places)
-        if y_values is not None:
-            y_values = np.round(y_values, decimal_places)
-
-        if x_values is None or y_values is None:
-            print(f"Could not retrieve data for branches {x_branch} or {y_branch}")
-            return
-
-        x_dask_array = da.from_array(x_values, chunks="auto")
-        y_dask_array = da.from_array(y_values, chunks="auto")
-
-        dask_df = dd.from_dask_array(da.stack([x_dask_array, y_dask_array], axis=1), columns=[x_branch, y_branch])
-
-        x_data = dask_df[x_branch].to_dask_array(lengths=True)
-        y_data = dask_df[y_branch].to_dask_array(lengths=True)
         
-        return x_data, y_data
-    
-# 3.0 ========================================================================================================================================================
+        tree = root_file[tree_name]
+        if tree is None: print(f"Tree '{tree_name}' not found in {file_name}"); return
+        if x_branch not in tree or y_branch not in tree: print(f"Branches '{x_branch}' or '{y_branch}' not found in the tree"); return
 
-def Heatmap_from_Dask(x_data, y_data, size, log_factor, x_shift, y_shift, save_as):
+        x_values = da.from_array(tree[x_branch].array(library="np"), chunks=chunk_size)
+        y_values = da.from_array(tree[y_branch].array(library="np"), chunks=chunk_size)
 
-    import matplotlib.pyplot as plt; import numpy as np
-    import dask.array as da; import dask.dataframe as dd
-    
-    x_data_shifted = x_data - x_shift
-    y_data_shifted = y_data - y_shift
+    x_data_shifted = x_values - x_shift
+    y_data_shifted = y_values - y_shift
 
-    pixel_size = 0.5 # mm
+    pixel_size = 0.5  # mm
     set_bins = np.arange(-size, size + pixel_size, pixel_size)
 
-    heatmap, x_edges, y_edges = da.histogram2d(x_data_shifted, y_data_shifted, bins = [set_bins, set_bins])
-    heatmap = heatmap.T
-    heatmap = np.rot90(heatmap, 2)
-    print('Heatmap size:', heatmap.shape, '[pixels]')
-    rows = heatmap.shape[0]
+    # Initialize cumulative heatmap
+    heatmap = da.zeros((len(set_bins) - 1, len(set_bins) - 1), dtype=np.float32)
 
-    heatmap = heatmap.compute()  
-    x_edges = x_edges.compute()  
-    y_edges = y_edges.compute()
+    for x_chunk, y_chunk in zip(x_data_shifted.to_delayed(), y_data_shifted.to_delayed()):
+        
+        x_chunk = da.from_delayed(x_chunk, shape=(chunk_size,), dtype=np.float32)
+        y_chunk = da.from_delayed(y_chunk, shape=(chunk_size,), dtype=np.float32)
+
+        chunk_histogram, _, _ = da.histogram2d(x_chunk, y_chunk, bins=[set_bins, set_bins])
+        heatmap += chunk_histogram
+
+    heatmap = heatmap.compute()
+    heatmap = np.rot90(heatmap.T, 2)
+
+    rows = heatmap.shape[0]
 
     heatmap[heatmap == 0] = log_factor
     maxi = np.max(heatmap)
     normal_map = np.log(maxi / heatmap)
 
-    plt.figure(figsize = (14, 4))
-    plt.subplot(1, 3, 1); plt.imshow(normal_map, cmap = 'gray', extent = [x_edges[0], x_edges[-1], y_edges[0], y_edges[-1]]); plt.axis('off')
-    if save_as != '': plt.savefig(save_as + '.png', bbox_inches = 'tight', dpi = 900)
-    plt.subplot(1, 3, 2); plt.plot(normal_map[2*rows//3,:])
-    plt.subplot(1, 3, 3); plt.plot(normal_map[:,rows//2])
+    plt.figure(figsize=(14, 4))
+    plt.subplot(1, 3, 1); plt.imshow(normal_map, cmap="gray", extent=[set_bins[0], set_bins[-1], set_bins[0], set_bins[-1]]); plt.axis("off")
+    if save_as: plt.savefig(save_as + ".png", bbox_inches="tight", dpi=900)
+    plt.subplot(1, 3, 2); plt.plot(normal_map[2 * rows // 3, :])
+    plt.subplot(1, 3, 3); plt.plot(normal_map[:, rows // 2])
 
-    return normal_map, x_edges, y_edges
+    return normal_map, set_bins, set_bins
 
 # 4.1 ========================================================================================================================================================
 
@@ -911,4 +866,95 @@ def export_to_dicom(HU_images, size_y, directory, compressed):
             ds.PixelData = image2d.tobytes()
             ds.save_as(name + '.dcm')
 
-# end ========================================================================================================================================================
+# Deprecated ========================================================================================================================================================
+
+def ModifyRoot(directory, root_name, tree_name, branch_names, output_name, new_tree_name, new_branch_names):
+
+    import uproot; import uproot.writing; import os
+
+    input_file = directory + root_name + '.root'
+    with uproot.open(input_file) as file:       
+        tree = file[tree_name]
+        branches = tree.arrays(branch_names, library="np")
+        
+    output_file = directory + output_name
+    counter = 1
+    while True:
+        if not os.path.exists(f"{output_file}{counter}.root"):
+            output_file = f"{output_file}{counter}.root"
+            break
+        counter = counter + 1
+
+    with uproot.recreate(output_file) as new_file:
+        new_file[new_tree_name] = {new_branch_names[0]: branches[branch_names[0]],
+                                   new_branch_names[1]: branches[branch_names[1]]}
+
+def Root_to_Dask(directory, root_name, tree_name, x_branch, y_branch):
+    
+    import uproot; import numpy as np
+    import dask.array as da; import dask.dataframe as dd
+
+    file_name = directory + root_name 
+
+    with uproot.open(file_name) as root_file:
+        tree = root_file[tree_name]
+        if tree is None:
+            print(f"Tree '{tree_name}' not found in {file_name}")
+            return
+
+        x_values = tree[x_branch].array(library="np") if x_branch in tree else print('error_x')
+        y_values = tree[y_branch].array(library="np") if y_branch in tree else print('error_y')
+
+        decimal_places = 1
+
+        if x_values is not None:
+            x_values = np.round(x_values, decimal_places)
+        if y_values is not None:
+            y_values = np.round(y_values, decimal_places)
+
+        if x_values is None or y_values is None:
+            print(f"Could not retrieve data for branches {x_branch} or {y_branch}")
+            return
+
+        x_dask_array = da.from_array(x_values, chunks="auto")
+        y_dask_array = da.from_array(y_values, chunks="auto")
+
+        dask_df = dd.from_dask_array(da.stack([x_dask_array, y_dask_array], axis=1), columns=[x_branch, y_branch])
+
+        x_data = dask_df[x_branch].to_dask_array(lengths=True)
+        y_data = dask_df[y_branch].to_dask_array(lengths=True)
+        
+        return x_data, y_data
+
+def Heatmap_from_Dask(x_data, y_data, size, log_factor, x_shift, y_shift, save_as):
+
+    import matplotlib.pyplot as plt; import numpy as np
+    import dask.array as da; import dask.dataframe as dd
+    
+    x_data_shifted = x_data - x_shift
+    y_data_shifted = y_data - y_shift
+
+    pixel_size = 0.5 # mm
+    set_bins = np.arange(-size, size + pixel_size, pixel_size)
+
+    heatmap, x_edges, y_edges = da.histogram2d(x_data_shifted, y_data_shifted, bins = [set_bins, set_bins])
+    heatmap = heatmap.T
+    heatmap = np.rot90(heatmap, 2)
+    # print('Heatmap size:', heatmap.shape, '[pixels]')
+    rows = heatmap.shape[0]
+
+    heatmap = heatmap.compute()  
+    x_edges = x_edges.compute()  
+    y_edges = y_edges.compute()
+
+    heatmap[heatmap == 0] = log_factor
+    maxi = np.max(heatmap)
+    normal_map = np.log(maxi / heatmap)
+
+    plt.figure(figsize = (14, 4))
+    plt.subplot(1, 3, 1); plt.imshow(normal_map, cmap = 'gray', extent = [x_edges[0], x_edges[-1], y_edges[0], y_edges[-1]]); plt.axis('off')
+    if save_as != '': plt.savefig(save_as + '.png', bbox_inches = 'tight', dpi = 900)
+    plt.subplot(1, 3, 2); plt.plot(normal_map[2*rows//3,:])
+    plt.subplot(1, 3, 3); plt.plot(normal_map[:,rows//2])
+
+    return normal_map, x_edges, y_edges

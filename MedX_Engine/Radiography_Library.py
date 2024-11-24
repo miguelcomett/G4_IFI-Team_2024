@@ -41,59 +41,63 @@ def MergeRoots(directory, starts_with, output_name):
 
 # 1.2. ========================================================================================================================================================
 
-import uproot; import os; from tqdm import tqdm
-from concurrent.futures import ThreadPoolExecutor; import threading
+def process_file(file, f_out, lock, trim_coords):
 
-def process_file(file, f_out, lock, step_size="10 MB"):
+    import uproot
+
+    step_size = "10 MB"
+    
     with uproot.open(file) as f_in:
+        
         for key in f_in.keys():
             base_key = key.split(';')[0]
             obj = f_in[key]
 
-            # Solo procesar si es un TTree
-            if isinstance(obj, uproot.TTree):
-                
-                # Leer los datos por partes para optimizar el uso de memoria
-                for new_data in obj.iterate(library="np", step_size=step_size):
-                    
-                    # Lock para asegurar que la escritura en f_out sea thread-safe
-                    with lock:
-                        
-                        # Añadir o crear el TTree en el archivo de salida
-                        if base_key in f_out:
-                            f_out[base_key].extend(new_data)
-                        else:
-                            f_out[base_key] = new_data
+            if base_key == "Hits" and isinstance(obj, uproot.TTree):
+                for new_data in obj.iterate(["x_ax", "y_ax"], library="np", step_size=step_size):
+                    if trim_coords:
+                        x_min, x_max, y_min, y_max = trim_coords
+                        mask = ((new_data['x_ax'] >= x_min) & (new_data['x_ax'] <= x_max) & (new_data['y_ax'] >= y_min) & (new_data['y_ax'] <= y_max))
+                        if mask.sum() == 0: print("No data after filtering. Skipping chunk."); continue
+                        new_data = {key: value[mask] for key, value in new_data.items()}
+                    with lock: # Lock para asegurar que la escritura en f_out sea thread-safe
+                        if base_key in f_out: f_out[base_key].extend(new_data)
+                        else: f_out[base_key] = new_data
 
-def MergeRoots_Parallel(directory, starts_with, output_name, max_workers = 9):
+            elif base_key == "Run Summary" and isinstance(obj, uproot.TTree):
+                for summary_data in obj.iterate(library="np", step_size=step_size):
+                    with lock:
+                        if base_key in f_out: f_out[base_key].extend(summary_data)
+                        else:f_out[base_key] = summary_data
+            
+            else: print(f"Skipping unrecognized tree or object: {base_key}")
+
+
+def MergeRoots_Parallel(directory, starts_with, output_name, trim_coords):
+    
+    import uproot; import os; from tqdm import tqdm
+    from concurrent.futures import ThreadPoolExecutor; import threading
+
+    max_workers = 9
     
     file_list = []
     for file in os.listdir(directory):
         if file.endswith('.root') and not file.startswith('merge') and not file.startswith(output_name):
-            if starts_with == '' or file.startswith(starts_with):
-                file_list.append(os.path.join(directory, file))
+            if starts_with == '' or file.startswith(starts_with): file_list.append(os.path.join(directory, file))
 
-    # Crear el nombre de archivo de salida con numeración si ya existe
     merged_file = directory + output_name 
-    if not os.path.exists(merged_file + ".root"):
-        merged_file = merged_file + ".root"
+    if not os.path.exists(merged_file + ".root"): merged_file = merged_file + ".root"
     if os.path.exists(merged_file + ".root"):
         counter = 0
-        while os.path.exists(f"{merged_file}_{counter}.root"):
-            counter += 1
+        while os.path.exists(f"{merged_file}_{counter}.root"): counter += 1
         merged_file = f"{merged_file}_{counter}.root"
 
-    # Crear un lock para el acceso a f_out
-    lock = threading.Lock()
+    lock = threading.Lock() # Crear un lock para el acceso a f_out
 
     with uproot.recreate(merged_file) as f_out:
-        with ThreadPoolExecutor(max_workers=max_workers) as executor:
-            futures = [
-                executor.submit(process_file, file, f_out, lock)
-                for file in file_list
-            ]
-            for future in tqdm(futures, desc="Merging ROOT files", unit="file"):
-                future.result()  # Asegura que se complete cada tarea
+        with ThreadPoolExecutor(max_workers = max_workers) as executor:
+            futures = [executor.submit(process_file, file, f_out, lock, trim_coords=trim_coords) for file in file_list]
+            for future in tqdm(futures, desc="Merging ROOT files", unit="file"): future.result()  # Asegura que se complete cada tarea
 
     print("Archivo final creado en:", merged_file)
 

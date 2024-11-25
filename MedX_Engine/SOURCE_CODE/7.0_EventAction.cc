@@ -9,9 +9,9 @@ void EventAction::EndOfEventAction(const G4Event * event)
     totalEvents = G4RunManager::GetRunManager() -> GetNumberOfEventsToBeProcessed();
     eventID = event -> GetEventID();
 
-    if (eventID == std::ceil(totalEvents*.25)) { std::cout << "Progress: 25%" << std::endl; }
-    if (eventID == std::ceil(totalEvents*.50)) { std::cout << "Progress: 50%" << std::endl; }
-    if (eventID == std::ceil(totalEvents*.75)) { std::cout << "Progress: 75%" << std::endl; }
+    if (eventID == std::ceil(totalEvents*.25)) { std::cout << "\033[32mProgress: 25% \033[32m" << std::endl; }
+    if (eventID == std::ceil(totalEvents*.50)) { std::cout << "\033[32mProgress: 50% \033[32m" << std::endl; }
+    if (eventID == std::ceil(totalEvents*.75)) { std::cout << "\033[32mProgress: 75% \033[32m" << std::endl; }
 
     G4AnalysisManager * analysisManager = G4AnalysisManager::Instance();
 

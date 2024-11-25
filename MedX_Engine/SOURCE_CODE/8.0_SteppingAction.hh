@@ -37,6 +37,12 @@ class SteppingAction : public G4UserSteppingAction
 
         G4VPhysicalVolume * currentPhysVolume;
         const DetectorConstruction * detectorConstruction;
+
+        struct ParticleData {
+            G4ThreeVector lastPosition;
+            int stuckStepCount;
+        };
+        std::map<G4int, ParticleData> stuckParticles;
 };
 
 #endif

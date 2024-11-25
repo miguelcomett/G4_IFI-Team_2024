@@ -1,11 +1,12 @@
 #ifndef EventAction_hh
 #define EventAction_hh
 
+#include <iostream>
+
 #include "G4UserEventAction.hh"
 #include "G4Event.hh"
 #include "G4AnalysisManager.hh"
 #include "G4RunManager.hh"
-
 #include "G4Threading.hh"
 
 #include "6.0_RunAction.hh"

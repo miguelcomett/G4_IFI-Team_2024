@@ -24,24 +24,22 @@ class SteppingAction : public G4UserSteppingAction
     
     private:
 
+        G4String processName;
+        G4double threshold;
+        G4int trackID;
+        G4double EDep;
         G4double worldMaxX, worldMinX, worldMaxY, worldMinY, worldMaxZ, worldMinZ;
 
+        G4ThreeVector position, currentPosition;
+        G4Track * track;
+
         EventAction * fEventAction;
+        G4VPhysicalVolume * currentVolume;
         G4LogicalVolume * scoringVolume, * Volume, * currentLogicVolume;
         G4StepPoint * endPoint;
-
-        G4UserLimits * stepLimit;
-        
-        G4String processName;
-        G4double EDep, minStepSize, stepLength;
-
-        G4VPhysicalVolume * currentPhysVolume;
         const DetectorConstruction * detectorConstruction;
 
-        struct ParticleData {
-            G4ThreeVector lastPosition;
-            int stuckStepCount;
-        };
+        struct ParticleData {G4ThreeVector lastPosition; int stuckStepCount;};
         std::map<G4int, ParticleData> stuckParticles;
 };
 

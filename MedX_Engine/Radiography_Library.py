@@ -1,4 +1,4 @@
-# 1.1. ========================================================================================================================================================
+# 1.1.1. ========================================================================================================================================================
 
 def MergeRoots(directory, starts_with, output_name):
 
@@ -39,7 +39,7 @@ def MergeRoots(directory, starts_with, output_name):
 
     print("Archivo final creado en:", merged_file)
 
-# 1.2. ========================================================================================================================================================
+# 1.1.2. ========================================================================================================================================================
 
 def process_file(file, f_out, lock, trim_coords):
 
@@ -99,6 +99,31 @@ def MergeRoots_Parallel(directory, starts_with, output_name, trim_coords):
             for future in tqdm(futures, desc="Merging ROOT files", unit="file"): future.result()  # Asegura que se complete cada tarea
 
     print("Archivo final creado en:", merged_file)
+
+# 1.2. ========================================================================================================================================================
+
+def Summary_Data(directory, root_file, tree_1, branch_1, tree_2, branches_2):
+
+    import uproot
+
+    file_path = directory + root_file
+
+    with uproot.open(file_path) as file:
+        
+        tree_1 = file[tree_1]
+        if branch_1 not in tree_1.keys(): raise ValueError(f"Branch: '{branch_1}', not found in tree: '{tree_1}'.")
+        NumberofHits = len(tree_1[branch_1].array(library="np"))
+
+        tree_2 = file[tree_2]
+        if branches_2[0] not in tree_2.keys(): raise ValueError(f"Branch: '{branches_2[0]}', not found in tree: '{tree_2}'.")
+        if branches_2[1] not in tree_2.keys(): raise ValueError(f"Branch: '{branches_2[1]}', not found in tree: '{tree_2}'.")
+        if branches_2[2] not in tree_2.keys(): raise ValueError(f"Branch: '{branches_2[2]}', not found in tree: '{tree_2}'.")
+
+        NumberofPhotons  = tree_2[branches_2[0]].array(library="np").sum()
+        EnergyDeposition = tree_2[branches_2[1]].array(library="np").sum()
+        RadiationDose    = tree_2[branches_2[2]].array(library="np").sum()
+    
+    return NumberofHits, NumberofPhotons, EnergyDeposition, RadiationDose
 
 # 2.0. ========================================================================================================================================================
 
@@ -171,9 +196,9 @@ def IsolateTissues(low_energy_img, high_energy_img, sigma1, sigma2, wn, save_in,
     SSH_Bone = ( (U_t_h/U_t_l) * low_energy_img) - gaussian_filter(high_energy_img, sigma = sigma1)
     SSH_Tissue = gaussian_filter(high_energy_img, sigma = sigma1) - ( low_energy_img * (U_b_h/U_b_l) )
 
-    ACNR_Bone = SLS_Bone + gaussian_filter(SLS_Tissue, sigma = sigma1) - 1
+    ACNR_Bone = SLS_Bone + (gaussian_filter(SLS_Tissue, sigma = sigma1)*wn) - 1
     ACNR_SSH_Bone = SSH_Bone + (gaussian_filter(SSH_Tissue, sigma = sigma2) * wn) - 1
-    ACNR_Tissue = SLS_Tissue + gaussian_filter(SLS_Bone, sigma = sigma1) - 1
+    ACNR_Tissue = SLS_Tissue + (gaussian_filter(SLS_Bone, sigma = sigma1)*wn) - 1
 
     # w  = U_t_h / U_t_l
     # wc = U_b_h / U_b_l
@@ -190,13 +215,13 @@ def IsolateTissues(low_energy_img, high_energy_img, sigma1, sigma2, wn, save_in,
     plt.imshow(SLS_Tissue, cmap='gray'); plt.axis('off')
     if save_as_4 != '': plt.savefig(save_in + save_as_4, bbox_inches = 'tight', dpi = 600); plt.close()
     plt.imshow(SSH_Bone, cmap='gray'); plt.axis('off')
-    if save_as_5 != '': plt.savefig(save_in + save_as_4, bbox_inches = 'tight', dpi = 600); plt.close()
+    if save_as_5 != '': plt.savefig(save_in + save_as_5, bbox_inches = 'tight', dpi = 600); plt.close()
     plt.imshow(SSH_Tissue, cmap='gray'); plt.axis('off')
-    if save_as_6 != '': plt.savefig(save_in + save_as_5, bbox_inches = 'tight', dpi = 600); plt.close()
+    if save_as_6 != '': plt.savefig(save_in + save_as_6, bbox_inches = 'tight', dpi = 600); plt.close()
     plt.imshow(ACNR_Bone, cmap='gray'); plt.axis('off')
-    if save_as_7 != '': plt.savefig(save_in + save_as_6, bbox_inches = 'tight', dpi = 600); plt.close()
+    if save_as_7 != '': plt.savefig(save_in + save_as_7, bbox_inches = 'tight', dpi = 600); plt.close()
     plt.imshow(ACNR_Tissue, cmap='gray'); plt.axis('off')
-    if save_as_8 != '': plt.savefig(save_in + save_as_4, bbox_inches = 'tight', dpi = 600); 
+    if save_as_8 != '': plt.savefig(save_in + save_as_8, bbox_inches = 'tight', dpi = 600); 
     plt.close()
 
     plt.figure(figsize = (18, 10))
@@ -206,7 +231,7 @@ def IsolateTissues(low_energy_img, high_energy_img, sigma1, sigma2, wn, save_in,
     plt.subplot(2, 4, 3); plt.imshow(SLS_Bone,          cmap='gray'); plt.axis('off');  plt.title("Bone [SLS]")
     plt.subplot(2, 4, 4); plt.imshow(SLS_Tissue,        cmap='gray'); plt.axis('off');  plt.title("Tissue [SLS]")
     plt.subplot(2, 4, 5); plt.imshow(SSH_Bone,          cmap='gray'); plt.axis('off');  plt.title("Bone [SSH]")
-    plt.subplot(2, 4, 6); plt.imshow(SSH_Tissue,        cmap='gray'); plt.axis('off');  plt.title("Tissue [SSh]")
+    plt.subplot(2, 4, 6); plt.imshow(SSH_Tissue,        cmap='gray'); plt.axis('off');  plt.title("Tissue [SSH]")
     plt.subplot(2, 4, 7); plt.imshow(ACNR_Bone,         cmap='gray'); plt.axis('off');  plt.title("Bone [ACNR]")
     # plt.subplot(2, 4, 8); plt.imshow(ACNR_SSH_Bone,     cmap='gray'); plt.axis('off');  plt.title("Bone [ACNR + SSH]")
     plt.subplot(2, 4, 8); plt.imshow(ACNR_Tissue,       cmap='gray'); plt.axis('off');  plt.title("Tissue [ACNR]")
@@ -509,7 +534,7 @@ def Plotly_Heatmap(array, xlim, ylim, title, x_label, y_label, annotation, width
                     xaxis_title = dict(text = x_label, font = dict(family = font_family, size = font_medium, color = "Black")),
                     yaxis_title = dict(text = y_label, font = dict(family = font_family, size = font_medium, color = "Black")),
                     xaxis = dict(tickfont = dict(family = family_2, size = font_small, color = "Black"), title_standoff = 25),
-                    yaxis = dict(tickfont = dict(family = family_2, size = font_small, color = "Black"), title_standoff = 10),
+                    yaxis = dict(tickfont = dict(family = family_2, size = font_small, color = "Black"), title_standoff = 10, range=[max(xlim), min(xlim)]),
                     width = width, height = height, margin = dict(l = 105, r = 90, t = 90, b = 90),
                     annotations = [dict(x = 0.95, y = 0.15,  xref = 'paper', yref = 'paper', showarrow = False,
                                         font = dict(family = family_2, size = 15, color = "White"),

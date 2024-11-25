@@ -148,17 +148,24 @@ def Root_to_Heatmap(directory, root_name, tree_name, x_branch, y_branch, size, l
     y_data_shifted = y_values - y_shift
 
     pixel_size = 0.5  # mm
-    set_bins = np.arange(-size, size + pixel_size, pixel_size)
 
-    # Initialize cumulative heatmap
-    heatmap = da.zeros((len(set_bins) - 1, len(set_bins) - 1), dtype=np.float32)
+    size_x = size[0]
+    size_y = size[1]
+
+    set_bins_x = np.arange(-size_x, size_x + pixel_size, pixel_size)
+    set_bins_y = np.arange(-size_y, size_y + pixel_size, pixel_size)
+
+    # heatmap, x_edges, y_edges = da.histogram2d(x_data_shifted, y_data_shifted, bins = [set_bins_x, set_bins_y])
+    # set_bins = np.arange(-size, size + pixel_size, pixel_size)
+
+    heatmap = da.zeros((len(set_bins_x) - 1, len(set_bins_y) - 1), dtype=np.float32) # Initialize cumulative heatmap
 
     for x_chunk, y_chunk in zip(x_data_shifted.to_delayed(), y_data_shifted.to_delayed()):
         
         x_chunk = da.from_delayed(x_chunk, shape=(chunk_size,), dtype=np.float32)
         y_chunk = da.from_delayed(y_chunk, shape=(chunk_size,), dtype=np.float32)
 
-        chunk_histogram, _, _ = da.histogram2d(x_chunk, y_chunk, bins=[set_bins, set_bins])
+        chunk_histogram, _, _ = da.histogram2d(x_chunk, y_chunk, bins=[set_bins_x, set_bins_y])
         heatmap += chunk_histogram
 
     heatmap = heatmap.compute()
@@ -171,12 +178,12 @@ def Root_to_Heatmap(directory, root_name, tree_name, x_branch, y_branch, size, l
     normal_map = np.log(maxi / heatmap)
 
     plt.figure(figsize=(14, 4))
-    plt.subplot(1, 3, 1); plt.imshow(normal_map, cmap="gray", extent=[set_bins[0], set_bins[-1], set_bins[0], set_bins[-1]]); plt.axis("off")
+    plt.subplot(1, 3, 1); plt.imshow(normal_map, cmap="gray", extent=[set_bins_x[0], set_bins_y[-1], set_bins_x[0], set_bins_y[-1]]); plt.axis("off")
     if save_as: plt.savefig(save_as + ".png", bbox_inches="tight", dpi=900)
     plt.subplot(1, 3, 2); plt.plot(normal_map[2 * rows // 3, :])
     plt.subplot(1, 3, 3); plt.plot(normal_map[:, rows // 2])
 
-    return normal_map, set_bins, set_bins
+    return normal_map, set_bins_x, set_bins_y
 
 # 3.0. ========================================================================================================================================================
 
@@ -609,27 +616,6 @@ def CT_Loop(directory, starts_with, angles):
         if os.path.exists(merged_file_path): shutil.move(merged_file_path, ct_folder)
 
 
-def CT_Heatmap_from_Dask(x_data, y_data, size_x, size_y, x_shift, y_shift, pixel_size):
-
-    import matplotlib.pyplot as plt; import numpy as np
-    import dask.array as da; import dask.dataframe as dd
-
-    x_data_shifted = x_data - x_shift
-    y_data_shifted = y_data - y_shift
-
-    set_bins_x = np.arange(-size_x, size_x + pixel_size, pixel_size)
-    set_bins_y = np.arange(-size_y, size_y + pixel_size, pixel_size)
-    heatmap, x_edges, y_edges = da.histogram2d(x_data_shifted, y_data_shifted, bins = [set_bins_x, set_bins_y])
-    heatmap = heatmap.T
-    heatmap = np.rot90(heatmap, 2)
-
-    heatmap = heatmap.compute() 
-    x_edges = x_edges.compute()  
-    y_edges = y_edges.compute()
-
-    return heatmap, x_edges, y_edges
-
-
 def Calculate_Projections(directory, roots, tree_name, x_branch, y_branch, dimensions, log_factor, pixel_size, csv_folder):
     
     import numpy as np; from tqdm import tqdm
@@ -988,3 +974,23 @@ def LoadRoots(directory, rootnames, tree_name, x_branch, y_branch):
     print("Dataframes created")
 
     return x_1, y_1, x_2, y_2
+
+def CT_Heatmap_from_Dask(x_data, y_data, size_x, size_y, x_shift, y_shift, pixel_size):
+
+    import matplotlib.pyplot as plt; import numpy as np
+    import dask.array as da; import dask.dataframe as dd
+
+    x_data_shifted = x_data - x_shift
+    y_data_shifted = y_data - y_shift
+
+    set_bins_x = np.arange(-size_x, size_x + pixel_size, pixel_size)
+    set_bins_y = np.arange(-size_y, size_y + pixel_size, pixel_size)
+    heatmap, x_edges, y_edges = da.histogram2d(x_data_shifted, y_data_shifted, bins = [set_bins_x, set_bins_y])
+    heatmap = heatmap.T
+    heatmap = np.rot90(heatmap, 2)
+
+    heatmap = heatmap.compute() 
+    x_edges = x_edges.compute()  
+    y_edges = y_edges.compute()
+
+    return heatmap, x_edges, y_edges

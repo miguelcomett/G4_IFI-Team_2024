@@ -53,6 +53,8 @@ class RunAction : public G4UserRunAction
         const PrimaryGenerator * primaryGenerator;
         G4Accumulable <G4double> fEdep = 0.0;
         std::chrono::system_clock::time_point simulationStartTime, simulationEndTime;
+        std::time_t now_end;
+        std::tm * now_tm_1;
 
         G4ParticleDefinition * particle;
 

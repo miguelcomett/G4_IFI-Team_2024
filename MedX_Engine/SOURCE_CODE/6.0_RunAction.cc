@@ -139,10 +139,10 @@ void RunAction::BeginOfRunAction(const G4Run * thisRun)
     if (!isMaster && threadID == 0)
     {
         std::cout << std::endl;
-        std::cout << "================= RUN " << runID + 1 << " ==================" << std::endl;
+        std::cout << "\033[32m================= RUN " << runID + 1 << " ==================" << std::endl;
         std::cout << "    The run is: " << totalNumberOfEvents << " " << particleName << " of " << G4BestUnit(primaryEnergy, "Energy") << std::endl;
         std::cout << "Start time: " << std::put_time(now_tm_0, "%H:%M:%S") << "    Date: " << std::put_time(now_tm_0, "%d-%m-%Y") << std::endl;
-        std::cout << std::endl;
+        std::cout << "\033[0m" << std::endl;
     }
 }
 
@@ -176,21 +176,21 @@ void RunAction::EndOfRunAction(const G4Run * thisRun)
         radiationDose = TotalEnergyDeposit / totalMass;
 
         simulationEndTime = std::chrono::system_clock::now();
-        std::time_t now_end = std::chrono::system_clock::to_time_t(simulationEndTime);
-        std::tm * now_tm_1 = std::localtime(&now_end);
+        now_end = std::chrono::system_clock::to_time_t(simulationEndTime);
+        now_tm_1 = std::localtime(&now_end);
         
         auto duration = std::chrono::duration_cast<std::chrono::seconds>(simulationEndTime - simulationStartTime);
         durationInSeconds = duration.count() * second;
 
         G4cout << G4endl; 
-        G4cout << "Run Summary:" << G4endl;
+        G4cout << "\033[32mRun Summary:" << G4endl;
         G4cout << "--> Total mass of sample: " << G4BestUnit(totalMass, "Mass") << G4endl;
         G4cout << "--> Total energy deposition: " << G4BestUnit(TotalEnergyDeposit, "Energy") << G4endl;
         G4cout << "--> Radiation dose : " << G4BestUnit(radiationDose, "Dose") << G4endl;
         G4cout << G4endl;
         G4cout << "Ending time: " << std::put_time(now_tm_1, "%H:%M:%S") << "   Date: " << std::put_time(now_tm_1, "%d-%m-%Y") << G4endl;
         G4cout << "Total simulation time: " << G4BestUnit(durationInSeconds, "Time") << G4endl;
-        G4cout << "==========================================" << G4endl;
+        G4cout << "========================================== \033[0m" << G4endl;
         G4cout << G4endl;
     }
     

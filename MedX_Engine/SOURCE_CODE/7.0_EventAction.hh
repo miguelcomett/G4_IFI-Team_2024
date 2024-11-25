@@ -32,6 +32,10 @@ class EventAction : public G4UserEventAction
         
         G4int totalEvents, eventID;
         G4double fEDep, EDep_keV;
+
+        std::chrono::system_clock::time_point nowTime1;
+        std::time_t nowTime2;
+        std::tm * nowTime3;
 };
 
 #endif

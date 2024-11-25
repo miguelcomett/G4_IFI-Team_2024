@@ -667,17 +667,21 @@ def LogaritmicTransformation(radiographs, log_factor, pixel_size, sigma):
     return htmps
 
 
-def RadonReconstruction(roots, htmps, slices):
+def RadonReconstruction(roots, htmps, layers):
 
     from skimage.transform import iradon
     import numpy as np; import matplotlib.pyplot as plt
     import plotly.graph_objects as go; import plotly.io as pio
     from tqdm import tqdm
+    initial = layers[0]
+    final = layers[1]
+    spacing = layers[2]
 
-    height = len(htmps[0])
-    n = height/(slices+1)
-    heights = np.round(np.arange(n, height, n)).astype(int)
-
+    # height = len(htmps[0])
+    # n = height/(slices+1)
+    # heights = np.round(np.arange(n, height, n)).astype(int)
+    
+    heights = np.round(np.arange(initial, final, spacing))
     start = roots[0]
     end = roots[1]
     deg = roots[2]

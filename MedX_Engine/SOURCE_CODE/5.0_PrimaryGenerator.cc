@@ -14,7 +14,7 @@ GeneratorMessenger(new PrimaryGeneratorMessenger(this)), G4VUserPrimaryGenerator
 
     threadID = G4Threading::G4GetThreadId();
 
-    if (threadID == 0) {std::cout << std::endl; std::cout << "============= GUN MESSENGERS =============" << std::endl;}
+    if (threadID == 0) {std::cout << std::endl; std::cout << "------------- GUN MESSENGERS -------------" << std::endl;}
 }
 
 PrimaryGenerator::~PrimaryGenerator() {delete particleGun; delete GeneratorMessenger;}

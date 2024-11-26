@@ -624,7 +624,7 @@ def Calculate_Projections(directory, filename, roots, tree_name, x_branch, y_bra
     deg = roots[2]
     projections = np.arange(start, end+1, deg)
 
-    for i in tqdm(projections, desc = 'Calculating heatmaps', unit = ' Heatmaps', leave = True):
+    for i in tqdm(projections, desc = 'Calculating heatmaps', unit = ' Heatmap', leave = True):
         
         root_name = filename + '_' + str(i) + '.root'
         htmp_array, xlim, ylim = Root_to_Heatmap(directory, root_name, tree_name, x_branch, y_branch, dimensions, pixel_size, log_factor, save_as); plt.close()

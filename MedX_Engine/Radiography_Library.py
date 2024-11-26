@@ -127,7 +127,7 @@ def Summary_Data(directory, root_file, tree_1, branch_1, tree_2, branches_2):
 
 # 2.0. ========================================================================================================================================================
 
-def Root_to_Heatmap(directory, root_name, tree_name, x_branch, y_branch, size, log_factor, x_shift, y_shift, save_as):
+def Root_to_Heatmap(directory, root_name, tree_name, x_branch, y_branch, size, pixel_size, log_factor, save_as):
 
     import uproot; import numpy as np; import matplotlib.pyplot as plt; import dask.array as da
     
@@ -144,19 +144,16 @@ def Root_to_Heatmap(directory, root_name, tree_name, x_branch, y_branch, size, l
         x_values = da.from_array(tree[x_branch].array(library="np"), chunks=chunk_size)
         y_values = da.from_array(tree[y_branch].array(library="np"), chunks=chunk_size)
 
+    size_x = size[0]
+    size_y = size[1]
+    x_shift = size[2]
+    y_shift = size[3]
+
     x_data_shifted = x_values - x_shift
     y_data_shifted = y_values - y_shift
 
-    pixel_size = 0.5  # mm
-
-    size_x = size[0]
-    size_y = size[1]
-
     set_bins_x = np.arange(-size_x, size_x + pixel_size, pixel_size)
     set_bins_y = np.arange(-size_y, size_y + pixel_size, pixel_size)
-
-    # heatmap, x_edges, y_edges = da.histogram2d(x_data_shifted, y_data_shifted, bins = [set_bins_x, set_bins_y])
-    # set_bins = np.arange(-size, size + pixel_size, pixel_size)
 
     heatmap = da.zeros((len(set_bins_x) - 1, len(set_bins_y) - 1), dtype=np.float32) # Initialize cumulative heatmap
 
@@ -616,30 +613,23 @@ def CT_Loop(directory, starts_with, angles):
         if os.path.exists(merged_file_path): shutil.move(merged_file_path, ct_folder)
 
 
-def Calculate_Projections(directory, roots, tree_name, x_branch, y_branch, dimensions, log_factor, pixel_size, csv_folder):
+def Calculate_Projections(directory, filename, roots, tree_name, x_branch, y_branch, dimensions, log_factor, pixel_size, csv_folder):
     
-    import numpy as np; from tqdm import tqdm
+    import numpy as np; from tqdm import tqdm; import matplotlib.pyplot as plt
+
+    save_as = ''
 
     start = roots[0]
     end = roots[1]
     deg = roots[2]
+    projections = np.arange(start, end+1, deg)
 
-    size_x = dimensions[0]
-    size_y = dimensions[1]
-    x_shift = dimensions[2]
-    y_shift = dimensions[3]
-
-    sims = np.arange(start, end+1, deg)
-
-    for i, sim in tqdm(enumerate(sims), desc = 'Calculating heatmaps', unit = ' Heatmaps', leave = True):
-                    #    dynamic_ncols=True, bar_format='{desc}: {percentage:3.0f}%|{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}, {rate_fmt}{postfix}]'):
+    for i in tqdm(projections, desc = 'Calculating heatmaps', unit = ' Heatmaps', leave = True):
         
-        root_name = "/Sim" + str(round(sim))
+        root_name = filename + '_' + str(i) + '.root'
+        htmp_array, xlim, ylim = Root_to_Heatmap(directory, root_name, tree_name, x_branch, y_branch, dimensions, pixel_size, log_factor, save_as); plt.close()
 
-        x_data, y_data = Root_to_Dask(directory, root_name, tree_name, x_branch, y_branch)
-        htmp_array, xlim, ylim = CT_Heatmap_from_Dask(x_data, y_data, size_x, size_y, log_factor, x_shift, y_shift, pixel_size)
-
-        name = csv_folder + f"/Sim{round(sims[i])}.csv"
+        name = csv_folder + "/CT_" + str(projections[i-1]) + ".csv"
         np.savetxt(name, htmp_array, delimiter=',', fmt='%.5f')
 
     return htmp_array, xlim, ylim

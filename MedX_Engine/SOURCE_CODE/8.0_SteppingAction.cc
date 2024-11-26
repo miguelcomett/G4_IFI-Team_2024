@@ -41,7 +41,7 @@ void SteppingAction::UserSteppingAction(const G4Step * step)
         G4RunManager::GetRunManager() -> AbortEvent();  // kill event after first interaction
     }
 
-    if (arguments == 4 || arguments == 5)
+    if (arguments == 5)
     {   
         threshold = 1.0e-5; 
         currentVolume = step -> GetPreStepPoint() -> GetPhysicalVolume();

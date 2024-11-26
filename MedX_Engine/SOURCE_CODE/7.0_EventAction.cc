@@ -46,18 +46,6 @@ void EventAction::EndOfEventAction(const G4Event * event)
             analysisManager -> AddNtupleRow(2);
         }
     }
-    
-    if (arguments == 4)
-    {
-        if (fEDep > 0.0) 
-        {
-            EDep_keV = fEDep / keV;
-            // G4cout << "Energy deposition (keV): " << EDep_keV << G4endl;
-
-            analysisManager -> FillNtupleDColumn(2, 0, EDep_keV);
-            analysisManager -> AddNtupleRow(2);
-        }
-    }
 
     fRunAction -> AddEdep(fEDep);
 }

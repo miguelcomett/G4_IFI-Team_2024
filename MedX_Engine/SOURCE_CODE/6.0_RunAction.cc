@@ -47,23 +47,6 @@ RunAction::RunAction()
 
     if (arguments == 4)
     {
-        analysisManager -> CreateNtuple("Hits", "Hits");
-        analysisManager -> CreateNtupleDColumn("x_ax");
-        analysisManager -> CreateNtupleDColumn("y_ax");
-        analysisManager -> CreateNtupleDColumn("Detected_Energy_keV");
-        analysisManager -> FinishNtuple(0);
-
-        analysisManager -> CreateNtuple("Run Summary", "Run Summary");
-        analysisManager -> CreateNtupleDColumn("Number_of_Photons");
-        analysisManager -> CreateNtupleDColumn("Initial_Energy_keV");
-        analysisManager -> CreateNtupleDColumn("Sample_Mass_kg");
-        analysisManager -> CreateNtupleDColumn("EDep_Value_TeV");
-        analysisManager -> CreateNtupleDColumn("Radiation_Dose_uSv");
-        analysisManager -> FinishNtuple(1);
-
-        analysisManager -> CreateNtuple("EDep Sample", "EDep Sample");
-        analysisManager -> CreateNtupleDColumn("EDep_Spectra");
-        analysisManager -> FinishNtuple(1);
     }
 
     if (arguments == 5)
@@ -120,7 +103,7 @@ void RunAction::BeginOfRunAction(const G4Run * thisRun)
     if (arguments == 1) {fileName = "/Sim_" + std::to_string(runID);}
     if (arguments == 2) {fileName = "/Sim_" + std::to_string(runID);}
     if (arguments == 3) {fileName = "/AttCoeff_" + std::to_string(runID);}
-    if (arguments == 4) {fileName = "/Rad_" + std::to_string(runID);}
+    if (arguments == 4) {fileName = "/Xray_" + std::to_string(runID);}
     if (arguments == 5) {fileName = "/CT_" + std::to_string(runID);}
 
     G4AnalysisManager * analysisManager = G4AnalysisManager::Instance();
@@ -194,7 +177,7 @@ void RunAction::EndOfRunAction(const G4Run * thisRun)
         G4cout << G4endl;
     }
     
-    if (arguments == 4 || arguments == 5) 
+    if (arguments == 5) 
     {   
         primaryEnergy = primaryEnergy / keV;
         totalMass = totalMass / kg;

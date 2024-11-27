@@ -197,7 +197,7 @@ void RunAction::EndOfRunAction(const G4Run * thisRun)
     analysisManager -> Write();
     analysisManager -> CloseFile();
     
-    if (isMaster) {MergeRootFiles();}
+    if (isMaster && arguments > 1) {MergeRootFiles();}
 }
 
 void RunAction::MergeRootFiles()

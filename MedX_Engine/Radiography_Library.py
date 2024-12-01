@@ -607,12 +607,11 @@ def CT_Loop(directory, starts_with, angles):
     import sys; from contextlib import redirect_stdout, redirect_stderr
 
     executable_file = "Sim"
-    # mac_filename_1 = 'CT_Loop.mac'
-    mac_filename_2 = 'CT.mac'
-    run_sim = f"./{executable_file} {mac_filename_2} . . ."
+    mac_filename = 'CT.mac'
+    run_sim = f"./{executable_file} {mac_filename} . . ."
 
     root_folder = directory + "ROOT/"
-    mac_filepath = directory + mac_filename_2
+    mac_filepath = directory + mac_filename
     ct_folder = directory + "ROOT/" + "CT/"
     os.makedirs(ct_folder, exist_ok = True)
     
@@ -641,7 +640,6 @@ def CT_Loop(directory, starts_with, angles):
 
         start = -280
         end = 250
-        # end = -277
         step = 4
         beam_lines = "\n".join(f"        /Pgun/Y {y} mm\n        /run/beamOn 150000" for y in range(start, end + 1, step))
 
@@ -649,16 +647,23 @@ def CT_Loop(directory, starts_with, angles):
         with open(mac_filepath, 'w') as f: f.write(filled_template)
 
         try: subprocess.run(run_sim, cwd = directory, check = True, shell = True, stdout = subprocess.DEVNULL)
-        # try: subprocess.run(run_sim, cwd = directory, check = True, shell = True)
         except subprocess.CalledProcessError as e: print(f"Error al ejecutar la simulación: {e}")
     
         output_name = f'Aang_{angle}'
+        if os.path.exists(ct_folder + output_name + '.root'):
+            counter = 0
+            while os.path.exists(ct_folder + output_name + '_' + str(counter) + '.root'): counter = counter + 1
+            output_name = root_folder + output_name + '_' + str(counter)
+
         with open(os.devnull, "w") as fnull: 
             with redirect_stdout(fnull), redirect_stderr(fnull):
                 RadLib.MergeRoots_Parallel(root_folder, starts_with, output_name, trim_coords = None)
 
         merged_file_path = root_folder + output_name + '.root'
+
         if os.path.exists(merged_file_path): shutil.move(merged_file_path, ct_folder)
+
+        ClearFolder(root_folder)
 
 
 def Calculate_Projections(directory, filename, roots, tree_name, x_branch, y_branch, dimensions, log_factor, pixel_size, csv_folder):

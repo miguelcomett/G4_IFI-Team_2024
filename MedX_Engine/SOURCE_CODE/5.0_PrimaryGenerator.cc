@@ -24,6 +24,7 @@ void PrimaryGenerator::GeneratePrimaries(G4Event * anEvent)
     if (SpectraMode == 1) {RealEnergy = InverseCumul(); particleGun -> SetParticleEnergy(RealEnergy);}
 	
     if (fDetector) {thoraxAngle = fDetector -> GetThoraxAngle();} else {thoraxAngle = 0;}
+    if (thoraxAngle > 90 && thoraxAngle < 270) {thoraxAngle = thoraxAngle - 180;}
     thoraxAngle = thoraxAngle * (2*pi / 360.0);
 
     if (Xgauss == true)  {x0 = G4RandGauss::shoot(0, 80*mm); x0 = x0 * std::cos(thoraxAngle/2);}

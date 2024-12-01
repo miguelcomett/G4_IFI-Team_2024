@@ -12,11 +12,9 @@ def MergeRoots(directory, starts_with, output_name):
             if starts_with == '' or file.startswith(starts_with):
                 file_list.append(os.path.join(directory, file))
 
-    # Crear el nombre de archivo de salida con numeración si ya existe
     merged_file = os.path.join(directory, output_name)
     counter = 0
-    while os.path.exists(f"{merged_file}_{counter}.root"):
-        counter += 1
+    while os.path.exists(f"{merged_file}_{counter}.root"): counter += 1
     merged_file = f"{merged_file}_{counter}.root"
 
     with uproot.recreate(merged_file) as f_out:
@@ -127,7 +125,7 @@ def Summary_Data(directory, root_file, tree_1, branch_1, tree_2, branches_2):
 
 # 2.0. ========================================================================================================================================================
 
-def Root_to_Heatmap(directory, root_name, tree_name, x_branch, y_branch, size, pixel_size, log_factor, save_as):
+def Root_to_Heatmap(directory, root_name, tree_name, x_branch, y_branch, size, pixel_size, save_as):
 
     import uproot; import numpy as np; import matplotlib.pyplot as plt; import dask.array as da
     
@@ -144,18 +142,15 @@ def Root_to_Heatmap(directory, root_name, tree_name, x_branch, y_branch, size, p
         x_values = da.from_array(tree[x_branch].array(library="np"), chunks=chunk_size)
         y_values = da.from_array(tree[y_branch].array(library="np"), chunks=chunk_size)
 
-    size_x = size[0]
-    size_y = size[1]
-    x_shift = size[2]
-    y_shift = size[3]
+    size_x = size[0]; size_y = size[1]; x_shift = size[2]; y_shift = size[3]
 
-    x_data_shifted = x_values - x_shift
-    y_data_shifted = y_values - y_shift
+    x_data_shifted = x_values - x_shift;            y_data_shifted = y_values - y_shift
+    x_data_shifted[x_data_shifted == 0] = np.nan;   y_data_shifted[y_data_shifted == 0] = np.nan
 
     set_bins_x = np.arange(-size_x, size_x + pixel_size, pixel_size)
     set_bins_y = np.arange(-size_y, size_y + pixel_size, pixel_size)
 
-    heatmap = da.zeros((len(set_bins_x) - 1, len(set_bins_y) - 1), dtype=np.float32) # Initialize cumulative heatmap
+    heatmap = da.full((len(set_bins_x) - 1, len(set_bins_y) - 1), np.nan, dtype=bool)
 
     for x_chunk, y_chunk in zip(x_data_shifted.to_delayed(), y_data_shifted.to_delayed()):
         
@@ -163,22 +158,27 @@ def Root_to_Heatmap(directory, root_name, tree_name, x_branch, y_branch, size, p
         y_chunk = da.from_delayed(y_chunk, shape=(chunk_size,), dtype=np.float32)
 
         chunk_histogram, _, _ = da.histogram2d(x_chunk, y_chunk, bins=[set_bins_x, set_bins_y])
+        # chunk_histogram = da.where(chunk_histogram == 0, -100, chunk_histogram)
         heatmap += chunk_histogram
 
     heatmap = heatmap.compute()
     heatmap = np.rot90(heatmap.T, 2)
 
-    rows = heatmap.shape[0]
-
-    heatmap[heatmap == 0] = log_factor
-    maxi = np.max(heatmap)
+    heatmap[heatmap == 1.0] = np.nan
+    heatmap[heatmap == 0] = np.nan
+    maxi = np.nanmax(heatmap)
     normal_map = np.log(maxi / heatmap)
 
+    # normal_map = heatmap
+    # for row in normal_map: print(row)
+
     plt.figure(figsize=(14, 4))
-    plt.subplot(1, 3, 1); plt.imshow(normal_map, cmap="gray", extent=[set_bins_x[0], set_bins_y[-1], set_bins_x[0], set_bins_y[-1]]); plt.axis("off")
+    plt.subplot(1, 3, 1); plt.imshow(normal_map, cmap="gray", extent=[set_bins_x[0], set_bins_y[-1], set_bins_x[0], set_bins_y[-1]]); # plt.axis("off")
+    plt.colorbar()
     if save_as: plt.savefig(save_as + ".png", bbox_inches="tight", dpi=900)
-    plt.subplot(1, 3, 2); plt.plot(normal_map[2 * rows // 3, :])
-    plt.subplot(1, 3, 3); plt.plot(normal_map[:, rows // 2])
+    rows = heatmap.shape[0]
+    plt.subplot(1, 3, 2); plt.plot(normal_map[2*rows//3, :])
+    plt.subplot(1, 3, 3); plt.plot(normal_map[:, rows//2])
 
     return normal_map, set_bins_x, set_bins_y
 
@@ -518,7 +518,7 @@ def Denoise(array, isHann, alpha, save_as, isCrossSection):
 
 # 7.0 ========================================================================================================================================================
 
-def Plotly_Heatmap(array, xlim, ylim, title, x_label, y_label, annotation, width, height, save_in, save_as):
+def Plotly_Heatmap_1(array, xlim, ylim, title, x_label, y_label, width, height, save_as):
 
     import plotly.io as pio; import plotly.graph_objects as go
 
@@ -539,14 +539,50 @@ def Plotly_Heatmap(array, xlim, ylim, title, x_label, y_label, annotation, width
                     yaxis_title = dict(text = y_label, font = dict(family = font_family, size = font_medium, color = "Black")),
                     xaxis = dict(tickfont = dict(family = family_2, size = font_small, color = "Black"), title_standoff = 25),
                     yaxis = dict(tickfont = dict(family = family_2, size = font_small, color = "Black"), title_standoff = 10, range=[max(xlim), min(xlim)]),
-                    width = width, height = height, margin = dict(l = 105, r = 90, t = 90, b = 90),
-                    annotations = [dict(x = 0.95, y = 0.15,  xref = 'paper', yref = 'paper', showarrow = False,
-                                        font = dict(family = family_2, size = 15, color = "White"),
-                                        bgcolor = "rgba(255, 255, 255, 0.1)", borderpad = 8, bordercolor = "White", borderwidth = 0.2,
-                                        text = annotation)]
+                    width = width, height = height, margin = dict(l = 105, r = 90, t = 90, b = 90)
     )
    
-    if save_as != '': pio.write_image(fig, save_in + save_as + '.png', width = width, height = height, scale = 5)
+    if save_as != '': pio.write_image(fig, save_as + '.png', width = width, height = height, scale = 5)
+    fig.show()
+
+
+def Plotly_Heatmap_2(array, xlim, ylim, title, x_label, y_label, sqr_1_coords, sqr_2_coords, annotation, width, height, save_as):
+
+    import plotly.graph_objects as go
+    import plotly.io as pio
+
+    font_family = 'Merriweather'
+    family_2    = 'Optima'
+    font_small  = 18
+    font_medium = 20
+    font_large  = 18
+
+    fig = go.Figure(go.Heatmap(z = array, x = xlim, y = ylim,
+                                colorscale = [[0, 'black'], [1, 'white']], showscale = False,
+                                colorbar = dict(title = "Density", tickfont = dict(family = family_2, size = 15, color = 'Black'))))
+    
+    fig.update_layout(
+                    title = dict(text = title, font = dict(family = font_family, size = font_large, color = "Black"), 
+                                 x = 0.51, y = 0.93, yanchor = 'middle', xanchor = 'center'),
+                    xaxis_title = dict(text = x_label, font = dict(family = font_family, size = font_medium, color = "Black")),
+                    yaxis_title = dict(text = y_label, font = dict(family = font_family, size = font_medium, color = "Black")),
+                    xaxis = dict(tickfont = dict(family = family_2, size = font_small, color = "Black"), title_standoff = 25, range=[max(xlim), min(xlim)]),
+                    yaxis = dict(tickfont = dict(family = family_2, size = font_small, color = "Black"), title_standoff = 10, range=[max(xlim), min(xlim)],
+                                 showticklabels = False
+                                ),
+                    width = width, height = height, margin = dict(l = 105, r = 90, t = 90, b = 90),
+                    annotations = [dict(x = 0.95, y = 0.15,  xref = 'paper', yref = 'paper', showarrow = False,
+                                        font = dict(family = family_2, size = 18, color = "White"),
+                                        bgcolor = "rgba(255, 255, 255, 0.1)", borderpad = 8, bordercolor = "White", borderwidth = 0.2,
+                                        text = annotation)])
+
+    fig.add_shape(type = "rect", line = dict(color = "blue", width = 2), fillcolor = "rgba(0, 0, 0, 0)",
+                  x0 = sqr_1_coords[0], y0 = sqr_1_coords[1], x1 = sqr_1_coords[2], y1 = sqr_1_coords[3]) 
+    
+    fig.add_shape(type = "rect", line = dict(color = "red", width = 2), fillcolor = "rgba(0, 0, 0, 0)",
+                  x0 = sqr_1_coords[0], y0 = sqr_1_coords[1], x1 = sqr_1_coords[2], y1 = sqr_1_coords[3]) 
+   
+    if save_as != '': pio.write_image(fig, save_as + '.png', width = width, height = height, scale = 5)
     fig.show()
 
 # 8.0 ========================================================================================================================================================
@@ -571,9 +607,9 @@ def CT_Loop(directory, starts_with, angles):
     import sys; from contextlib import redirect_stdout, redirect_stderr
 
     executable_file = "Sim"
-    mac_filename_1 = 'CT_Loop.mac'
+    # mac_filename_1 = 'CT_Loop.mac'
     mac_filename_2 = 'CT.mac'
-    run_sim = f"./{executable_file} {mac_filename_1} . . ."
+    run_sim = f"./{executable_file} {mac_filename_2} . . ."
 
     root_folder = directory + "ROOT/"
     mac_filepath = directory + mac_filename_2
@@ -584,22 +620,29 @@ def CT_Loop(directory, starts_with, angles):
         
         ClearFolder(root_folder)
 
-        mac_template = """\
+        mac_template = \
+        """ \
+        /run/numberOfThreads 10
+        /run/initialize
+
         /myDetector/Rotation {angle}
+        /run/reinitializeGeometry
 
         /Pgun/X 0 mm
         /Pgun/gaussX true
-        /Pgun/Y {beamLine} mm
         /Pgun/SpanY 0.01 mm
-
-        /run/reinitializeGeometry
-
         /gun/energy 80 keV
-        /run/beamOn 100000
+
+        {beam_lines}
         """
 
-        mac_content = mac_template.format(angle = angle, beamLine = "{beamLine}")
-        with open(mac_filepath, 'w') as f: f.write(mac_content)
+        start = -280
+        end = 250
+        step = 2
+        beam_lines = "\n".join(f"        /Pgun/Y {y} mm\n        /run/beamOn 100000" for y in range(start, end + 1, step))
+
+        filled_template = mac_template.format(angle = angle, beam_lines = beam_lines)
+        with open(mac_filepath, 'w') as f: f.write(filled_template)
 
         try: subprocess.run(run_sim, cwd = directory, check = True, shell = True, stdout = subprocess.DEVNULL)
         except subprocess.CalledProcessError as e: print(f"Error al ejecutar la simulación: {e}")
@@ -607,7 +650,7 @@ def CT_Loop(directory, starts_with, angles):
         output_name = f'Aang_{angle}'
         with open(os.devnull, "w") as fnull: 
             with redirect_stdout(fnull), redirect_stderr(fnull):
-                RadLib.MergeRoots_Parallel(root_folder, starts_with, output_name)
+                RadLib.MergeRoots_Parallel(root_folder, starts_with, output_name, trim_coords = None)
 
         merged_file_path = root_folder + output_name + '.root'
         if os.path.exists(merged_file_path): shutil.move(merged_file_path, ct_folder)
@@ -635,7 +678,7 @@ def Calculate_Projections(directory, filename, roots, tree_name, x_branch, y_bra
     return htmp_array, xlim, ylim
 
 
-def htmps_from_csv(csv_folder, roots):
+def LoadHeatmapsFromCSV(csv_folder, roots):
 
     import numpy as np; from tqdm import tqdm
 
@@ -651,17 +694,18 @@ def htmps_from_csv(csv_folder, roots):
 
     return htmps
 
-def LogaritmicTransformation(radiographs, log_factor, pixel_size, sigma):
+
+def LogaritmicTransformation(radiographs, pixel_size, sigma):
     
     import matplotlib.pyplot as plt; import numpy as np; from scipy import ndimage; from tqdm import tqdm
 
-    # maxi =  np.max(radiographs[0])
     htmps = np.zeros(len(radiographs), dtype = 'object')
 
     for i, radiograph in tqdm(enumerate(radiographs), desc = 'Computing logarithmic transformation', unit = ' Heatmaps', leave = True):
         radiograph = ndimage.gaussian_filter(radiograph, sigma)
         maxi = np.max(radiograph)
-        htmps[i] = np.log(maxi/(radiograph + np.where(radiograph == 0, log_factor, 0))) / (pixel_size * 0.1)
+        htmps[i][htmps[i] == 0] = np.nan
+        htmps[i] = np.log(maxi/radiograph) / (pixel_size * 0.1)
 
     plt.imshow(htmps[-1]); plt.colorbar(); plt.show()
 
@@ -704,9 +748,9 @@ def RadonReconstruction(roots, htmps, layers):
     return reconstructed_imgs
 
 
-def coefficients_to_HU(reconstructed_imgs, slices, mu_water, air_parameter):
+def CoefficientstoHU(reconstructed_imgs, slices, mu_water, air_parameter):
 
-    import numpy as np; import plotly.graph_objects as go; import plotly.io as pio
+    import numpy as np; import plotly.graph_objects as go; import plotly.io as pio 
 
     HU_images = np.zeros(slices, dtype="object")
 
@@ -725,7 +769,7 @@ def coefficients_to_HU(reconstructed_imgs, slices, mu_water, air_parameter):
 def export_to_dicom(HU_images, size_y, directory, compressed):
 
     import numpy as np; import pydicom; from pydicom.pixels import compress
-    from pydicom.dataset import Dataset, FileDataset; from pydicom.uid import RLELossless
+    from pydicom.dataset import Dataset, FileDataset; from pydicom.uid import RLELossless 
     from pydicom.uid import ExplicitVRLittleEndian; from pydicom.encaps import encapsulate
     
     image2d = HU_images[0].astype('int16')

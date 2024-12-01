@@ -15,14 +15,14 @@ DetectorConstruction::DetectorConstruction() : gen(rd()), randomDist(0.0, 1.0), 
 
     targetThickness = 12 * mm;
 
+    samplePosition = G4ThreeVector(0.0, 0.0, 0.0);
+
     boneHeight = 60 * mm;
     innerBoneRadius = 0.0;
     outerBoneRadius = 22.5 * mm;
     armRotation = new G4RotationMatrix(0, 90*deg, 0);
 
-    // thoraxAngle = 0;
-    samplePosition = G4ThreeVector(0.0, 0.0, 0.0);
-
+    // thoraxAngle = 270;
     angleX = 0 * deg; angleY = -90 * deg; angleZ = (thoraxAngle + 180) * deg; 
     Model3DRotation = new G4RotationMatrix(angleX, angleY, angleZ);
     
@@ -40,7 +40,7 @@ DetectorConstruction::DetectorConstruction() : gen(rd()), randomDist(0.0, 1.0), 
         isThorax = true;
         isFiller = true;
         
-        isTumor = true;
+        isTumor = false;
             isFixed = true; //Default random false
             isTestParametrization = false;
             isDebug = false;

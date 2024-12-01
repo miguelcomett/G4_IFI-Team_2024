@@ -6,6 +6,8 @@ SteppingAction::~SteppingAction() {}
 
 void SteppingAction::UserSteppingAction(const G4Step * step)
 {
+    G4bool Stuck = false;
+
     track = step -> GetTrack();
     position = track -> GetPosition();
     worldMaxX =  500.1 * mm; worldMinX = -500.1 * mm; worldMaxY =  500.1 * mm; worldMinY = -500.1 * mm; worldMaxZ =  500.1 * mm; worldMinZ = -500.1 * mm;
@@ -43,24 +45,27 @@ void SteppingAction::UserSteppingAction(const G4Step * step)
 
     if (arguments == 5)
     {   
-        threshold = 1.0e-5; 
-        currentVolume = step -> GetPreStepPoint() -> GetPhysicalVolume();
-        trackID = track -> GetTrackID();
-        currentPosition = track -> GetPosition();
-
-        if (stuckParticles.find(trackID) != stuckParticles.end()) // Check if this track is already being monitored
+        if (Stuck == true) 
         {
-            ParticleData & data = stuckParticles[trackID];
-            if ((currentPosition - data.lastPosition).mag() < threshold) 
-            {
-                data.stuckStepCount++; // Increment stuck step count
-                if (data.stuckStepCount >= 5) {track -> SetTrackStatus(fStopAndKill); std::cout << "Killed stuck particle" << std::endl;}
-            } 
-            else {data.stuckStepCount = 0;}
-            data.lastPosition = currentPosition;
-        } 
+            threshold = 1.0e-5; 
+            currentVolume = step -> GetPreStepPoint() -> GetPhysicalVolume();
+            trackID = track -> GetTrackID();
+            currentPosition = track -> GetPosition();
 
-        else {stuckParticles[trackID] = {currentPosition, 0};} // Add new track to monitoring
+            if (stuckParticles.find(trackID) != stuckParticles.end()) // Check if this track is already being monitored
+            {
+                ParticleData & data = stuckParticles[trackID];
+                if ((currentPosition - data.lastPosition).mag() < threshold) 
+                {
+                    data.stuckStepCount++; // Increment stuck step count
+                    if (data.stuckStepCount >= 5) {track -> SetTrackStatus(fStopAndKill); std::cout << "Killed stuck particle" << std::endl;}
+                } 
+                else {data.stuckStepCount = 0;}
+                data.lastPosition = currentPosition;
+            } 
+            else {stuckParticles[trackID] = {currentPosition, 0};} // Add new track to monitoring
+        }
+
         std::vector<G4LogicalVolume*> scoringVolumes = detectorConstruction -> GetAllScoringVolumes();
         if (std::find(scoringVolumes.begin(), scoringVolumes.end(), Volume) == scoringVolumes.end()) {return;}
         {       

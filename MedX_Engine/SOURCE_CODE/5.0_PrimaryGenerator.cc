@@ -55,21 +55,21 @@ void PrimaryGenerator::GeneratePrimaries(G4Event * anEvent)
 void PrimaryGenerator::SetGunXpos(G4double newXpos)
 {
     if (newXpos != Xpos) {Xpos = newXpos; 
-        if (threadID == 0) {std::cout << "-> Source X Post changed to: " << Xpos << std::endl;} 
+        if (threadID == 0) {std::cout << "-> Source X Position changed to: " << Xpos << std::endl;} 
     else if (threadID == 0) {std::cout << "-> Same Position Selected." << std::endl;}}
 }
 
 void PrimaryGenerator::SetGunYpos(G4double newYpos)
 {
     if (newYpos != Ypos) {Ypos = newYpos;
-        if (threadID == 0) {std::cout << "-> Source Y Post changed to: " << Ypos << std::endl;} 
+        if (threadID == 0) {std::cout << "-> Source Y Position changed to: " << Ypos << std::endl;} 
     else if (threadID == 0) {G4cout << "-> Same Position Selected." << std::endl;}}
 }
 
 void PrimaryGenerator::SetGunZpos(G4double newZpos)
 {
     if (newZpos != Zpos) {Zpos = newZpos; 
-        if (threadID == 0) {std::cout << "-> Source Z Post changed to: " << Zpos << std::endl;} 
+        if (threadID == 0) {std::cout << "-> Source Z Position changed to: " << Zpos << std::endl;} 
     else if (threadID == 0) {std::cout << "-> Same Position Selected." << std::endl;}}
 }
 

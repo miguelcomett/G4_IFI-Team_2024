@@ -622,15 +622,18 @@ def CT_Loop(directory, starts_with, angles):
 
         mac_template = \
         """ \
-        /run/numberOfThreads 10
-        /run/initialize
-
         /myDetector/Rotation {angle}
         /run/reinitializeGeometry
+        /run/numberOfThreads 9
+        /run/initialize
+
+        /myDetector/nColumns 1
+        /myDetector/nRows 1
 
         /Pgun/X 0 mm
         /Pgun/gaussX true
         /Pgun/SpanY 0.01 mm
+
         /gun/energy 80 keV
 
         {beam_lines}
@@ -638,13 +641,15 @@ def CT_Loop(directory, starts_with, angles):
 
         start = -280
         end = 250
-        step = 2
-        beam_lines = "\n".join(f"        /Pgun/Y {y} mm\n        /run/beamOn 100000" for y in range(start, end + 1, step))
+        # end = -277
+        step = 4
+        beam_lines = "\n".join(f"        /Pgun/Y {y} mm\n        /run/beamOn 150000" for y in range(start, end + 1, step))
 
         filled_template = mac_template.format(angle = angle, beam_lines = beam_lines)
         with open(mac_filepath, 'w') as f: f.write(filled_template)
 
         try: subprocess.run(run_sim, cwd = directory, check = True, shell = True, stdout = subprocess.DEVNULL)
+        # try: subprocess.run(run_sim, cwd = directory, check = True, shell = True)
         except subprocess.CalledProcessError as e: print(f"Error al ejecutar la simulación: {e}")
     
         output_name = f'Aang_{angle}'

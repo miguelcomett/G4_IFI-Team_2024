@@ -22,9 +22,7 @@ DetectorConstruction::DetectorConstruction() : gen(rd()), randomDist(0.0, 1.0), 
     outerBoneRadius = 22.5 * mm;
     armRotation = new G4RotationMatrix(0, 90*deg, 0);
 
-    // thoraxAngle = 270;
-    angleX = 0 * deg; angleY = -90 * deg; angleZ = (thoraxAngle + 180) * deg; 
-    Model3DRotation = new G4RotationMatrix(angleX, angleY, angleZ);
+    // thoraxAngle = 45;
     
     ellipsoidPosition1 = G4ThreeVector(88.0 * mm, 5.0 * mm, -8.0 * mm); if (isDebug) {G4cout << "Posición rotada pulmón derecho: " << ellipsoidPosition1 << G4endl;}
     ellipsoidPosition2 = G4ThreeVector(-93 * mm, 5.0 * mm, -13.0 * mm); if (isDebug) {G4cout << "Posición rotada pulmón izquierdo: " << ellipsoidPosition2 << G4endl;}
@@ -198,6 +196,9 @@ void DetectorConstruction::ConstructBoneDivided()
 
 void DetectorConstruction::ConstructThorax()
 {
+    angleX = 0 * deg; angleY = -90 * deg; angleZ = (thoraxAngle + 180) * deg; 
+    Model3DRotation = new G4RotationMatrix(angleX, angleY, angleZ);
+
     G4STL stl; 
     
     #ifdef __APPLE__
@@ -215,6 +216,7 @@ void DetectorConstruction::ConstructThorax()
         
     if (arguments == 1) {G4cout << G4endl;}
     G4cout << "=============== 3D MODELS ====================================" << G4endl; 
+    G4cout << "Model Rotation about Z: " << thoraxAngle << "°" << G4endl;
 
     Heart = stl.Read(modelPath + "HEART.stl");
     if (Heart && isHeart) 
@@ -226,6 +228,8 @@ void DetectorConstruction::ConstructThorax()
         scoringVolumes.push_back(scoringVolume_1);
         
         G4cout << "> HEART model imported succesfully" << G4endl;
+
+        // G4cout << "-------->>>>>>>>>>" << angleZ << G4endl;
     }
     if (isHeart && !Heart)  
     {

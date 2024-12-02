@@ -123,6 +123,40 @@ def Summary_Data(directory, root_file, tree_1, branch_1, tree_2, branches_2):
     
     return NumberofHits, NumberofPhotons, EnergyDeposition, RadiationDose
 
+# 1.3. ========================================================================================================================================================
+
+def CT_Summary_Data(directory, tree, branches):
+
+    import uproot; import os
+
+    NumberofPhotons = 0
+    EnergyDeposition = 0
+    RadiationDose = 0
+
+    num_of_files = 0
+
+    for file in os.listdir(directory):
+
+        file_path = os.path.join(directory, file)
+        if not file_path.endswith('.root'): continue
+
+        with uproot.open(file_path) as root_file:
+
+            tree_data = root_file[tree]
+            if branches[0] not in tree_data.keys(): raise ValueError(f"Branch: '{branches[0]}', not found in tree: '{tree}'.")
+            if branches[1] not in tree_data.keys(): raise ValueError(f"Branch: '{branches[1]}', not found in tree: '{tree}'.")
+            if branches[2] not in tree_data.keys(): raise ValueError(f"Branch: '{branches[2]}', not found in tree: '{tree}'.")
+
+            NumberofPhotons  = NumberofPhotons  + tree_data[branches[0]].array(library="np").sum()
+            EnergyDeposition = EnergyDeposition + tree_data[branches[1]].array(library="np").sum()
+            RadiationDose    = RadiationDose    + tree_data[branches[2]].array(library="np").sum()
+        
+        num_of_files = num_of_files + 1
+
+    print('Files processed: ', num_of_files)
+        
+    return NumberofPhotons, EnergyDeposition, RadiationDose
+
 # 2.0. ========================================================================================================================================================
 
 def Root_to_Heatmap(directory, root_name, tree_name, x_branch, y_branch, size, pixel_size, save_as):
@@ -603,7 +637,9 @@ def ClearFolder(directory):
 def CT_Loop(directory, starts_with, angles):
 
     import Radiography_Library as RadLib
-    import os; import subprocess; import shutil; from tqdm import tqdm
+    import os; import subprocess; import shutil; 
+    # from tqdm import tqdm
+    from tqdm.notebook import tqdm
     import sys; from contextlib import redirect_stdout, redirect_stderr
 
     executable_file = "Sim"
@@ -623,7 +659,7 @@ def CT_Loop(directory, starts_with, angles):
         """ \
         /myDetector/Rotation {angle}
         /run/reinitializeGeometry
-        /run/numberOfThreads 9
+        /run/numberOfThreads 10
         /run/initialize
 
         /myDetector/nColumns 1

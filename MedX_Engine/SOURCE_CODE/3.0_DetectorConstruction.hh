@@ -63,6 +63,8 @@ class DetectorConstruction : public G4VUserDetectorConstruction
         G4bool  isArm, isHealthyBone, isOsteoBone, isBoneDivided, 
                 is3DModel, isHeart, isLungs, isRibcage, isFiller, isThorax,
                 checkOverlaps, isTumor, isTestParametrization, isFixed, isDebug;
+
+        G4bool Getis3DModel() const {return is3DModel;}
     
     private:
 

@@ -176,15 +176,31 @@ def Root_to_Heatmap(directory, root_name, tree_name, x_branch, y_branch, size, p
         x_values = da.from_array(tree[x_branch].array(library="np"), chunks=chunk_size)
         y_values = da.from_array(tree[y_branch].array(library="np"), chunks=chunk_size)
 
-    size_x = size[0]; size_y = size[1]; x_shift = size[2]; y_shift = size[3]
+        xmin = tree[x_branch].array(library="np").min()
+        xmax = tree[x_branch].array(library="np").max()
+        ymin = tree[y_branch].array(library="np").min()
+        ymax = tree[y_branch].array(library="np").max()
 
-    x_data_shifted = x_values - x_shift;            y_data_shifted = y_values - y_shift
-    x_data_shifted[x_data_shifted == 0] = np.nan;   y_data_shifted[y_data_shifted == 0] = np.nan
+        xmin = np.ceil(xmin)
+        xmax = np.floor(xmax)
+        ymin = np.ceil(ymin)
+        ymax = np.floor(ymax)
 
-    set_bins_x = np.arange(-size_x, size_x + pixel_size, pixel_size)
-    set_bins_y = np.arange(-size_y, size_y + pixel_size, pixel_size)
+    x_shift = size[2]
+    y_shift = size[3]
 
-    heatmap = da.full((len(set_bins_x) - 1, len(set_bins_y) - 1), np.nan, dtype=bool)
+    x_down = xmin - x_shift
+    x_up   = xmax - x_shift
+    y_down = ymin - y_shift
+    y_up   = ymax - y_shift
+
+    x_data_shifted = x_values - x_shift            
+    y_data_shifted = y_values - y_shift
+
+    set_bins_x = np.arange(x_down, x_up + pixel_size, pixel_size)
+    set_bins_y = np.arange(y_down, y_up + pixel_size, pixel_size)
+
+    heatmap = da.full((len(set_bins_x) - 1, len(set_bins_y) - 1), 0, dtype=float)
 
     for x_chunk, y_chunk in zip(x_data_shifted.to_delayed(), y_data_shifted.to_delayed()):
         
@@ -192,29 +208,44 @@ def Root_to_Heatmap(directory, root_name, tree_name, x_branch, y_branch, size, p
         y_chunk = da.from_delayed(y_chunk, shape=(chunk_size,), dtype=np.float32)
 
         chunk_histogram, _, _ = da.histogram2d(x_chunk, y_chunk, bins=[set_bins_x, set_bins_y])
-        # chunk_histogram = da.where(chunk_histogram == 0, -100, chunk_histogram)
-        heatmap += chunk_histogram
+        heatmap = heatmap + chunk_histogram
 
     heatmap = heatmap.compute()
     heatmap = np.rot90(heatmap.T, 2)
+    maxi = np.max(heatmap)
+    heatmap = np.log(maxi / heatmap)
 
-    heatmap[heatmap == 1.0] = np.nan
-    heatmap[heatmap == 0] = np.nan
-    maxi = np.nanmax(heatmap)
-    normal_map = np.log(maxi / heatmap)
+    #####################################
 
-    # normal_map = heatmap
-    # for row in normal_map: print(row)
+    size_x = size[0]; 
+    size_y = size[1]; 
+
+    set_bins_x = np.arange(-size_x, size_x + pixel_size, pixel_size)
+    set_bins_y = np.arange(-size_y, size_y + pixel_size, pixel_size)
+
+    original_size = np.zeros((len(set_bins_x), len(set_bins_y)))
+    
+    size_0 = original_size.shape
+    size_1 = heatmap.shape
+
+    start_row = (size_0[0] - size_1[0]) // 2
+    start_col = (size_0[1] - size_1[1]) // 2
+
+    padded_matrix = np.zeros(size_0)
+    padded_matrix[start_row:start_row + size_1[0], start_col:start_col + size_1[1]] = heatmap
+    heatmap = padded_matrix
+
+    #####################################
 
     plt.figure(figsize=(14, 4))
-    plt.subplot(1, 3, 1); plt.imshow(normal_map, cmap="gray", extent=[set_bins_x[0], set_bins_y[-1], set_bins_x[0], set_bins_y[-1]]); # plt.axis("off")
+    plt.subplot(1, 3, 1); plt.imshow(heatmap, cmap="gray", extent=[set_bins_x[0], set_bins_y[-1], set_bins_x[0], set_bins_y[-1]]); # plt.axis("off")
     plt.colorbar()
     if save_as: plt.savefig(save_as + ".png", bbox_inches="tight", dpi=900)
     rows = heatmap.shape[0]
-    plt.subplot(1, 3, 2); plt.plot(normal_map[2*rows//3, :])
-    plt.subplot(1, 3, 3); plt.plot(normal_map[:, rows//2])
+    plt.subplot(1, 3, 2); plt.plot(heatmap[2*rows//3, :])
+    plt.subplot(1, 3, 3); plt.plot(heatmap[:, rows//2])
 
-    return normal_map, set_bins_x, set_bins_y
+    return heatmap, set_bins_x, set_bins_y
 
 # 3.0. ========================================================================================================================================================
 
@@ -637,10 +668,7 @@ def ClearFolder(directory):
 def CT_Loop(directory, starts_with, angles):
 
     import Radiography_Library as RadLib
-    import os; import subprocess; import shutil; 
-    # from tqdm import tqdm
-    from tqdm.notebook import tqdm
-    import sys; from contextlib import redirect_stdout, redirect_stderr
+    import os; import subprocess; import shutil; from tqdm.notebook import tqdm; from contextlib import redirect_stdout, redirect_stderr
 
     executable_file = "Sim"
     mac_filename = 'CT.mac'
@@ -659,7 +687,7 @@ def CT_Loop(directory, starts_with, angles):
         """ \
         /myDetector/Rotation {angle}
         /run/reinitializeGeometry
-        /run/numberOfThreads 10
+        /run/numberOfThreads 9
         /run/initialize
 
         /myDetector/nColumns 1
@@ -760,17 +788,11 @@ def LogaritmicTransformation(radiographs, pixel_size, sigma):
 
 def RadonReconstruction(roots, htmps, layers):
 
-    from skimage.transform import iradon
-    import numpy as np; import matplotlib.pyplot as plt
-    import plotly.graph_objects as go; import plotly.io as pio
-    from tqdm import tqdm
+    import numpy as np; import matplotlib.pyplot as plt; import plotly.graph_objects as go; import plotly.io as pio; from tqdm import tqdm; from skimage.transform import iradon
+    
     initial = layers[0]
     final = layers[1]
     spacing = layers[2]
-
-    # height = len(htmps[0])
-    # n = height/(slices+1)
-    # heights = np.round(np.arange(n, height, n)).astype(int)
     
     heights = np.round(np.arange(initial, final, spacing))
     start = roots[0]

@@ -6,6 +6,8 @@
 #include "G4RunManager.hh"
 #include "G4SystemOfUnits.hh"
 
+#include "3.0_DetectorConstruction.hh"
+
 extern int arguments;
 
 class SensitiveDetector : public G4VSensitiveDetector

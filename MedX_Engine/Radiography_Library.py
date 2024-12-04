@@ -159,9 +159,9 @@ def CT_Summary_Data(directory, tree, branches):
 
 # 2.0. ========================================================================================================================================================
 
-def Root_to_Heatmap(directory, root_name, tree_name, x_branch, y_branch, size, pixel_size, save_as):
+def Root_to_Heatmap(directory, root_name, tree_name, x_branch, y_branch, size, pixel_size):
 
-    import uproot; import numpy as np; import matplotlib.pyplot as plt; import dask.array as da
+    import uproot; import numpy as np; import dask.array as da
     
     chunk_size = 1_000_000
 
@@ -197,45 +197,66 @@ def Root_to_Heatmap(directory, root_name, tree_name, x_branch, y_branch, size, p
     x_data_shifted = x_values - x_shift            
     y_data_shifted = y_values - y_shift
 
-    set_bins_x = np.arange(x_down, x_up + pixel_size, pixel_size)
-    set_bins_y = np.arange(y_down, y_up + pixel_size, pixel_size)
+    bins_x0 = np.arange(x_down, x_up + pixel_size, pixel_size)
+    bins_y0 = np.arange(y_down, y_up + pixel_size, pixel_size)
 
-    heatmap = da.full((len(set_bins_x) - 1, len(set_bins_y) - 1), 0, dtype=float)
+    heatmap = da.full((len(bins_x0) - 1, len(bins_y0) - 1), 0, dtype=float)
 
     for x_chunk, y_chunk in zip(x_data_shifted.to_delayed(), y_data_shifted.to_delayed()):
         
         x_chunk = da.from_delayed(x_chunk, shape=(chunk_size,), dtype=np.float32)
         y_chunk = da.from_delayed(y_chunk, shape=(chunk_size,), dtype=np.float32)
 
-        chunk_histogram, _, _ = da.histogram2d(x_chunk, y_chunk, bins=[set_bins_x, set_bins_y])
+        chunk_histogram, _, _ = da.histogram2d(x_chunk, y_chunk, bins=[bins_x0, bins_y0])
         heatmap = heatmap + chunk_histogram
 
     heatmap = heatmap.compute()
     heatmap = np.rot90(heatmap.T, 2)
-    maxi = np.max(heatmap)
-    heatmap = np.log(maxi / heatmap)
 
-    #####################################
+    return heatmap, bins_x0, bins_y0
+
+def Logaritmic_Transform(heatmap, size, pixel_size):
+
+    import numpy as np
+    
+    maxi_vector = heatmap[0, :]
+    heatmap = np.log(maxi_vector / heatmap)
 
     size_x = size[0]; 
     size_y = size[1]; 
 
-    set_bins_x = np.arange(-size_x, size_x + pixel_size, pixel_size)
-    set_bins_y = np.arange(-size_y, size_y + pixel_size, pixel_size)
+    bins_x1 = np.arange(-size_x, size_x + pixel_size, pixel_size)
+    bins_y1 = np.arange(-size_y, size_y + pixel_size, pixel_size)
 
-    original_size = np.zeros((len(set_bins_x), len(set_bins_y)))
+    new_size = np.zeros((len(bins_x1), len(bins_y1)))
     
-    size_0 = original_size.shape
+    size_0 = new_size.shape
     size_1 = heatmap.shape
 
-    start_row = (size_0[0] - size_1[0]) // 2
-    start_col = (size_0[1] - size_1[1]) // 2
+    if size_0 > size_1:
+    
+        start_row = (size_0[0] - size_1[0]) // 2
+        start_col = (size_0[1] - size_1[1]) // 2
 
-    padded_matrix = np.zeros(size_0)
-    padded_matrix[start_row:start_row + size_1[0], start_col:start_col + size_1[1]] = heatmap
-    heatmap = padded_matrix
+        padded_matrix = np.zeros(size_0)
+        # padded_matrix = np.full(size_0, maxi)
+        padded_matrix[start_row:start_row + size_1[0], start_col:start_col + size_1[1]] = heatmap
+        heatmap = padded_matrix
+    
+    else: 
+    
+        start_row = (size_1[0] - size_0[0]) // 2
+        start_col = (size_1[1] - size_0[1]) // 2
 
-    #####################################
+        cropped_matrix = heatmap[start_row:start_row + size_0[0], start_col:start_col + size_0[1]]
+        heatmap = cropped_matrix
+    
+
+    return heatmap, bins_x1, bins_y1
+
+def Plot_Heatmap(heatmap, set_bins_x, set_bins_y, save_as):
+
+    import matplotlib.pyplot as plt
 
     plt.figure(figsize=(14, 4))
     plt.subplot(1, 3, 1); plt.imshow(heatmap, cmap="gray", extent=[set_bins_x[0], set_bins_y[-1], set_bins_x[0], set_bins_y[-1]]); # plt.axis("off")
@@ -244,8 +265,6 @@ def Root_to_Heatmap(directory, root_name, tree_name, x_branch, y_branch, size, p
     rows = heatmap.shape[0]
     plt.subplot(1, 3, 2); plt.plot(heatmap[2*rows//3, :])
     plt.subplot(1, 3, 3); plt.plot(heatmap[:, rows//2])
-
-    return heatmap, set_bins_x, set_bins_y
 
 # 3.0. ========================================================================================================================================================
 
@@ -730,11 +749,9 @@ def CT_Loop(directory, starts_with, angles):
         ClearFolder(root_folder)
 
 
-def Calculate_Projections(directory, filename, roots, tree_name, x_branch, y_branch, dimensions, log_factor, pixel_size, csv_folder):
+def Calculate_Projections(directory, filename, roots, tree_name, x_branch, y_branch, dimensions, pixel_size, csv_folder):
     
     import numpy as np; from tqdm import tqdm; import matplotlib.pyplot as plt
-
-    save_as = ''
 
     start = roots[0]
     end = roots[1]
@@ -744,7 +761,7 @@ def Calculate_Projections(directory, filename, roots, tree_name, x_branch, y_bra
     for i in tqdm(projections, desc = 'Calculating heatmaps', unit = ' Heatmap', leave = True):
         
         root_name = filename + '_' + str(i) + '.root'
-        htmp_array, xlim, ylim = Root_to_Heatmap(directory, root_name, tree_name, x_branch, y_branch, dimensions, pixel_size, log_factor, save_as); plt.close()
+        htmp_array, xlim, ylim = Root_to_Heatmap(directory, root_name, tree_name, x_branch, y_branch, dimensions, pixel_size)
 
         name = csv_folder + "/CT_" + str(projections[i-1]) + ".csv"
         np.savetxt(name, htmp_array, delimiter=',', fmt='%.5f')
@@ -765,23 +782,6 @@ def LoadHeatmapsFromCSV(csv_folder, roots):
     for i, sim in tqdm(enumerate(sims), desc = 'Creating heatmaps from CSV files', unit = ' heatmaps', leave = True):
         name = csv_folder + f"/Sim{round(sim)}.csv"
         htmps[i] = np.genfromtxt(name, delimiter = ',')
-
-    return htmps
-
-
-def LogaritmicTransformation(radiographs, pixel_size, sigma):
-    
-    import matplotlib.pyplot as plt; import numpy as np; from scipy import ndimage; from tqdm import tqdm
-
-    htmps = np.zeros(len(radiographs), dtype = 'object')
-
-    for i, radiograph in tqdm(enumerate(radiographs), desc = 'Computing logarithmic transformation', unit = ' Heatmaps', leave = True):
-        radiograph = ndimage.gaussian_filter(radiograph, sigma)
-        maxi = np.max(radiograph)
-        htmps[i][htmps[i] == 0] = np.nan
-        htmps[i] = np.log(maxi/radiograph) / (pixel_size * 0.1)
-
-    plt.imshow(htmps[-1]); plt.colorbar(); plt.show()
 
     return htmps
 
@@ -1096,3 +1096,19 @@ def CT_Heatmap_from_Dask(x_data, y_data, size_x, size_y, x_shift, y_shift, pixel
     y_edges = y_edges.compute()
 
     return heatmap, x_edges, y_edges
+
+def LogaritmicTransformation(radiographs, pixel_size, sigma):
+    
+    import matplotlib.pyplot as plt; import numpy as np; from scipy import ndimage; from tqdm import tqdm
+
+    htmps = np.zeros(len(radiographs), dtype = 'object')
+
+    for i, radiograph in tqdm(enumerate(radiographs), desc = 'Computing logarithmic transformation', unit = ' Heatmaps', leave = True):
+        radiograph = ndimage.gaussian_filter(radiograph, sigma)
+        maxi = np.max(radiograph)
+        htmps[i][htmps[i] == 0] = np.nan
+        htmps[i] = np.log(maxi/radiograph) / (pixel_size * 0.1)
+
+    plt.imshow(htmps[-1]); plt.colorbar(); plt.show()
+
+    return htmps

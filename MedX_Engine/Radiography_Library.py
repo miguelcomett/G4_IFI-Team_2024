@@ -689,9 +689,9 @@ def CT_Loop(directory, starts_with, angles):
     import Radiography_Library as RadLib
     import os; import subprocess; import shutil; from tqdm.notebook import tqdm; from contextlib import redirect_stdout, redirect_stderr
 
-    executable_file = "Sim"
+    executable_file = "Sim.exe"
     mac_filename = 'CT.mac'
-    run_sim = f"./{executable_file} {mac_filename} . . ."
+    run_sim = f".\{executable_file} .\{mac_filename} . . ."
 
     root_folder = directory + "ROOT/"
     mac_filepath = directory + mac_filename

@@ -1,0 +1,281 @@
+         /myDetector/Rotation 200
+        /run/reinitializeGeometry
+        /run/numberOfThreads 9
+        /run/initialize
+
+        /myDetector/nColumns 1
+        /myDetector/nRows 1
+
+        /Pgun/X 0 mm
+        /Pgun/gaussX true
+        /Pgun/SpanY 0.01 mm
+
+        /gun/energy 80 keV
+
+                /Pgun/Y -280 mm
+        /run/beamOn 150000
+        /Pgun/Y -276 mm
+        /run/beamOn 150000
+        /Pgun/Y -272 mm
+        /run/beamOn 150000
+        /Pgun/Y -268 mm
+        /run/beamOn 150000
+        /Pgun/Y -264 mm
+        /run/beamOn 150000
+        /Pgun/Y -260 mm
+        /run/beamOn 150000
+        /Pgun/Y -256 mm
+        /run/beamOn 150000
+        /Pgun/Y -252 mm
+        /run/beamOn 150000
+        /Pgun/Y -248 mm
+        /run/beamOn 150000
+        /Pgun/Y -244 mm
+        /run/beamOn 150000
+        /Pgun/Y -240 mm
+        /run/beamOn 150000
+        /Pgun/Y -236 mm
+        /run/beamOn 150000
+        /Pgun/Y -232 mm
+        /run/beamOn 150000
+        /Pgun/Y -228 mm
+        /run/beamOn 150000
+        /Pgun/Y -224 mm
+        /run/beamOn 150000
+        /Pgun/Y -220 mm
+        /run/beamOn 150000
+        /Pgun/Y -216 mm
+        /run/beamOn 150000
+        /Pgun/Y -212 mm
+        /run/beamOn 150000
+        /Pgun/Y -208 mm
+        /run/beamOn 150000
+        /Pgun/Y -204 mm
+        /run/beamOn 150000
+        /Pgun/Y -200 mm
+        /run/beamOn 150000
+        /Pgun/Y -196 mm
+        /run/beamOn 150000
+        /Pgun/Y -192 mm
+        /run/beamOn 150000
+        /Pgun/Y -188 mm
+        /run/beamOn 150000
+        /Pgun/Y -184 mm
+        /run/beamOn 150000
+        /Pgun/Y -180 mm
+        /run/beamOn 150000
+        /Pgun/Y -176 mm
+        /run/beamOn 150000
+        /Pgun/Y -172 mm
+        /run/beamOn 150000
+        /Pgun/Y -168 mm
+        /run/beamOn 150000
+        /Pgun/Y -164 mm
+        /run/beamOn 150000
+        /Pgun/Y -160 mm
+        /run/beamOn 150000
+        /Pgun/Y -156 mm
+        /run/beamOn 150000
+        /Pgun/Y -152 mm
+        /run/beamOn 150000
+        /Pgun/Y -148 mm
+        /run/beamOn 150000
+        /Pgun/Y -144 mm
+        /run/beamOn 150000
+        /Pgun/Y -140 mm
+        /run/beamOn 150000
+        /Pgun/Y -136 mm
+        /run/beamOn 150000
+        /Pgun/Y -132 mm
+        /run/beamOn 150000
+        /Pgun/Y -128 mm
+        /run/beamOn 150000
+        /Pgun/Y -124 mm
+        /run/beamOn 150000
+        /Pgun/Y -120 mm
+        /run/beamOn 150000
+        /Pgun/Y -116 mm
+        /run/beamOn 150000
+        /Pgun/Y -112 mm
+        /run/beamOn 150000
+        /Pgun/Y -108 mm
+        /run/beamOn 150000
+        /Pgun/Y -104 mm
+        /run/beamOn 150000
+        /Pgun/Y -100 mm
+        /run/beamOn 150000
+        /Pgun/Y -96 mm
+        /run/beamOn 150000
+        /Pgun/Y -92 mm
+        /run/beamOn 150000
+        /Pgun/Y -88 mm
+        /run/beamOn 150000
+        /Pgun/Y -84 mm
+        /run/beamOn 150000
+        /Pgun/Y -80 mm
+        /run/beamOn 150000
+        /Pgun/Y -76 mm
+        /run/beamOn 150000
+        /Pgun/Y -72 mm
+        /run/beamOn 150000
+        /Pgun/Y -68 mm
+        /run/beamOn 150000
+        /Pgun/Y -64 mm
+        /run/beamOn 150000
+        /Pgun/Y -60 mm
+        /run/beamOn 150000
+        /Pgun/Y -56 mm
+        /run/beamOn 150000
+        /Pgun/Y -52 mm
+        /run/beamOn 150000
+        /Pgun/Y -48 mm
+        /run/beamOn 150000
+        /Pgun/Y -44 mm
+        /run/beamOn 150000
+        /Pgun/Y -40 mm
+        /run/beamOn 150000
+        /Pgun/Y -36 mm
+        /run/beamOn 150000
+        /Pgun/Y -32 mm
+        /run/beamOn 150000
+        /Pgun/Y -28 mm
+        /run/beamOn 150000
+        /Pgun/Y -24 mm
+        /run/beamOn 150000
+        /Pgun/Y -20 mm
+        /run/beamOn 150000
+        /Pgun/Y -16 mm
+        /run/beamOn 150000
+        /Pgun/Y -12 mm
+        /run/beamOn 150000
+        /Pgun/Y -8 mm
+        /run/beamOn 150000
+        /Pgun/Y -4 mm
+        /run/beamOn 150000
+        /Pgun/Y 0 mm
+        /run/beamOn 150000
+        /Pgun/Y 4 mm
+        /run/beamOn 150000
+        /Pgun/Y 8 mm
+        /run/beamOn 150000
+        /Pgun/Y 12 mm
+        /run/beamOn 150000
+        /Pgun/Y 16 mm
+        /run/beamOn 150000
+        /Pgun/Y 20 mm
+        /run/beamOn 150000
+        /Pgun/Y 24 mm
+        /run/beamOn 150000
+        /Pgun/Y 28 mm
+        /run/beamOn 150000
+        /Pgun/Y 32 mm
+        /run/beamOn 150000
+        /Pgun/Y 36 mm
+        /run/beamOn 150000
+        /Pgun/Y 40 mm
+        /run/beamOn 150000
+        /Pgun/Y 44 mm
+        /run/beamOn 150000
+        /Pgun/Y 48 mm
+        /run/beamOn 150000
+        /Pgun/Y 52 mm
+        /run/beamOn 150000
+        /Pgun/Y 56 mm
+        /run/beamOn 150000
+        /Pgun/Y 60 mm
+        /run/beamOn 150000
+        /Pgun/Y 64 mm
+        /run/beamOn 150000
+        /Pgun/Y 68 mm
+        /run/beamOn 150000
+        /Pgun/Y 72 mm
+        /run/beamOn 150000
+        /Pgun/Y 76 mm
+        /run/beamOn 150000
+        /Pgun/Y 80 mm
+        /run/beamOn 150000
+        /Pgun/Y 84 mm
+        /run/beamOn 150000
+        /Pgun/Y 88 mm
+        /run/beamOn 150000
+        /Pgun/Y 92 mm
+        /run/beamOn 150000
+        /Pgun/Y 96 mm
+        /run/beamOn 150000
+        /Pgun/Y 100 mm
+        /run/beamOn 150000
+        /Pgun/Y 104 mm
+        /run/beamOn 150000
+        /Pgun/Y 108 mm
+        /run/beamOn 150000
+        /Pgun/Y 112 mm
+        /run/beamOn 150000
+        /Pgun/Y 116 mm
+        /run/beamOn 150000
+        /Pgun/Y 120 mm
+        /run/beamOn 150000
+        /Pgun/Y 124 mm
+        /run/beamOn 150000
+        /Pgun/Y 128 mm
+        /run/beamOn 150000
+        /Pgun/Y 132 mm
+        /run/beamOn 150000
+        /Pgun/Y 136 mm
+        /run/beamOn 150000
+        /Pgun/Y 140 mm
+        /run/beamOn 150000
+        /Pgun/Y 144 mm
+        /run/beamOn 150000
+        /Pgun/Y 148 mm
+        /run/beamOn 150000
+        /Pgun/Y 152 mm
+        /run/beamOn 150000
+        /Pgun/Y 156 mm
+        /run/beamOn 150000
+        /Pgun/Y 160 mm
+        /run/beamOn 150000
+        /Pgun/Y 164 mm
+        /run/beamOn 150000
+        /Pgun/Y 168 mm
+        /run/beamOn 150000
+        /Pgun/Y 172 mm
+        /run/beamOn 150000
+        /Pgun/Y 176 mm
+        /run/beamOn 150000
+        /Pgun/Y 180 mm
+        /run/beamOn 150000
+        /Pgun/Y 184 mm
+        /run/beamOn 150000
+        /Pgun/Y 188 mm
+        /run/beamOn 150000
+        /Pgun/Y 192 mm
+        /run/beamOn 150000
+        /Pgun/Y 196 mm
+        /run/beamOn 150000
+        /Pgun/Y 200 mm
+        /run/beamOn 150000
+        /Pgun/Y 204 mm
+        /run/beamOn 150000
+        /Pgun/Y 208 mm
+        /run/beamOn 150000
+        /Pgun/Y 212 mm
+        /run/beamOn 150000
+        /Pgun/Y 216 mm
+        /run/beamOn 150000
+        /Pgun/Y 220 mm
+        /run/beamOn 150000
+        /Pgun/Y 224 mm
+        /run/beamOn 150000
+        /Pgun/Y 228 mm
+        /run/beamOn 150000
+        /Pgun/Y 232 mm
+        /run/beamOn 150000
+        /Pgun/Y 236 mm
+        /run/beamOn 150000
+        /Pgun/Y 240 mm
+        /run/beamOn 150000
+        /Pgun/Y 244 mm
+        /run/beamOn 150000
+        /Pgun/Y 248 mm
+        /run/beamOn 150000
+        

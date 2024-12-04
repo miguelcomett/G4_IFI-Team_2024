@@ -1,0 +1,1 @@
+Agreguen precompilados o comandos adecuados para vis

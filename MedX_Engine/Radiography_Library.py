@@ -780,7 +780,7 @@ def LoadHeatmapsFromCSV(csv_folder, roots):
     
     htmps = np.zeros(len(sims), dtype=object)
     for i, sim in tqdm(enumerate(sims), desc = 'Creating heatmaps from CSV files', unit = ' heatmaps', leave = True):
-        name = csv_folder + f"/Sim{round(sim)}.csv"
+        name = csv_folder + f"CT_{round(sim)}.csv"
         htmps[i] = np.genfromtxt(name, delimiter = ',')
 
     return htmps
@@ -793,16 +793,16 @@ def RadonReconstruction(roots, htmps, layers):
     initial = layers[0]
     final = layers[1]
     spacing = layers[2]
+    slices = np.round(np.arange(initial, final, spacing))
     
-    heights = np.round(np.arange(initial, final, spacing))
     start = roots[0]
     end = roots[1]
     deg = roots[2]
 
     thetas = np.arange(start, end+1, deg)
-    reconstructed_imgs = np.zeros(slices, dtype="object")
+    reconstructed_imgs = np.zeros(len(slices), dtype="object")
 
-    for i, layer in tqdm(enumerate(heights), desc = 'Reconstructing slices', unit = ' slice', leave = True):
+    for i, layer in tqdm(enumerate(slices), desc = 'Reconstructing slices', unit = ' Slices', leave = True):
 
         p = np.array([heatmap[layer] for heatmap in htmps]).T
         reconstructed_imgs[i] = iradon(p, theta = thetas)
@@ -820,7 +820,7 @@ def CoefficientstoHU(reconstructed_imgs, slices, mu_water, air_parameter):
 
     import numpy as np; import plotly.graph_objects as go; import plotly.io as pio 
 
-    HU_images = np.zeros(slices, dtype="object")
+    HU_images = np.zeros(len(slices), dtype="object")
 
     for i in range(len(HU_images)):
 

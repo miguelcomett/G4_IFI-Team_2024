@@ -713,7 +713,7 @@ def CT_Loop(directory, starts_with, angles):
         """ \
         /myDetector/Rotation {angle}
         /run/reinitializeGeometry
-        /run/numberOfThreads 9
+        #/run/numberOfThreads 9
         /run/initialize
 
         /myDetector/nColumns 1
@@ -721,6 +721,7 @@ def CT_Loop(directory, starts_with, angles):
 
         /Pgun/X 0 mm
         /Pgun/gaussX true
+        /Pgun/Xcos true
         /Pgun/SpanY 0.01 mm
 
         /gun/energy 80 keV

@@ -27,8 +27,11 @@ void PrimaryGenerator::GeneratePrimaries(G4Event * anEvent)
     if (thoraxAngle > 90 && thoraxAngle < 270) {thoraxAngle = thoraxAngle - 180;}
     thoraxAngle = thoraxAngle * (2*pi / 360.0);
 
-    long seed = std::time(nullptr);
-    CLHEP::HepRandom::setTheSeed(Ypos*seed);
+    G4int runID = G4RunManager::GetRunManager()->GetCurrentRun()->GetRunID();
+    G4int eventID = anEvent->GetEventID();
+
+    long seed = static_cast<long>(std::time(nullptr)) + runID + eventID;
+    CLHEP::HepRandom::setTheSeed(seed);
 
     if (Xgauss == true)  {x0 = G4RandGauss::shoot(0, 80*mm);}
     if (Xgauss == false) {x0 = 2 * (G4UniformRand() - 0.5); x0 = x0 * SpanX;}

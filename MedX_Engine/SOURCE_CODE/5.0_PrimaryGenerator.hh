@@ -4,6 +4,7 @@
 #include <iomanip>
 #include <vector>
 #include <fstream>
+#include <ctime>
 
 #include "Randomize.hh"
 #include "G4VUserPrimaryGeneratorAction.hh"

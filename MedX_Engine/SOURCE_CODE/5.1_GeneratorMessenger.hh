@@ -28,7 +28,7 @@ class PrimaryGeneratorMessenger : public G4UImessenger
 
 		G4int threadID;
 		
-		G4UIcmdWithABool * fPgunXgauss;   
+		G4UIcmdWithABool * fPgunXcos, * fPgunXgauss;   
 		G4UIcmdWithAnInteger * fSpectraMode;
 		G4UIcmdWithADouble * fPgunSpanX, * fPgunSpanY, * fPgunAngle;
 		G4UIcmdWithADoubleAndUnit * fPgunX, * fPgunY, * fPgunZ; 

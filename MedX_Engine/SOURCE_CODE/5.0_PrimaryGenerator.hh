@@ -32,6 +32,7 @@ class PrimaryGenerator:public G4VUserPrimaryGeneratorAction
         void SetGunXpos(G4double newXpos);
         void SetGunYpos(G4double newYpos);
         void SetGunZpos(G4double newZpos);
+        void SetGunXcos(G4bool newXtriangular);
         void SetGunXGauss(G4bool newXgauss);
         void SetGunSpanX(G4double newSpanX);
         void SetGunSpanY(G4double newSpanY);
@@ -54,11 +55,12 @@ class PrimaryGenerator:public G4VUserPrimaryGeneratorAction
         G4ParticleDefinition * particle;
 
         G4int threadID;
+        G4double random, peak, min, max;
 
         G4ThreeVector photonPosition, photonMomentum;
         
         const G4double pi = 3.14159265358979323846;
-        G4bool Xgauss, newXgauss;
+        G4bool Xtriangular, newXtriangular, Xcos, Xgauss, newXgauss;
         G4double x0, y0, z0, thoraxAngle, theta, phi, AngleInCarts, 
                  Xpos, Ypos, Zpos, SpanX, SpanY, GunAngle, RealEnergy;
         

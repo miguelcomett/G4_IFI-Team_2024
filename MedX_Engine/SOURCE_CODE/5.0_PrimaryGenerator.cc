@@ -27,8 +27,9 @@ void PrimaryGenerator::GeneratePrimaries(G4Event * anEvent)
     if (thoraxAngle > 90 && thoraxAngle < 270) {thoraxAngle = thoraxAngle - 180;}
     thoraxAngle = thoraxAngle * (2*pi / 360.0);
 
-    if (Xgauss == true)  {x0 = G4RandGauss::shoot(0, 80*mm); x0 = x0 * std::cos(thoraxAngle/2);}
+    if (Xgauss == true)  {x0 = G4RandGauss::shoot(0, 80*mm);}
     if (Xgauss == false) {x0 = 2 * (G4UniformRand() - 0.5); x0 = x0 * SpanX;}
+    if (Xcos == true) {x0 = x0 * std::cos(thoraxAngle/2);}
     x0 = x0 + Xpos; 
 
     y0 = 2 * (G4UniformRand() - 0.5);
@@ -79,6 +80,14 @@ void PrimaryGenerator::SetGunXGauss(G4bool newXgauss)
         if (threadID == 0) {std::cout << "-> Source X changed to: Gauss Distribution" << std::endl;}}
     if (newXgauss == false) {Xgauss = false; 
         if (threadID == 0) {std::cout << "-> Source X changed to: Linear Distribution" << std::endl;}}
+}
+
+void PrimaryGenerator::SetGunXcos(G4bool newXcos)
+{   
+    if (newXcos == true) {Xcos = true; 
+        if (threadID == 0) {std::cout << "-> Source X span changed to: Cosine function " << std::endl;}}
+    if (newXcos == false) {Xcos = false; 
+        if (threadID == 0) {std::cout << "-> Source X span fixed" << std::endl;}}
 }
 
 void PrimaryGenerator::SetGunSpanX(G4double newSpanX)

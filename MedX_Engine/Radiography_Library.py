@@ -722,7 +722,7 @@ def CT_Loop(directory, starts_with, angles):
         """
 
         start = -280
-        end = 250
+        end = 245
         step = 4
         beam_lines = "\n".join(f"        /Pgun/Y {y} mm\n        /run/beamOn 150000" for y in range(start, end + 1, step))
 

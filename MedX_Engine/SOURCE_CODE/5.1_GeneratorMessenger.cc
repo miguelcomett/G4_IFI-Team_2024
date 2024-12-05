@@ -18,6 +18,10 @@ PrimaryGeneratorMessenger::PrimaryGeneratorMessenger(PrimaryGenerator * gun) : f
 	fPgunXgauss -> SetGuidance("Set the source X Distribution.");
 	fPgunXgauss -> SetParameterName("GunGaussX", true);
 	
+	fPgunXcos = new G4UIcmdWithABool("/Pgun/Xcos", this);
+	fPgunXcos -> SetGuidance("Set the source X span function.");
+	fPgunXcos -> SetParameterName("GunXcos", true);
+	
 	fPgunSpanX = new G4UIcmdWithADouble("/Pgun/SpanX", this);
 	fPgunSpanX -> SetGuidance("Set the source X length.");
 	fPgunSpanX -> SetParameterName("GunSpanY", true);
@@ -43,7 +47,7 @@ PrimaryGeneratorMessenger::PrimaryGeneratorMessenger(PrimaryGenerator * gun) : f
 PrimaryGeneratorMessenger::~PrimaryGeneratorMessenger()
 {
 	delete fPgunX; delete fPgunY; delete fPgunZ;
-	delete fPgunXgauss;
+	delete fPgunXgauss; delete fPgunXcos;
 	delete fPgunSpanX; delete fPgunSpanY;
 	delete fPgunAngle; 
 	delete fSpectraMode; 
@@ -70,6 +74,12 @@ void PrimaryGeneratorMessenger::SetNewValue(G4UIcommand * command, G4String newV
 	    G4double GunZpos = fPgunZ -> GetNewDoubleValue(newValue);
 	    fGun -> SetGunZpos(GunZpos);
 	    // if (threadID == 0) {std::cout << "Command received: /Pgun/Z " << GunZpos << std::endl;}
+	}
+
+	if (command == fPgunXcos)
+	{
+		G4bool GunXtriangular = fPgunXcos -> GetNewBoolValue(newValue);
+	    fGun -> SetGunXcos(GunXtriangular);
 	}
 
 	if (command == fPgunXgauss)

@@ -61,8 +61,8 @@ class DetectorConstruction : public G4VUserDetectorConstruction
         G4double GetThoraxAngle() const {return thoraxAngle;}
 
         G4bool  isArm, isHealthyBone, isOsteoBone, isBoneDivided, 
-                is3DModel, isHeart, isLungs, isRibcage, isFiller, isThorax, isTumorReal, isThyroid,
-                checkOverlaps, isTumor, isTestParametrization, isFixed, isDebug;
+                is3DModel, isHeart, isLungs, isRibcage, isFiller, isThorax, isTumorReal, isTraquea,
+                checkOverlaps, isTumorRandom, isTestParametrization, isFixed, isDebug;
 
         G4bool Getis3DModel() const {return is3DModel;}
     
@@ -98,7 +98,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
 
         G4LogicalVolume   * logicWorld, * logicRadiator, * logicDetector, * logicHealthyBone, * logicOsteoBone, * logicMuscle, 
                           * logicGrasa, * logicSkin, * logicOs, * logicHealthy, 
-                          * logicLungs, * logicHeart, * logicThorax, * logicRibcage, * logicFiller, * logicTumor, * logicThyroid,
+                          * logicLungs, * logicHeart, * logicThorax, * logicRibcage, * logicFiller, * logicTumor, * logicTraquea,
                           * scoringVolume_0, * scoringVolume_1, * scoringVolume_2, * scoringVolume_3, 
                           * scoringVolume_4, * scoringVolume_5, * scoringVolume_6, * scoringVolume_7, * scoringVolume_8, * logicTumorReal, * ellipsoidLogic;
         G4VPhysicalVolume * physicalWorld, * physicalRadiator, * physicalDetector, * physBone, * physArm, 
@@ -114,11 +114,11 @@ class DetectorConstruction : public G4VUserDetectorConstruction
                    * Adipose, * Skin, * Muscle, * Bone, * OsBone, * compactBone, * TissueMix, * Light_Adipose, * Muscle_Sucrose;
         
         STLGeometryReader * stlReader;
-        G4TessellatedSolid * Ribcage, * Lungs, * Heart, * TumorReal, * Thyroid, * Tumor;
+        G4TessellatedSolid * Ribcage, * Lungs, * Heart, * TumorReal, * Traquea, * Tumor;
         G4VSolid * Thorax1, * Thorax2, * AccumulatedLungs;
-        G4SubtractionSolid * subtractedSolid0, * subtractedSolid1, * subtractedSolid2, * subtractedSolid3, 
-                           * subtractedSolid4, * subtractedSolid5, * subtractedSolid6, * subtractedSolid7, 
-                           * subtractedSolid8, * subtractedSolid9, * subtractedLung;
+        G4SubtractionSolid * subtractedLungs_1, * subtractedLungs_2, 
+                           * subtractedThorax_1, * subtractedThorax_2, * subtractedThorax_3,
+                           * subtractedFiller_1, * subtractedFiller_2, * subtractedFiller_3, * subtractedFiller_4;
 
         //Distribuciones
         std::random_device rd;

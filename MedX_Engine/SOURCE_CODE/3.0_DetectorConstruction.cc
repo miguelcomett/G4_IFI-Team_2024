@@ -221,6 +221,34 @@ void DetectorConstruction::ConstructThorax()
     G4cout << "=============== 3D MODELS ====================================" << G4endl; 
     G4cout << "-> Model Rotation about Z: " << thoraxAngle << "°" << G4endl;
 
+    Heart = stl.Read(modelPath + "HEART3.stl");
+    if (Heart && isHeart)
+    {
+        if (isTraquea)
+        {
+            subtractedHeart_1 = new G4SubtractionSolid("Heart1", Heart, Traquea, originMatrix, samplePosition);
+            logicHeart = new G4LogicalVolume(subtractedHeart_1, Muscle, "Heart");
+            new G4PVPlacement(Model3DRotation, samplePosition, logicHeart, "Heart", logicWorld, false, 0, true);
+        }
+        else
+        {
+            logicHeart = new G4LogicalVolume(Heart, Muscle, "Heart");
+            new G4PVPlacement(Model3DRotation, samplePosition, logicHeart, "Heart", logicWorld, false, 0, true);
+        }
+
+        scoringVolume_1 = logicHeart;
+        scoringVolumes.push_back(scoringVolume_1);
+
+        G4cout << "> HEART model imported succesfully" << G4endl;
+    }
+    if (isHeart && !Heart)
+    {
+        G4cout << "--> HEART model not found" << G4endl;
+        G4cout << "Critical error: Stopping the Simulation" << G4endl;
+        G4cout << "==============================================================" << G4endl; G4cout << G4endl;
+        std::exit(EXIT_FAILURE);
+    }
+
     TumorReal = stl.Read(modelPath + "TUMOR.stl");
     if (TumorReal && isTumorReal)
     {
@@ -259,52 +287,24 @@ void DetectorConstruction::ConstructThorax()
         std::exit(EXIT_FAILURE);
     }
 
-    Heart = stl.Read(modelPath + "HEART3.stl");
-    if (Heart && isHeart)
-    {
-        if (isTraquea)
-        {
-            subtractedHeart_1 = new G4SubtractionSolid("Heart1", Heart, Traquea, originMatrix, samplePosition);
-            logicHeart = new G4LogicalVolume(subtractedHeart_1, Muscle, "Heart");
-            new G4PVPlacement(Model3DRotation, samplePosition, logicHeart, "Heart", logicWorld, false, 0, true);
-        }
-        else
-        {
-            logicHeart = new G4LogicalVolume(Heart, Muscle, "Heart");
-            new G4PVPlacement(Model3DRotation, samplePosition, logicHeart, "Heart", logicWorld, false, 0, true);
-        }
-
-        scoringVolume_1 = logicHeart;
-        scoringVolumes.push_back(scoringVolume_1);
-
-        G4cout << "> HEART model imported succesfully" << G4endl;
-    }
-    if (isHeart && !Heart)
-    {
-        G4cout << "--> HEART model not found" << G4endl;
-        G4cout << "Critical error: Stopping the Simulation" << G4endl;
-        G4cout << "==============================================================" << G4endl; G4cout << G4endl;
-        std::exit(EXIT_FAILURE);
-    }
-
     Lungs = stl.Read(modelPath + "LUNGS1.stl");
     if (Lungs && isLungs)
     {
-        // if (isTumorRandom)
-        // {
-        //     AccumulatedLungs = Lungs; // Se puede igualar un solido a un tesselate
-        //     numTumores = 2; 
+        if (isTumorRandom)
+        {
+            AccumulatedLungs = Lungs; // Se puede igualar un solido a un tesselate
+            numTumores = 2; 
 
-        //     for (int i = 1; i <= numTumores; i++)
-        //     {
-        //         ConstructTumor(i); 
-        //         G4ThreeVector correctedTumorPosition = G4ThreeVector(-tumorPosition.x(), tumorPosition.z(), tumorPosition.y());
-        //         AccumulatedLungs = new G4SubtractionSolid("LungsWithTumorHole", AccumulatedLungs, tumorSphere, Model3DRotation, correctedTumorPosition);
-        //     }
+            for (int i = 1; i <= numTumores; i++)
+            {
+                ConstructTumor(i); 
+                G4ThreeVector correctedTumorPosition = G4ThreeVector(-tumorPosition.x(), tumorPosition.z(), tumorPosition.y());
+                AccumulatedLungs = new G4SubtractionSolid("LungsWithTumorHole", AccumulatedLungs, tumorSphere, Model3DRotation, correctedTumorPosition);
+            }
 
-        //     logicLungs = new G4LogicalVolume(AccumulatedLungs, Air, "Lungs"); // Crear el volumen lógico del sólido resultante
-        //     new G4PVPlacement(Model3DRotation, samplePosition, logicLungs, "Lungs", logicWorld, false, 0, true);
-        // }
+            logicLungs = new G4LogicalVolume(AccumulatedLungs, Air, "Lungs"); // Crear el volumen lógico del sólido resultante
+            new G4PVPlacement(Model3DRotation, samplePosition, logicLungs, "Lungs", logicWorld, false, 0, true);
+        }
 
         if (isTumorReal)
         {
@@ -629,41 +629,3 @@ G4double angleZ2 = Model3DRotation.z() + 0 * deg;*/
 // tumor X = substract -X
 // Colocar el tumor en el modelo de tórax
 //new G4PVPlacement(Model3DRotation, Model3DRotation->inverse() *  tumorPosition, logicTumor, "Tumor", logicWorld, false, 0, true);
-
-    // else if (isTumorReal && isTraquea)
-    // {
-    //     subtractedLungs_1 = new G4SubtractionSolid("Lung0", Lungs, TumorReal, originMatrix, samplePosition);
-    //     subtractedLungs_2 = new G4SubtractionSolid("Lung1", subtractedLungs_1, Traquea, originMatrix, samplePosition);
-        
-    //     logicLungs = new G4LogicalVolume(subtractedLungs_2, Air, "Lungs");
-    //     new G4PVPlacement(Model3DRotation, samplePosition, logicLungs, "Lungs", logicWorld, false, 0, true);
-    // }
-    // else if (isTumorReal && !isTraquea)
-    // {
-    //     subtractedLungs_1 = new G4SubtractionSolid("Lung0", Lungs, TumorReal, originMatrix, samplePosition);
-        
-    //     logicLungs = new G4LogicalVolume(subtractedLungs_1, Air, "Lungs");
-    //     new G4PVPlacement(Model3DRotation, samplePosition, logicLungs, "Lungs", logicWorld, false, 0, true);
-    // }
-    // else if (!isTumorReal && isTraquea)
-    // {
-    //     subtractedLungs_2 = new G4SubtractionSolid("Lung1", Lungs, Traquea, originMatrix, samplePosition);
-        
-    //     logicLungs = new G4LogicalVolume(subtractedLungs_2, Air, "Lungs");
-    //     new G4PVPlacement(Model3DRotation, samplePosition, logicLungs, "Lungs", logicWorld, false, 0, true);
-    // }
-
-//logicFiller = new G4LogicalVolume(subtractedFiller_4, Light_Adipose, "Filler");
-//new G4PVPlacement(Model3DRotation, G4ThreeVector(0, 0, 0), logicFiller, "Filler", logicWorld, false, 0, true);
-
-//subtractedLungs_2 = new G4SubtractionSolid("Lung1", subtractedLungs_1, Traquea, originMatrix, samplePosition);
-//logicFiller = new G4LogicalVolume(subtractedFiller_4, Light_Adipose, "Filler");
-//new G4PVPlacement(Model3DRotation, G4ThreeVector(0, 0, 0), logicFiller, "Filler", logicWorld, false, 0, true);
-
-//subtractedLungs_1 = new G4SubtractionSolid("Lung0", Lungs, TumorReal, originMatrix, samplePosition);
-//logicFiller = new G4LogicalVolume(subtractedFiller_4, Light_Adipose, "Filler");
-//new G4PVPlacement(Model3DRotation, G4ThreeVector(0, 0, 0), logicFiller, "Filler", logicWorld, false, 0, true);
-
-    // subtractedSolid1 = new G4SubtractionSolid("SoftWithBoneAndToraxHole", Thorax1, Thorax2, originMatrix, samplePosition); // Resta el volumen "TORAX_Real0" del resultado anterior
-    // subtractedSolid9 = new G4SubtractionSolid("ThoraxThyroid", subtractedSolid1, Traquea, originMatrix, samplePosition);
-    // subtractedSolid0 = new G4SubtractionSolid("SoftWithBoneHole", subtractedSolid9, Ribcage, originMatrix, samplePosition); // Resta el volumen "bone" del volumen "tissue"

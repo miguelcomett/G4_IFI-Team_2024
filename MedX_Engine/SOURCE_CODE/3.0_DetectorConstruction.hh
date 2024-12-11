@@ -118,7 +118,8 @@ class DetectorConstruction : public G4VUserDetectorConstruction
         G4VSolid * Thorax1, * Thorax2, * AccumulatedLungs;
         G4SubtractionSolid * subtractedLungs_1, * subtractedLungs_2, 
                            * subtractedThorax_1, * subtractedThorax_2, * subtractedThorax_3,
-                           * subtractedFiller_1, * subtractedFiller_2, * subtractedFiller_3, * subtractedFiller_4;
+                           * subtractedFiller_1, * subtractedFiller_2, * subtractedFiller_3, 
+                           * subtractedFiller_4, * subtractedHeart_1;
 
         //Distribuciones
         std::random_device rd;

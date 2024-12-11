@@ -32,13 +32,13 @@ DetectorConstruction::DetectorConstruction() : gen(rd()), randomDist(0.0, 1.0), 
         isHealthyBone = true;
         isOsteoBone = false;
     is3DModel = true;
-        isHeart = false;
-        isLungs = false;
-            isTraquea = true;
-            isTumorReal = false;
-        isRibcage = false;
+        isHeart = true;
+        isLungs = true;
+            isTraquea = false;
+            isTumorReal = true;
+        isRibcage = true;
         isThorax = true;
-        isFiller = false;
+        isFiller = true;
         
         isTumorRandom = false;
             isFixed = true; //Default random false
@@ -221,25 +221,6 @@ void DetectorConstruction::ConstructThorax()
     G4cout << "=============== 3D MODELS ====================================" << G4endl; 
     G4cout << "-> Model Rotation about Z: " << thoraxAngle << "°" << G4endl;
 
-    Heart = stl.Read(modelPath + "HEART2.stl");
-    if (Heart && isHeart) 
-    {
-        logicHeart = new G4LogicalVolume(Heart, Muscle, "Heart");
-        new G4PVPlacement(Model3DRotation, samplePosition, logicHeart, "Heart", logicWorld, false, 0, true);
-        
-        scoringVolume_1 = logicHeart;
-        scoringVolumes.push_back(scoringVolume_1);
-        
-        G4cout << "> HEART model imported succesfully" << G4endl;
-    }
-    if (isHeart && !Heart)  
-    {
-        G4cout << "--> HEART model not found" << G4endl; 
-        G4cout << "Critical error: Stopping the Simulation" << G4endl;
-        G4cout << "==============================================================" << G4endl; G4cout << G4endl;
-        std::exit(EXIT_FAILURE);
-    }
-
     TumorReal = stl.Read(modelPath + "TUMOR.stl");
     if (TumorReal && isTumorReal)
     {
@@ -278,7 +259,35 @@ void DetectorConstruction::ConstructThorax()
         std::exit(EXIT_FAILURE);
     }
 
-    Lungs = stl.Read(modelPath + "LUNGS.stl");
+    Heart = stl.Read(modelPath + "HEART3.stl");
+    if (Heart && isHeart)
+    {
+        if (isTraquea)
+        {
+            subtractedHeart_1 = new G4SubtractionSolid("Heart1", Heart, Traquea, originMatrix, samplePosition);
+            logicHeart = new G4LogicalVolume(subtractedHeart_1, Muscle, "Heart");
+            new G4PVPlacement(Model3DRotation, samplePosition, logicHeart, "Heart", logicWorld, false, 0, true);
+        }
+        else
+        {
+            logicHeart = new G4LogicalVolume(Heart, Muscle, "Heart");
+            new G4PVPlacement(Model3DRotation, samplePosition, logicHeart, "Heart", logicWorld, false, 0, true);
+        }
+
+        scoringVolume_1 = logicHeart;
+        scoringVolumes.push_back(scoringVolume_1);
+
+        G4cout << "> HEART model imported succesfully" << G4endl;
+    }
+    if (isHeart && !Heart)
+    {
+        G4cout << "--> HEART model not found" << G4endl;
+        G4cout << "Critical error: Stopping the Simulation" << G4endl;
+        G4cout << "==============================================================" << G4endl; G4cout << G4endl;
+        std::exit(EXIT_FAILURE);
+    }
+
+    Lungs = stl.Read(modelPath + "LUNGS1.stl");
     if (Lungs && isLungs)
     {
         // if (isTumorRandom)

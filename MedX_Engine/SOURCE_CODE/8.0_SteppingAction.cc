@@ -6,8 +6,6 @@ SteppingAction::~SteppingAction() {}
 
 void SteppingAction::UserSteppingAction(const G4Step * step)
 {
-    G4bool Stuck = false;
-
     track = step -> GetTrack();
     position = track -> GetPosition();
     worldMaxX =  500.1 * mm; worldMinX = -500.1 * mm; worldMaxY =  500.1 * mm; worldMinY = -500.1 * mm; worldMaxZ =  500.1 * mm; worldMinZ = -500.1 * mm;
@@ -45,6 +43,8 @@ void SteppingAction::UserSteppingAction(const G4Step * step)
 
     if (arguments == 5)
     {   
+        G4bool Stuck = true;
+        
         if (Stuck == true) 
         {
             threshold = 1.0e-5; 
@@ -58,7 +58,12 @@ void SteppingAction::UserSteppingAction(const G4Step * step)
                 if ((currentPosition - data.lastPosition).mag() < threshold) 
                 {
                     data.stuckStepCount++; // Increment stuck step count
-                    if (data.stuckStepCount >= 5) {track -> SetTrackStatus(fStopAndKill); std::cout << "Killed stuck particle" << std::endl;}
+                    if (data.stuckStepCount >= 5) 
+                    {
+                        track -> SetTrackStatus(fStopAndKill); 
+                        std::cout << "Killed stuck particle" << std::endl;
+                        stuckParticles.erase(trackID);
+                    }
                 } 
                 else {data.stuckStepCount = 0;}
                 data.lastPosition = currentPosition;
